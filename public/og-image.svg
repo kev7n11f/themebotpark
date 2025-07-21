@@ -1,0 +1,83 @@
+<!-- 
+This is a placeholder for the Open Graph image.
+In production, you would create a 1200x630px image showing:
+- ThemeBotPark logo
+- "AI Chatbots with Unique Personalities" 
+- Icons of the 4 bots
+- Professional design matching your brand
+
+For now, this file serves as a reminder to create this image.
+The image should be saved as: public/og-image.png
+
+You can use tools like:
+- Canva (with their social media templates)
+- Figma (free design tool)
+- Photoshop/GIMP
+- AI image generators like DALL-E or Midjourney
+
+Key elements to include:
+🤖 ThemeBotPark
+🌧️ RainMaker - Business Strategy
+💓 HeartSync - Relationships  
+🛠️ FixItFrank - Tech Support
+🧨 TellItLikeItIs - Honest Advice
+
+Size: 1200x630px
+Format: PNG or JPG
+-->
+
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A9EFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7B61FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Main Title -->
+  <text x="600" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="72" font-weight="bold">
+    🤖 ThemeBotPark
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="260" text-anchor="middle" fill="#E6F3FF" font-family="Arial, sans-serif" font-size="32">
+    AI Chatbots with Unique Personalities
+  </text>
+  
+  <!-- Bot Icons Row -->
+  <text x="200" y="400" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48">
+    🌧️
+  </text>
+  <text x="200" y="450" text-anchor="middle" fill="#E6F3FF" font-family="Arial, sans-serif" font-size="18">
+    RainMaker
+  </text>
+  
+  <text x="400" y="400" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48">
+    💓
+  </text>
+  <text x="400" y="450" text-anchor="middle" fill="#E6F3FF" font-family="Arial, sans-serif" font-size="18">
+    HeartSync
+  </text>
+  
+  <text x="800" y="400" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48">
+    🛠️
+  </text>
+  <text x="800" y="450" text-anchor="middle" fill="#E6F3FF" font-family="Arial, sans-serif" font-size="18">
+    FixItFrank
+  </text>
+  
+  <text x="1000" y="400" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48">
+    🧨
+  </text>
+  <text x="1000" y="450" text-anchor="middle" fill="#E6F3FF" font-family="Arial, sans-serif" font-size="18">
+    TellItLikeItIs
+  </text>
+  
+  <!-- CTA -->
+  <text x="600" y="550" text-anchor="middle" fill="#FFD700" font-family="Arial, sans-serif" font-size="24" font-weight="bold">
+    Start Chatting for Free →
+  </text>
+</svg>
