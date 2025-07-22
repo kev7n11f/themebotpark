@@ -7,22 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 const creatorBots = [];
 
 // Function to get all creator bots
-const getCreatorBots = () => creatorBots;
-
-// Bot validation middleware
-const validateBot = (req, res, next) => {
-  const { name, systemPrompt } = req.body;
-  
-  if (!name || !systemPrompt) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'ValidationError',
-      message: 'Name and system prompt are required'
-    });
-  }
-  
-  next();
-};
+function getCreatorBots() {
+  return creatorBots;
+}
 
 // Add some sample bots
 const sampleBots = [
@@ -234,22 +221,7 @@ router.post('/connect-stripe', (req, res) => {
   });
 });
 
-// Error handling for creator routes
-router.use((err, req, res, next) => {
-  console.error('Creator API Error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    error: err.name || 'Error',
-    message: process.env.NODE_ENV === 'production'
-      ? 'An error occurred while processing your request'
-      : err.message
-  });
-});
-
-// Export both the router and getCreatorBots function
-const creatorRouter = express.Router();
-creatorRouter.use('/', router);
-
-// Export as a single object with both router and getCreatorBots
-module.exports = creatorRouter;
+// Export both the router and the getCreatorBots function
+module.exports = router;
+// Attach the getCreatorBots function to the exported router
 module.exports.getCreatorBots = getCreatorBots;

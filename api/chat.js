@@ -1,8 +1,9 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Create OpenAI client only if API key is available
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 // Export the serverless function directly
 module.exports = async (req, res) => {
@@ -26,6 +27,11 @@ module.exports = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const { mode, message, messages } = req.body;
+
+      // Validate incoming request
+      if (!mode || typeof mode !== 'string') {
+        return res.status(400).json({ error: 'Invalid mode parameter' });
+      }
 
       // Bot personalities and system prompts
       const botPrompts = {
@@ -67,6 +73,16 @@ module.exports = async (req, res) => {
       // Add current message
       conversationHistory.push({ role: 'user', content: message });
 
+      // Check if OpenAI client is available
+      if (!openai) {
+        console.log('OpenAI API key not configured, using fallback responses');
+        return res.json({
+          response: getFallbackResponse(mode, message),
+          systemPrompt,
+          fallback: true
+        });
+      }
+
       // Call OpenAI API
       const completion = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
@@ -84,18 +100,14 @@ module.exports = async (req, res) => {
       });
 
     } catch (error) {
-      console.error('OpenAI API Error:', error);
+      console.error('API Error:', error);
       
-      // Fallback responses for when API fails
-      const fallbackResponses = {
-        RainMaker: "I'm experiencing some technical difficulties, but here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
-        HeartSync: "My connection is a bit fuzzy right now, but remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
-        FixItFrank: "Well, looks like I'm the one with technical issues now! Ironic, right? Try refreshing and let's get back to fixing your problems! 🛠️",
-        TellItLikeItIs: "Straight talk: My systems are down right now. But here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨"
-      };
-
+      // Get fallback response based on bot mode
+      const mode = req.body?.mode || 'RainMaker';
+      const message = req.body?.message || '';
+      
       res.json({ 
-        response: fallbackResponses[mode] || "I'm experiencing technical difficulties. Please try again in a moment!",
+        response: getFallbackResponse(mode, message),
         error: true,
         fallback: true
       });
@@ -113,4 +125,16 @@ function getWelcomeMessage(botName) {
     TellItLikeItIs: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨"
   };
   return welcomes[botName] || "How can I help you today?";
+}
+
+function getFallbackResponse(botName, message) {
+  // Simple fallback responses based on bot personality
+  const fallbackResponses = {
+    RainMaker: "Here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
+    HeartSync: "Remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
+    FixItFrank: "Have you tried turning it off and on again? Sometimes the simplest solutions work best! 🛠️",
+    TellItLikeItIs: "Here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨"
+  };
+
+  return fallbackResponses[botName] || "I'm here to help you. What would you like to talk about?";
 }

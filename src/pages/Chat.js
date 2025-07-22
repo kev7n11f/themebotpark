@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import SEOHead from '../components/SEOHead';
 
-export default function Chat() {
+function Chat() {
   const [bot, setBot] = useState('');
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState([]);
@@ -11,36 +11,22 @@ export default function Chat() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
+  const [error, setError] = useState(null);
+  const [userId, setUserId] = useState('');
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs'];
   const freeMessageLimit = 3;
 
-  useEffect(() => {
-    const activeBot = localStorage.getItem('activeBot') || 'RainMaker';
-    setBot(activeBot);
-    
-    // Check subscription status
-    checkSubscriptionStatus();
-    
-    // Load bot personality
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mode: activeBot })
-    })
-      .then(res => res.json())
-      .then(data => {
-        setPrompt(data.systemPrompt || '');
-        setMessages([{
-          id: 1,
-          sender: 'bot',
-          text: `Hello! I'm ${activeBot}. ${getWelcomeMessage(activeBot)}`,
-          timestamp: new Date()
-        }]);
-      })
-      .catch(err => console.error('Error loading bot:', err));
-  }, []);
+  const getWelcomeMessage = (botName) => {
+    const welcomes = {
+      RainMaker: "Ready to brainstorm some income-generating ideas? Let's make it rain! 🌧️💰",
+      HeartSync: "I'm here to help you understand your deeper patterns. What's on your heart? 💓",
+      FixItFrank: "Got a problem that needs fixing? Let's troubleshoot this thing! 🛠️",
+      TellItLikeItIs: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨"
+    };
+    return welcomes[botName] || "How can I help you today?";
+  };
 
   const checkSubscriptionStatus = () => {
     // Check subscription from localStorage
@@ -56,16 +42,6 @@ export default function Chat() {
       messageCount: count,
       subscription: subscription
     });
-  };
-
-  const getWelcomeMessage = (botName) => {
-    const welcomes = {
-      RainMaker: "Ready to brainstorm some income-generating ideas? Let's make it rain! 🌧️💰",
-      HeartSync: "I'm here to help you understand your deeper patterns. What's on your heart? 💓",
-      FixItFrank: "Got a problem that needs fixing? Let's troubleshoot this thing! 🛠️",
-      TellItLikeItIs: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨"
-    };
-    return welcomes[botName] || "How can I help you today?";
   };
 
   const checkPaywallRequired = () => {
@@ -130,7 +106,8 @@ export default function Chat() {
         body: JSON.stringify({ 
           mode: bot,
           message: currentMessage,
-          messages: messages
+          messages: messages,
+          userId: userId
         })
       });
 
@@ -183,6 +160,64 @@ export default function Chat() {
     const currentSubscription = localStorage.getItem('hasSubscription') === 'true';
     return checkPaywallRequired() && !currentSubscription;
   };
+
+  // Generate or retrieve user ID on component mount
+  useEffect(() => {
+    let uid = localStorage.getItem('userId');
+    if (!uid) {
+      uid = 'user_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('userId', uid);
+    }
+    setUserId(uid);
+  }, []);
+
+  useEffect(() => {
+    console.log('Initializing Chat component...');
+
+    const activeBot = localStorage.getItem('activeBot') || 'RainMaker';
+    console.log('Active bot:', activeBot);
+    setBot(activeBot);
+
+    // Check subscription status
+    checkSubscriptionStatus();
+
+    // Load bot personality
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: activeBot })
+    })
+      .then(res => {
+        console.log('API response status:', res.status);
+        if (!res.ok) {
+          throw new Error('Failed to load bot data');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('API response data:', data);
+        setPrompt(data.systemPrompt || '');
+        setMessages([{
+          id: 1,
+          sender: 'bot',
+          text: `Hello! I'm ${activeBot}. ${getWelcomeMessage(activeBot)}`,
+          timestamp: new Date()
+        }]);
+      })
+      .catch(err => {
+        console.error('Error loading bot:', err);
+        setError('Failed to load chat data. Please try again later.');
+      });
+
+  }, []);
+
+  if (!bot) {
+    return <div className="loading">Loading bot...</div>;
+  }
+
+  if (messages.length === 0) {
+    return <div className="no-messages">No messages yet. Start the conversation!</div>;
+  }
 
   return (
     <section className="chat-page">
@@ -263,3 +298,5 @@ export default function Chat() {
     </section>
   );
 }
+
+export default Chat;

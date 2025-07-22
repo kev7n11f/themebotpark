@@ -7,17 +7,43 @@ import FixItFrank from '../components/BotSection/FixItFrank';
 import TellItLikeItIs from '../components/BotSection/TellItLikeItIs';
 import BotSection from '../components/BotSection/BotSection';
 import UserHeader from '../components/UserHeader';
+import SEOHead from '../components/SEOHead';
 
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState(false);
+  const [creatorBots, setCreatorBots] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
+    
+    // Fetch available bots including creator bots
+    const fetchBots = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/chat/available-bots');
+        if (response.ok) {
+          const data = await response.json();
+          // Filter out built-in bots to only show creator bots
+          const customBots = data.bots.filter(bot => 
+            !['RainMaker', 'HeartSync', 'FixItFrank', 'TellItLikeItIs'].includes(bot.name)
+          );
+          setCreatorBots(customBots);
+        }
+      } catch (error) {
+        console.error('Error fetching bots:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBots();
   }, []);
 
   return (
     <ScrollWrapper>
       <div className={`homepage ${isVisible ? 'fade-in' : ''}`}>
+        <SEOHead />
         {/* Navigation */}
         <nav className="main-nav">
           <div className="nav-brand">
@@ -108,6 +134,39 @@ export default function HomePage() {
           />
         </section>
 
+        {/* Creator Bot Sections */}
+        {creatorBots.length > 0 && (
+          <>
+            <div className="section-divider">
+              <h2>Community Created Bots</h2>
+              <p>Discover unique AI personalities crafted by our creator community</p>
+            </div>
+            
+            {creatorBots.map(bot => (
+              <BotSection
+                key={bot.id || bot.name}
+                title={`${bot.name} ${bot.emoji}`}
+                description={bot.description}
+                image={bot.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=random&color=fff&size=512`}
+                botId={bot.name}
+                features={bot.features || []}
+                tier={bot.isPremium ? 'premium' : 'free'}
+              />
+            ))}
+            
+            <div className="creator-cta">
+              <h3>Want to create your own bot?</h3>
+              <p>Join our creator community and earn revenue from your AI companions</p>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                Become a Creator
+              </button>
+            </div>
+          </>
+        )}
+
         {/* Features Section */}
         <section className="features-section">
           <div className="section-header">
@@ -173,6 +232,15 @@ export default function HomePage() {
                 Contact Us
               </button>
             </div>
+          </div>
+        </section>
+
+        <section className="cta-section">
+          <h2>Get Started with ThemeBotPark</h2>
+          <p>Discover the perfect AI companion for your needs. Start your journey today!</p>
+          <div className="cta-buttons">
+            <button className="btn btn-primary" onClick={() => window.location.href = '/chat'}>Explore Bots</button>
+            <button className="btn btn-secondary" onClick={() => window.location.href = '/about'}>Learn More</button>
           </div>
         </section>
       </div>

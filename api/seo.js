@@ -127,7 +127,7 @@ async function healthCheck(req, res) {
     performance: {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      responseTime: Date.now()
+      responseTime: Date.now() - req.startTime
     },
     seo: {
       sitemap: 'generated',

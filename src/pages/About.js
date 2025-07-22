@@ -118,23 +118,10 @@ export default function About() {
 
         <section className="cta-section">
           <h2>Join Our Community</h2>
-          <p>
-            Ready to experience AI with personality? Start chatting with our bots today and 
-            discover which one becomes your favorite digital companion.
-          </p>
+          <p>Ready to experience AI with personality? Start chatting with our bots today!</p>
           <div className="cta-buttons">
-            <button 
-              className="btn btn-primary"
-              onClick={() => window.location.href = '/'}
-            >
-              Try Our Bots
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => window.location.href = '/contact'}
-            >
-              Get in Touch
-            </button>
+            <button className="btn btn-primary" onClick={() => window.location.href = '/chat'}>Try Our Bots</button>
+            <button className="btn btn-secondary" onClick={() => window.location.href = '/contact'}>Contact Us</button>
           </div>
         </section>
       </div>

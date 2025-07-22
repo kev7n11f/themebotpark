@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#4A9EFF" />
+    <script>
+      // Consolidated theme color logic for all browsers
+      function updateThemeColor() {
+        var themeColor = '#4A9EFF';
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          themeColor = '#222222';
+        }
+        var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (!metaThemeColor) {
+          metaThemeColor = document.createElement('meta');
+          metaThemeColor.setAttribute('name', 'theme-color');
+          document.head.appendChild(metaThemeColor);
+        }
+        metaThemeColor.setAttribute('content', themeColor);
+      }
+      document.addEventListener('DOMContentLoaded', updateThemeColor);
+      // Optional: Listen for changes in color scheme
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
+      }
+    </script>
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Experience conversations with AI bots that have distinct personalities. From business strategy to relationship advice, find the perfect AI companion for your needs." />

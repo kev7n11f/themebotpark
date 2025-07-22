@@ -1,24 +1,29 @@
 # ThemeBotPark 🤖
 
-**AI Chatbots with Unique Personalities**
+## AI Chatbots with Unique Personalities
 
 Experience conversations with AI bots that have distinct personalities. From business strategy to relationship advice, find the perfect AI companion for your needs.
 
 ## 🌟 Live Demo
-**https://themebotpark-b35brpylq-kevins-projects-5e23f80d.vercel.app**
+
+**<https://themebotpark-b35brpylq-kevins-projects-5e23f80d.vercel.app>**
 
 ## 🤖 Meet Our Bots
 
 ### 🌧️ RainMaker
+
 Your strategic business companion. Specializes in income generation, marketing strategies, and entrepreneurial guidance.
 
 ### 💓 HeartSync  
+
 The empathetic relationship guide. Understands emotions and relationships, offering compassionate insights.
 
 ### 🛠️ FixItFrank
+
 Your witty technical troubleshooter. Combines deep technical knowledge with humor and efficiency.
 
 ### 🧨 TellItLikeItIs
+
 The unfiltered truth-teller. Provides honest, direct feedback without sugarcoating.
 
 ## ✨ Features
@@ -35,17 +40,20 @@ The unfiltered truth-teller. Provides honest, direct feedback without sugarcoati
 ## 🚀 Tech Stack
 
 ### Frontend
+
 - **React 19** - Latest React with modern features
 - **React Router** - Client-side routing
 - **CSS3** - Custom styling with variables and gradients
 
 ### Backend  
+
 - **Node.js/Express** - REST API server
 - **OpenAI API** - GPT-powered chat functionality
 - **Stripe** - Payment processing
 - **JWT** - Authentication tokens
 
 ### Deployment
+
 - **Vercel** - Serverless deployment platform
 - **Git** - Version control
 
@@ -68,11 +76,12 @@ npm run dev
 
 # Build for production
 npm run build
-```
+```plaintext
 
 ## 📊 Project Structure
 
-```
+```plaintext
+
 themebotpark/
 ├── public/           # Static files, favicon, manifest
 ├── src/
@@ -83,6 +92,7 @@ themebotpark/
 ├── api/              # Serverless API endpoints
 ├── logs/             # Application logs
 └── package.json      # Dependencies and scripts
+
 ```
 
 ## 👨‍💻 Created By

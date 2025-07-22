@@ -78,7 +78,13 @@ export default function UserHeader() {
               className="user-menu-item button"
               onClick={() => window.location.href = '/dashboard'}
             >
-              📊 Dashboard
+              📊 My Dashboard
+            </button>
+            <button 
+              className="user-menu-item button"
+              onClick={() => window.location.href = '/dashboard'}
+            >
+              🎨 Creator Portal
             </button>
             {user.subscription === 'free' && (
               <button 
@@ -108,7 +114,7 @@ export default function UserHeader() {
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        initialMode="login"
+        initialMode={authMode}
       />
     </>
   );
