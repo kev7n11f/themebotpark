@@ -3,81 +3,81 @@
 /* Basic styles for ThemeBotPark */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #0f0f0f;
-  color: #f3f3f3;
+  font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  background: var(--primary-bg);
+  color: var(--primary-text);
 }
 
 .static-page, .dashboard, .chat-page {
   max-width: 700px;
   margin: 40px auto;
-  background: #181818;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px #0002;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   padding: 2rem;
 }
 
 footer {
   text-align: center;
   margin: 2rem 0 1rem 0;
-  color: #aaa;
+  color: var(--muted-text);
 }
 
 footer a {
-  color: #ccc;
+  color: var(--secondary-text);
   margin: 0 0.5em;
   text-decoration: underline;
 }
 
 .chat-prompt {
-  background: #222;
-  border-radius: 8px;
+  background: var(--surface-bg);
+  border-radius: var(--radius-sm);
   padding: 1rem;
   margin: 1rem 0;
   font-size: 1.1rem;
-  color: #fff;
+  color: var(--primary-text);
 }
 
 input, textarea {
   width: 100%;
   margin: 0.5em 0;
   padding: 0.75em;
-  border-radius: 6px;
-  border: 1px solid #333;
-  background: #222;
-  color: #fff;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--primary-text);
 }
 
 button {
-  background: #444;
-  color: #fff;
+  background: var(--accent-primary);
+  color: white;
   padding: 10px 20px;
   border: none;
   margin-top: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 button:hover {
-  background: #666;
+  background: var(--accent-secondary);
 }
 
 ::-webkit-scrollbar {
   width: 8px;
-  background: #181818;
+  background: var(--surface-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--border-color);
   border-radius: 8px;
 }
 
 .chat-page {
   max-width: 900px;
   margin: 20px auto;
-  background: #181818;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px #0002;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   padding: 0;
   height: 80vh;
   display: flex;
@@ -89,27 +89,27 @@ button:hover {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .chat-header h1 {
   margin: 0;
-  color: #fff;
+  color: var(--primary-text);
 }
 
 .back-button {
-  background: #333;
-  color: #ccc;
+  background: var(--surface-bg);
+  color: var(--secondary-text);
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
 }
 
 .back-button:hover {
-  background: #444;
-  color: #fff;
+  background: var(--hover-bg);
+  color: var(--primary-text);
 }
 
 .chat-container {

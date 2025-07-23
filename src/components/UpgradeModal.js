@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+// Handle missing Stripe key gracefully
+const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 export default function UpgradeModal({ isOpen, onClose, botName }) {
   const [loading, setLoading] = useState(false);
@@ -41,9 +43,14 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     setError('');
     
     try {
+      // Check if Stripe is available
+      if (!stripePromise) {
+        throw new Error('Stripe is not configured. Please check your environment variables.');
+      }
+
       console.log('Starting Stripe checkout...', {
         priceId: plans[selectedPlan].priceId,
-        hasStripeKey: !!process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
+        hasStripeKey: !!stripeKey
       });
 
       // For debugging - check if we can reach the API at all

@@ -3,8 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#4A9EFF" />
+    
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <script>
       // Consolidated theme color logic for all browsers
       function updateThemeColor() {
@@ -13,15 +19,12 @@
           themeColor = '#222222';
         }
         var metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (!metaThemeColor) {
-          metaThemeColor = document.createElement('meta');
-          metaThemeColor.setAttribute('name', 'theme-color');
-          document.head.appendChild(metaThemeColor);
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', themeColor);
         }
-        metaThemeColor.setAttribute('content', themeColor);
       }
       document.addEventListener('DOMContentLoaded', updateThemeColor);
-      // Optional: Listen for changes in color scheme
+      // Listen for changes in color scheme
       if (window.matchMedia) {
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
       }
@@ -41,13 +44,18 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
     <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.openai.com">
     <link rel="preconnect" href="https://js.stripe.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     
     <!-- DNS Prefetch for performance -->
     <link rel="dns-prefetch" href="//vercel.app">
     <link rel="dns-prefetch" href="//api.stripe.com">
+    
+    <!-- Font loading with display swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     
     <title>ThemeBotPark - AI Chatbots with Unique Personalities</title>
     
@@ -70,14 +78,6 @@
         color: #000000 !important;
       }
     </style>
-    
-    <!-- Theme color update script -->
-    <script>
-      // Simple theme color update
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#222222');
-      }
-    </script>
     
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
