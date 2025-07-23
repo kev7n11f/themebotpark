@@ -4,8 +4,16 @@
 body {
   margin: 0;
   font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
-  background: var(--primary-bg);
+  background: transparent;
   color: var(--primary-text);
+}
+
+html {
+  background: var(--gradient-primary);
+}
+
+#root {
+  background: transparent;
 }
 
 .static-page, .dashboard, .chat-page {

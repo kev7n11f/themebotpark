@@ -106,3 +106,18 @@ themebotpark/
 ## Original Project Notes
 
 🚀 ThemeBotPark is a multi-mode AI chatbot playground powered by autodevelop.ai, featuring scroll-based navigation, creative bot personalities, voice chat, subscriptions, and long-term memory.
+
+## 🔄 CI/CD with GitHub Actions
+
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds and deploys the site to Vercel on every push to `main`. To enable deployment:
+
+1. In your GitHub repository settings, under **Secrets and variables → Actions**, add the following secrets:
+   - `VERCEL_TOKEN`: Your Vercel personal access token.
+   - `VERCEL_ORG_ID`: Your Vercel organization ID.
+   - `VERCEL_PROJECT_ID`: Your Vercel project ID.
+
+2. Push changes to `main`, and the workflow will automatically build and deploy to production.
+
+3. Monitor build status in the **Actions** tab.
+
+Now every commit to `main` triggers an automatic deployment on Vercel! 🎉
