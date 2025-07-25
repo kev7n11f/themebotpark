@@ -11,12 +11,12 @@ function Chat() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // Error state for handling errors
   const [userId, setUserId] = useState('');
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs'];
-  const freeMessageLimit = 3;
+  const freeMessageLimit = 10;
 
   const getWelcomeMessage = (botName) => {
     const welcomes = {

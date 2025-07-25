@@ -34,7 +34,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.10",
-    "vercel": "^44.5.3"
+    "vercel": "^41.0.2"
   },
   "browserslist": {
     "production": [
