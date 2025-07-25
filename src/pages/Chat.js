@@ -11,7 +11,7 @@ function Chat() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
-  const [error, setError] = useState(null); // Error state for handling errors
+  // const [error, setError] = useState(null); // Error state for handling errors
   const [userId, setUserId] = useState('');
 
   // Premium bots that require subscription
@@ -206,7 +206,7 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
-        // setError('Failed to load chat data. Please try again later.'); // TODO: Implement error handling
+        // Error handling can be implemented here if needed
       });
 
   }, []);
