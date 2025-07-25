@@ -2,3 +2,18 @@
 .App {
   text-align: center;
 }
+
+/* Footer social button styles */
+.footer-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin: 0 0.25rem;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.footer-link:hover {
+  transform: scale(1.1);
+}

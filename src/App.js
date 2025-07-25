@@ -13,7 +13,7 @@ import CreatorDashboard from './pages/CreatorDashboard';
 import Footer from './pages/Footer';
 
 // Components
-import AuthModal from './components/AuthModal';
+// import AuthModal from './components/AuthModal'; // TODO: Implement auth modal
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Styles
