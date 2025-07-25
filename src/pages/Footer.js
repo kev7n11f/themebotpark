@@ -6,9 +6,9 @@ export default function Footer() {
           <h4>ThemeBotPark</h4>
           <p>AI-powered conversations with unique bot personalities</p>
           <div className="footer-social">
-            <button type="button" aria-label="Twitter" className="footer-link">🐦</button>
-            <button type="button" aria-label="GitHub" className="footer-link">💻</button>
-            <button type="button" aria-label="LinkedIn" className="footer-link">💼</button>
+            <a href="https://twitter.com" aria-label="Twitter" className="footer-link" target="_blank" rel="noopener noreferrer">🐦</a>
+            <a href="https://github.com" aria-label="GitHub" className="footer-link" target="_blank" rel="noopener noreferrer">💻</a>
+            <a href="https://linkedin.com" aria-label="LinkedIn" className="footer-link" target="_blank" rel="noopener noreferrer">💼</a>
           </div>
         </div>
 
