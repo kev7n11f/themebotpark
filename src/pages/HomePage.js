@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ScrollWrapper from '../components/ScrollWrapper';
-import SlideMenu from '../components/SlideMenu';
-import RainMaker from '../components/BotSection/RainMaker';
-import HeartSync from '../components/BotSection/HeartSync';
-import FixItFrank from '../components/BotSection/FixItFrank';
-import TellItLikeItIs from '../components/BotSection/TellItLikeItIs';
+// import SlideMenu from '../components/SlideMenu'; // TODO: Implement slide menu
+// import RainMaker from '../components/BotSection/RainMaker'; // TODO: Add RainMaker bot
+// import HeartSync from '../components/BotSection/HeartSync'; // TODO: Add HeartSync bot
+// import FixItFrank from '../components/BotSection/FixItFrank'; // TODO: Add FixItFrank bot
+// import TellItLikeItIs from '../components/BotSection/TellItLikeItIs'; // TODO: Add TellItLikeItIs bot
 import BotSection from '../components/BotSection/BotSection';
 import UserHeader from '../components/UserHeader';
 import SEOHead from '../components/SEOHead';
@@ -12,14 +12,14 @@ import SEOHead from '../components/SEOHead';
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState(false);
   const [creatorBots, setCreatorBots] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true); // TODO: Implement loading state
 
   useEffect(() => {
     setIsVisible(true);
     
     // Fetch available bots including creator bots
     const fetchBots = async () => {
-      setIsLoading(true);
+      // setIsLoading(true); // TODO: Implement loading state
       try {
         const response = await fetch('/api/chat/available-bots');
         if (response.ok) {
@@ -33,7 +33,7 @@ export default function HomePage() {
       } catch (error) {
         console.error('Error fetching bots:', error);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false); // TODO: Implement loading state
       }
     };
     

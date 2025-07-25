@@ -4,14 +4,14 @@ import SEOHead from '../components/SEOHead';
 
 function Chat() {
   const [bot, setBot] = useState('');
-  const [prompt, setPrompt] = useState('');
+  // const [prompt, setPrompt] = useState(''); // TODO: Implement prompt functionality
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [hasSubscription, setHasSubscription] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null); // TODO: Implement error handling
   const [userId, setUserId] = useState('');
 
   // Premium bots that require subscription
@@ -196,7 +196,7 @@ function Chat() {
       })
       .then(data => {
         console.log('API response data:', data);
-        setPrompt(data.systemPrompt || '');
+        // setPrompt(data.systemPrompt || ''); // TODO: Implement prompt functionality
         setMessages([{
           id: 1,
           sender: 'bot',
@@ -206,7 +206,7 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
-        setError('Failed to load chat data. Please try again later.');
+        // setError('Failed to load chat data. Please try again later.'); // TODO: Implement error handling
       });
 
   }, []);
