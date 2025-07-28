@@ -4,7 +4,7 @@ import SEOHead from '../components/SEOHead';
 
 function Chat() {
   const [bot, setBot] = useState('');
-  const [prompt, setPrompt] = useState('');
+  // const [prompt, setPrompt] = useState(''); // TODO: Implement prompt functionality
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +124,7 @@ function Chat() {
       
     } catch (error) {
       console.error('Error sending message:', error);
+      setError('Failed to send message. Please try again.');
       const errorResponse = {
         id: Date.now() + 1,
         sender: 'bot',
@@ -196,7 +197,7 @@ function Chat() {
       })
       .then(data => {
         console.log('API response data:', data);
-        setPrompt(data.systemPrompt || '');
+        // setPrompt(data.systemPrompt || ''); // TODO: Implement prompt functionality
         setMessages([{
           id: 1,
           sender: 'bot',
@@ -228,6 +229,30 @@ function Chat() {
         url={`https://themebotpark.vercel.app/chat?bot=${bot}`}
         noindex={true}
       />
+      {error && (
+        <div className="error-banner" style={{
+          background: '#fee',
+          color: '#c33',
+          padding: '1rem',
+          margin: '1rem 0',
+          border: '1px solid #fcc',
+          borderRadius: '4px'
+        }}>
+          {error}
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#c33',
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className="chat-header">
         <h1>Chat with {bot}</h1>
         <div className="header-actions">
