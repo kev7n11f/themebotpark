@@ -52,7 +52,7 @@ function getWelcomeMessage(botName) {
 // Handle POST requests to /chat
 router.post('/', async (req, res) => {
   try {
-    const { mode, message, messages, userId } = req.body;
+    const { mode, message, userId } = req.body;
     const botMode = mode || 'RainMaker';
     
     // Use a default userId if none provided
