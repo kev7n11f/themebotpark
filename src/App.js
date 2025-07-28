@@ -15,6 +15,8 @@ import Footer from './pages/Footer';
 // Components
 // import AuthModal from './components/AuthModal'; // TODO: Implement auth modal
 import ErrorBoundary from './components/ErrorBoundary';
+import ThemeToggle from './components/ThemeToggle';
+import ResponsiveTest from './components/ResponsiveTest';
 
 // Styles
 import './App.css';
@@ -26,7 +28,15 @@ export default function App() {
       <UserProvider>
         <Router basename={process.env.PUBLIC_URL}>
           <div className="app">
-            <main className="main-content">
+            {/* Skip link for accessibility */}
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
+            
+            <ThemeToggle />
+            <ResponsiveTest />
+            
+            <main id="main-content" className="main-content">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/chat" element={<Chat />} />
