@@ -93,11 +93,9 @@ jobs:
           'your code, for example:'
         echo '  make bootstrap'
         echo '  make release'
- kev7n11f-patch-1
         echo 'No manual build commands provided. Skipping manual build step.'
 
         exit 1
-main
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
