@@ -100,7 +100,7 @@ jobs:
         echo ''
         echo 'For more details on configuring manual builds, refer to the CodeQL documentation:'
         echo 'https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#building-your-code'
-        echo 'Failing the workflow due to missing configuration.'
+        echo 'Manual build configuration required - replace this step with your build commands.'
 
         exit 1
 
