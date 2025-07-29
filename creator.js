@@ -90,7 +90,7 @@ router.get('/my-bots', (req, res) => {
 });
 
 // Create a new bot
-router.post('/bot', (req, res) => {
+router.post('/bot', validateBot, (req, res) => {
   const { 
     name, 
     description, 
@@ -104,14 +104,6 @@ router.post('/bot', (req, res) => {
   
   // In production, would get creatorId from auth token
   const creatorId = req.body.creatorId || 'demo-creator';
-  
-  // Validate required fields
-  if (!name || !systemPrompt) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Name and system prompt are required' 
-    });
-  }
   
   // Create new bot
   const newBot = {

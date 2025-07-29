@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 
 // Demo user database (in production, use real database)
@@ -43,7 +44,14 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', async (req, res) => {
+// Configure rate limiter for POST / route
+const postRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.post('/', postRateLimiter, async (req, res) => {
   const { action } = req.body;
 
   try {

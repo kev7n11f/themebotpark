@@ -16,7 +16,7 @@ function Chat() {
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs'];
-  const freeMessageLimit = 3;
+  const freeMessageLimit = 10;
 
   const getWelcomeMessage = (botName) => {
     const welcomes = {
@@ -124,6 +124,7 @@ function Chat() {
       
     } catch (error) {
       console.error('Error sending message:', error);
+      setError('Failed to send message. Please try again.');
       const errorResponse = {
         id: Date.now() + 1,
         sender: 'bot',
@@ -165,7 +166,9 @@ function Chat() {
   useEffect(() => {
     let uid = localStorage.getItem('userId');
     if (!uid) {
-      uid = 'user_' + Math.random().toString(36).substring(2, 15);
+      const array = new Uint8Array(12);
+      window.crypto.getRandomValues(array);
+      uid = 'user_' + Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('').substring(0, 13);
       localStorage.setItem('userId', uid);
     }
     setUserId(uid);
@@ -206,12 +209,16 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
+      fix/eslint-error
         setMessages([{
           id: 0,
           sender: 'system',
           text: 'An error occurred while loading the bot. Please try again later.',
           timestamp: new Date()
         }]);
+
+        setError('Failed to load chat data. Please try again later.');
+      main
       });
 
   }, []);
@@ -233,6 +240,30 @@ function Chat() {
         url={`https://themebotpark.vercel.app/chat?bot=${bot}`}
         noindex={true}
       />
+      {error && (
+        <div className="error-banner" style={{
+          background: '#fee',
+          color: '#c33',
+          padding: '1rem',
+          margin: '1rem 0',
+          border: '1px solid #fcc',
+          borderRadius: '4px'
+        }}>
+          {error}
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#c33',
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className="chat-header">
         <h1>Chat with {bot}</h1>
         <div className="header-actions">
