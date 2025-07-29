@@ -28,9 +28,10 @@ export default function CreatorDashboard() {
       setIsLoading(true);
       try {
         // In production, these would be real API calls
-        const analyticsRes = await fetch('/api/creator/analytics?creatorId=demo-creator');
-        const myBotsRes = await fetch('/api/creator/my-bots?creatorId=demo-creator');
-        const payoutsRes = await fetch('/api/creator/payouts?creatorId=demo-creator');
+        const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+        const analyticsRes = await fetch(`${apiBase}/api/creator/analytics?creatorId=demo-creator`);
+        const myBotsRes = await fetch(`${apiBase}/api/creator/my-bots?creatorId=demo-creator`);
+        const payoutsRes = await fetch(`${apiBase}/api/creator/payouts?creatorId=demo-creator`);
         
         if (analyticsRes.ok && myBotsRes.ok && payoutsRes.ok) {
           const analyticsData = await analyticsRes.json();
@@ -62,7 +63,8 @@ export default function CreatorDashboard() {
 
   const handleConnectStripe = async () => {
     try {
-      const response = await fetch('/api/creator/connect-stripe', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/creator/connect-stripe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -85,7 +87,8 @@ export default function CreatorDashboard() {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/creator/bot', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/creator/bot`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -126,7 +129,8 @@ export default function CreatorDashboard() {
     }
     
     try {
-      const response = await fetch(`/api/creator/bot/${botId}`, {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/creator/bot/${botId}`, {
         method: 'DELETE'
       });
       

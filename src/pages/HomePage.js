@@ -21,7 +21,8 @@ export default function HomePage() {
     const fetchBots = async () => {
       // setIsLoading(true); // TODO: Implement loading state
       try {
-        const response = await fetch('/api/chat/available-bots');
+        const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+        const response = await fetch(`${apiBase}/api/chat/available-bots`);
         if (response.ok) {
           const data = await response.json();
           // Filter out built-in bots to only show creator bots
