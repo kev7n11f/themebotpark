@@ -5,6 +5,10 @@
     { "src": "public/index.html", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/manifest.json", "dest": "/public/manifest.json" },
+    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
+    { "src": "/logo192.png", "dest": "/public/logo192.png" },
+    { "src": "/logo512.png", "dest": "/public/logo512.png" },
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/static/(.*)", "dest": "/build/static/$1" },
     { "src": "/(.*)", "dest": "/public/index.html" }

@@ -12,7 +12,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login, register } = useUser();
+
+  const [success, setSuccess] = useState('');
+  const { login, register, forgotPassword } = useUser();
 
   const handleChange = (e) => {
     setFormData({
@@ -20,12 +22,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
       [e.target.name]: e.target.value
     });
     setError('');
+    setSuccess('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     if (mode === 'register') {
       if (formData.password !== formData.confirmPassword) {
@@ -44,13 +48,19 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
       let result;
       if (mode === 'login') {
         result = await login(formData.email, formData.password);
-      } else {
+      } else if (mode === 'register') {
         result = await register(formData.email, formData.password, formData.name);
+      } else if (mode === 'forgot') {
+        result = await forgotPassword(formData.email);
       }
 
       if (result.success) {
-        onClose();
-        setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+        if (mode === 'forgot') {
+          setSuccess('Password reset link sent! Check your email.');
+        } else {
+          onClose();
+          setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+        }
       } else {
         setError(result.error);
       }
@@ -61,148 +71,73 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
     }
   };
 
-  const switchMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
-    setError('');
-    setFormData({ email: '', password: '', name: '', confirmPassword: '' });
-  };
-
-  const handleDemoLogin = async () => {
-    setIsLoading(true);
-    const result = await login('demo@themebotpark.com', 'demo123');
-    if (result.success) {
-      onClose();
-    } else {
-      setError('Demo login failed');
-    }
-    setIsLoading(false);
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div className="auth-modal-overlay" onClick={onClose}>
-      <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="auth-modal-close" onClick={onClose}>×</button>
-        
-        <div className="auth-modal-header">
-          <h2>{mode === 'login' ? 'Welcome Back!' : 'Join ThemeBotPark'}</h2>
-          <p>
-            {mode === 'login' 
-              ? 'Sign in to access your conversations and premium features'
-              : 'Create an account to save your chats and upgrade to premium'
-            }
-          </p>
-        </div>
-
-        {error && (
-          <div className="auth-error">
-            <span>❌ {error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="auth-form">
+    <div className="auth-modal-overlay">
+      <div className="auth-modal">
+        <button className="close-btn" onClick={onClose}>&times;</button>
+        <h2>{mode === 'login' ? 'Login' : mode === 'register' ? 'Register' : 'Forgot Password'}</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
           {mode === 'register' && (
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Your full name"
-                required
-                className="auth-input"
-              />
-            </div>
-          )}
-
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="your.email@example.com"
               required
-              className="auth-input"
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          )}
+          {(mode === 'login' || mode === 'register') && (
             <input
               type="password"
-              id="password"
               name="password"
+              placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              placeholder={mode === 'register' ? 'At least 6 characters' : 'Your password'}
               required
-              className="auth-input"
             />
-          </div>
-
-          {mode === 'register' && (
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm your password"
-                required
-                className="auth-input"
-              />
-            </div>
           )}
-
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            className="auth-submit-button"
-          >
-            {isLoading ? (
-              <>
-                <span className="spinner-small"></span>
-                {mode === 'login' ? 'Signing in...' : 'Creating account...'}
-              </>
-            ) : (
-              mode === 'login' ? 'Sign In' : 'Create Account'
-            )}
+          {mode === 'register' && (
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          )}
+          {mode === 'forgot' && (
+            <p>Enter your email to receive a password reset link.</p>
+          )}
+          {error && <div className="auth-error">{error}</div>}
+          {success && <div className="auth-success">{success}</div>}
+          <button type="submit" className="auth-btn" disabled={isLoading}>
+            {isLoading ? 'Processing...' : mode === 'login' ? 'Login' : mode === 'register' ? 'Register' : 'Send Reset Link'}
           </button>
         </form>
-
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
-
-        <button 
-          onClick={handleDemoLogin}
-          disabled={isLoading}
-          className="demo-login-button"
-        >
-          🚀 Try Demo Account (Premium Access)
-        </button>
-
-        <div className="auth-footer">
-          <p>
-            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-            <button 
-              type="button" 
-              onClick={switchMode}
-              className="auth-switch-button"
-            >
-              {mode === 'login' ? 'Sign up' : 'Sign in'}
-            </button>
-          </p>
+        <div className="auth-switch">
+          {mode !== 'login' && (
+            <button onClick={() => setMode('login')}>Already have an account? Login</button>
+          )}
+          {mode !== 'register' && (
+            <button onClick={() => setMode('register')}>Need an account? Register</button>
+          )}
+          {mode !== 'forgot' && (
+            <button onClick={() => setMode('forgot')}>Forgot password?</button>
+          )}
         </div>
       </div>
     </div>
   );
-}
+

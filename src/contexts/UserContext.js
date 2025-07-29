@@ -5,10 +5,9 @@ const UserContext = createContext();
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
+
   return context;
-};
+
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -58,17 +57,17 @@ export const UserProvider = ({ children }) => {
         localStorage.setItem('hasSubscription', 'false');
         setAuthError('Authentication failed. Please log in again.');
       }
+      setIsLoading(false);
     } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('authToken');
-      localStorage.setItem('hasSubscription', 'false');
-      setAuthError('Unable to connect to authentication server.');
-    } finally {
+      setAuthError('Authentication error.');
       setIsLoading(false);
     }
   };
 
+  // Login handler
   const login = async (email, password) => {
+    setIsLoading(true);
+    setAuthError(null);
     try {
       const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
       const response = await fetch(`${apiBase}/api/auth`, {
@@ -82,25 +81,30 @@ export const UserProvider = ({ children }) => {
           password
         }),
       });
-
       const data = await response.json();
-
-      if (data.success) {
+      if (data.success && data.token) {
         localStorage.setItem('authToken', data.token);
-        localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
         setUser(data.user);
         setIsAuthenticated(true);
+        setAuthError(null);
+        localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
         return { success: true };
       } else {
-        return { success: false, error: data.error };
+        setAuthError(data.error || 'Login failed');
+        return { success: false, error: data.error || 'Login failed' };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Login failed. Please try again.' };
+      setAuthError('Login error.');
+      return { success: false, error: 'Login error.' };
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Register handler
   const register = async (email, password, name) => {
+    setIsLoading(true);
+    setAuthError(null);
     try {
       const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
       const response = await fetch(`${apiBase}/api/auth`, {
@@ -115,69 +119,78 @@ export const UserProvider = ({ children }) => {
           name
         }),
       });
-
       const data = await response.json();
-
-      if (data.success) {
+      if (data.success && data.token) {
         localStorage.setItem('authToken', data.token);
-        localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
         setUser(data.user);
         setIsAuthenticated(true);
+        setAuthError(null);
+        localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
         return { success: true };
       } else {
-        return { success: false, error: data.error };
+        setAuthError(data.error || 'Registration failed');
+        return { success: false, error: data.error || 'Registration failed' };
       }
     } catch (error) {
-      console.error('Register error:', error);
-      return { success: false, error: 'Registration failed. Please try again.' };
+      setAuthError('Registration error.');
+      return { success: false, error: 'Registration error.' };
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const logout = async () => {
+  // Forgot password handler
+  const forgotPassword = async (email) => {
+    setIsLoading(true);
+    setAuthError(null);
     try {
       const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      await fetch(`${apiBase}/api/auth`, {
+      const response = await fetch(`${apiBase}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'logout'
+          action: 'forgot-password',
+          email
         }),
       });
+      const data = await response.json();
+      if (data.success) {
+        return { success: true };
+      } else {
+        setAuthError(data.error || 'Password reset failed');
+        return { success: false, error: data.error || 'Password reset failed' };
+      }
     } catch (error) {
-      console.error('Logout API error:', error);
+      setAuthError('Password reset error.');
+      return { success: false, error: 'Password reset error.' };
     } finally {
-      localStorage.removeItem('authToken');
-      localStorage.setItem('hasSubscription', 'false');
-      localStorage.setItem('messageCount', '0');
-      setUser(null);
-      setIsAuthenticated(false);
+      setIsLoading(false);
     }
   };
 
-  const upgradeSubscription = () => {
-    // Update user subscription status
-    if (user) {
-      const updatedUser = { ...user, subscription: 'premium' };
-      setUser(updatedUser);
-      localStorage.setItem('hasSubscription', 'true');
-    }
+  // Logout handler
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.setItem('hasSubscription', 'false');
+    setUser(null);
+    setIsAuthenticated(false);
+    setAuthError(null);
   };
 
-  const value = {
-    user,
-    isAuthenticated,
-    isLoading,
-    login,
-    register,
-    logout,
-    upgradeSubscription,
-    checkAuthStatus
-  };
 
   return (
-    <UserContext.Provider value={value}>
+    <UserContext.Provider value={{
+      user,
+      isAuthenticated,
+      isLoading,
+      authError,
+      login,
+      register,
+      forgotPassword,
+      logout
+    }}>
       {authError && (
         <div style={{background:'#fee',color:'#c33',padding:'1rem',margin:'1rem',border:'1px solid #fcc',borderRadius:'4px'}}>
           <strong>Authentication Error:</strong> {authError}
