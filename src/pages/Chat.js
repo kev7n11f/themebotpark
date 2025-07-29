@@ -100,7 +100,8 @@ function Chat() {
     }
 
     try {
-      const response = await fetch('/api/chat', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -191,7 +192,8 @@ function Chat() {
     checkSubscriptionStatus();
 
     // Load bot personality
-    fetch('/api/chat', {
+    const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+    fetch(`${apiBase}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mode: activeBot })

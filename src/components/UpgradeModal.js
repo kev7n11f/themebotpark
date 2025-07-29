@@ -6,6 +6,7 @@ const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 export default function UpgradeModal({ isOpen, onClose, botName }) {
+  const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const [error, setError] = useState('');
@@ -56,7 +57,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       // For debugging - check if we can reach the API at all
       console.log('Testing API connectivity...');
       
-      const testResponse = await fetch('/api/stripe', {
+      const testResponse = await fetch(`${apiBase}/api/stripe`, {
         method: 'GET',
       });
       
@@ -81,7 +82,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       }
       
       console.log('Making Stripe API call...');
-      const response = await fetch('/api/stripe', {
+      const response = await fetch(`${apiBase}/api/stripe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -14,6 +14,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     checkAuthStatus();
@@ -27,7 +28,8 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
-      const response = await fetch('/api/auth', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,23 +40,29 @@ export const UserProvider = ({ children }) => {
         }),
       });
 
+      if (!response.ok) {
+        setAuthError('Authentication server error. Please try again later.');
+        setIsLoading(false);
+        return;
+      }
+
       const data = await response.json();
 
       if (data.valid && data.user) {
         setUser(data.user);
         setIsAuthenticated(true);
-        
-        // Update subscription status in localStorage for compatibility
         localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
+        setAuthError(null);
       } else {
-        // Invalid token, clear it
         localStorage.removeItem('authToken');
         localStorage.setItem('hasSubscription', 'false');
+        setAuthError('Authentication failed. Please log in again.');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       localStorage.removeItem('authToken');
       localStorage.setItem('hasSubscription', 'false');
+      setAuthError('Unable to connect to authentication server.');
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +70,8 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/auth', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +102,8 @@ export const UserProvider = ({ children }) => {
 
   const register = async (email, password, name) => {
     try {
-      const response = await fetch('/api/auth', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +135,8 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      await fetch(`${apiBase}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,6 +178,11 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider value={value}>
+      {authError && (
+        <div style={{background:'#fee',color:'#c33',padding:'1rem',margin:'1rem',border:'1px solid #fcc',borderRadius:'4px'}}>
+          <strong>Authentication Error:</strong> {authError}
+        </div>
+      )}
       {children}
     </UserContext.Provider>
   );

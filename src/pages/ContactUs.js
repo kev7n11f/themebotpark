@@ -23,7 +23,8 @@ export default function ContactUs() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact', {
+      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const response = await fetch(`${apiBase}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
