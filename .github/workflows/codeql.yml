@@ -33,11 +33,11 @@ jobs:
       security-events: write
 
       # required to fetch internal or private CodeQL packs
-      packages: read
+      packages: write
 
       # only required for workflows in private repositories
-      actions: read
-      contents: read
+      actions: write
+      contents: write
 
     strategy:
       fail-fast: false
