@@ -206,7 +206,12 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
-        // Error handling can be implemented here if needed
+        setMessages([{
+          id: 0,
+          sender: 'system',
+          text: 'An error occurred while loading the bot. Please try again later.',
+          timestamp: new Date()
+        }]);
       });
 
   }, []);
