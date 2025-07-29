@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
 
@@ -22,7 +22,15 @@ import ResponsiveTest from './components/ResponsiveTest';
 import './App.css';
 import './styles/theme.css';
 
+// Analytics
+import { initializeAnalytics } from './utils/analytics';
+
 export default function App() {
+  useEffect(() => {
+    // Initialize analytics and performance monitoring
+    initializeAnalytics();
+  }, []);
+
   return (
     <ErrorBoundary>
       <UserProvider>
