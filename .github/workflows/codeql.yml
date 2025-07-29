@@ -93,7 +93,7 @@ jobs:
           'your code, for example:'
         echo '  make bootstrap'
         echo '  make release'
-        echo 'No manual build commands provided. Failing the workflow as manual build step is required.'
+        echo 'Please configure manual build commands for your project in this step. Failing the workflow due to missing configuration.'
 
         exit 1
 
