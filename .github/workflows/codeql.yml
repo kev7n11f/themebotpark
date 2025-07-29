@@ -90,10 +90,7 @@ jobs:
       run: |
         echo 'If you are using a "manual" build mode for one or more of the' \
           'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        echo 'Please configure manual build commands for your project in this step. For example:'
+          'your code. For example:'
         echo '  # For Java projects:'
         echo '  ./gradlew build'
         echo '  # For Python projects:'
