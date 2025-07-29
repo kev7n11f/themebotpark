@@ -33,7 +33,6 @@ jobs:
       security-events: write
 
       # required to fetch internal or private CodeQL packs
- kev7n11f-patch-1
       packages: read
 
       # only required for workflows in private repositories
