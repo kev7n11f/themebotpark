@@ -16,7 +16,7 @@ function Chat() {
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs'];
-  const freeMessageLimit = 3;
+  const freeMessageLimit = 10;
 
   const getWelcomeMessage = (botName) => {
     const welcomes = {
@@ -124,6 +124,7 @@ function Chat() {
       
     } catch (error) {
       console.error('Error sending message:', error);
+      setError('Failed to send message. Please try again.');
       const errorResponse = {
         id: Date.now() + 1,
         sender: 'bot',
@@ -206,7 +207,7 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
-        // setError('Failed to load chat data. Please try again later.'); // TODO: Implement error handling
+        setError('Failed to load chat data. Please try again later.');
       });
 
   }, []);
@@ -228,6 +229,30 @@ function Chat() {
         url={`https://themebotpark.vercel.app/chat?bot=${bot}`}
         noindex={true}
       />
+      {error && (
+        <div className="error-banner" style={{
+          background: '#fee',
+          color: '#c33',
+          padding: '1rem',
+          margin: '1rem 0',
+          border: '1px solid #fcc',
+          borderRadius: '4px'
+        }}>
+          {error}
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: '1rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#c33',
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className="chat-header">
         <h1>Chat with {bot}</h1>
         <div className="header-actions">
