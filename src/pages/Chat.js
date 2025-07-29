@@ -111,17 +111,23 @@ function Chat() {
         })
       });
 
-      const data = await response.json();
-      
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        setError('Received invalid JSON from server.');
+        data = {};
+      }
+
       const botResponse = {
         id: Date.now() + 1,
         sender: 'bot',
-        text: data.response || "I'm having trouble responding right now. Please try again!",
+        text: (data && typeof data.response === 'string') ? data.response : "I'm having trouble responding right now. Please try again!",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, botResponse]);
-      
+
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Failed to send message. Please try again.');
