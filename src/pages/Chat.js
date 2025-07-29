@@ -217,7 +217,6 @@ function Chat() {
         }]);
 
         setError('Failed to load chat data. Please try again later.');
-      main
       });
 
   }, []);
