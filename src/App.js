@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
 
@@ -15,36 +15,18 @@ import Footer from './pages/Footer';
 // Components
 // import AuthModal from './components/AuthModal'; // TODO: Implement auth modal
 import ErrorBoundary from './components/ErrorBoundary';
-import ThemeToggle from './components/ThemeToggle';
-import ResponsiveTest from './components/ResponsiveTest';
 
 // Styles
 import './App.css';
 import './styles/theme.css';
 
-// Analytics
-import { initializeAnalytics } from './utils/analytics';
-
 export default function App() {
-  useEffect(() => {
-    // Initialize analytics and performance monitoring
-    initializeAnalytics();
-  }, []);
-
   return (
     <ErrorBoundary>
       <UserProvider>
         <Router basename={process.env.PUBLIC_URL}>
           <div className="app">
-            {/* Skip link for accessibility */}
-            <a href="#main-content" className="skip-link">
-              Skip to main content
-            </a>
-            
-            <ThemeToggle />
-            <ResponsiveTest />
-            
-            <main id="main-content" className="main-content">
+            <main className="main-content">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/chat" element={<Chat />} />
