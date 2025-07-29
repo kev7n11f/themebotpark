@@ -209,7 +209,6 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
-      fix/eslint-error
         setMessages([{
           id: 0,
           sender: 'system',
