@@ -33,12 +33,13 @@ jobs:
       security-events: write
 
       # required to fetch internal or private CodeQL packs
+
+      # only required for workflows in private repositories
       packages: write
 
       # only required for workflows in private repositories
       actions: write
       contents: write
-
     strategy:
       fail-fast: false
       matrix:
@@ -89,9 +90,18 @@ jobs:
       run: |
         echo 'If you are using a "manual" build mode for one or more of the' \
           'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
+          'your code. For example:'
+        echo '  # For Java projects:'
+        echo '  ./gradlew build'
+        echo '  # For Python projects:'
+        echo '  pip install -r requirements.txt'
+        echo '  # For JavaScript projects:'
+        echo '  npm install && npm run build'
+        echo ''
+        echo 'For more details on configuring manual builds, refer to the CodeQL documentation:'
+        echo 'https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#building-your-code'
+        echo 'Manual build configuration required - replace this step with your build commands.'
+
         exit 1
 
     - name: Perform CodeQL Analysis
