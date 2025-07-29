@@ -166,7 +166,9 @@ function Chat() {
   useEffect(() => {
     let uid = localStorage.getItem('userId');
     if (!uid) {
-      uid = 'user_' + Math.random().toString(36).substring(2, 15);
+      const array = new Uint8Array(12);
+      window.crypto.getRandomValues(array);
+      uid = 'user_' + Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('').substring(0, 13);
       localStorage.setItem('userId', uid);
     }
     setUserId(uid);
@@ -207,6 +209,13 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
+        setMessages([{
+          id: 0,
+          sender: 'system',
+          text: 'An error occurred while loading the bot. Please try again later.',
+          timestamp: new Date()
+        }]);
+
         setError('Failed to load chat data. Please try again later.');
       });
 
