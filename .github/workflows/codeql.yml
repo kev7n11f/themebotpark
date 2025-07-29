@@ -111,6 +111,6 @@ main
 main
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@<commit-hash>
+      uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
