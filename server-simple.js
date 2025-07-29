@@ -3,6 +3,15 @@ const path = require('path');
 const app = express();
 require('dotenv').config();
 
+// Rate limiting middleware
+const rateLimit = require('express-rate-limit');
+const catchAllLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 // JSON parsing middleware
 app.use(express.json());
 
@@ -40,7 +49,7 @@ app.get('/api/creator/bots', (req, res) => {
 
 // Serve React build in production
 app.use(express.static(path.join(__dirname, 'build')));
-app.get('*', (req, res) => {
+app.get('*', catchAllLimiter, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
