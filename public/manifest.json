@@ -23,10 +23,11 @@
   "display": "standalone",
   "theme_color": "#4A9EFF",
   "background_color": "#ffffff",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "scope": "/",
   "lang": "en-US",
-  "categories": ["productivity", "social", "business"],
+  "categories": ["productivity", "social", "business", "entertainment"],
+  "prefer_related_applications": false,
   "screenshots": [
     {
       "src": "screenshot-wide.png",
