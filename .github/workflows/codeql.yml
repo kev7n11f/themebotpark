@@ -44,8 +44,6 @@ jobs:
       # only required for workflows in private repositories
       actions: write
       contents: write
- main
-
     strategy:
       fail-fast: false
       matrix:
