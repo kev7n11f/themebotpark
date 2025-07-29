@@ -93,7 +93,17 @@ jobs:
           'your code, for example:'
         echo '  make bootstrap'
         echo '  make release'
-        echo 'Please configure manual build commands for your project in this step. Failing the workflow due to missing configuration.'
+        echo 'Please configure manual build commands for your project in this step. For example:'
+        echo '  # For Java projects:'
+        echo '  ./gradlew build'
+        echo '  # For Python projects:'
+        echo '  pip install -r requirements.txt'
+        echo '  # For JavaScript projects:'
+        echo '  npm install && npm run build'
+        echo ''
+        echo 'For more details on configuring manual builds, refer to the CodeQL documentation:'
+        echo 'https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#building-your-code'
+        echo 'Failing the workflow due to missing configuration.'
 
         exit 1
 
