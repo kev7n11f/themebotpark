@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import SEOHead from '../components/SEOHead';
+import { api } from '../utils/api';
 
 function Chat() {
   const [bot, setBot] = useState('');
@@ -100,25 +101,7 @@ function Chat() {
     }
 
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      const response = await fetch(`${apiBase}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          mode: bot,
-          message: currentMessage,
-          messages: messages,
-          userId: userId
-        })
-      });
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        setError('Received invalid JSON from server.');
-        data = {};
-      }
+      const data = await api.sendChatMessage(bot, currentMessage, messages, userId);
 
       const botResponse = {
         id: Date.now() + 1,
@@ -192,19 +175,10 @@ function Chat() {
     checkSubscriptionStatus();
 
     // Load bot personality
-    const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-    fetch(`${apiBase}/api/chat`, {
+    api.call('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mode: activeBot })
     })
-      .then(res => {
-        console.log('API response status:', res.status);
-        if (!res.ok) {
-          throw new Error('Failed to load bot data');
-        }
-        return res.json();
-      })
       .then(data => {
         console.log('API response data:', data);
         // setPrompt(data.systemPrompt || ''); // TODO: Implement prompt functionality

@@ -1,16 +1,18 @@
 {
   "version": 2,
   "builds": [
-    { "src": "server.js", "use": "@vercel/node" },
-    { "src": "public/index.html", "use": "@vercel/static" }
+    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "build/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/manifest.json", "dest": "/public/manifest.json" },
-    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
-    { "src": "/logo192.png", "dest": "/public/logo192.png" },
-    { "src": "/logo512.png", "dest": "/public/logo512.png" },
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/static/(.*)", "dest": "/build/static/$1" },
-    { "src": "/(.*)", "dest": "/public/index.html" }
+    { "src": "/manifest.json", "dest": "/build/manifest.json" },
+    { "src": "/favicon.ico", "dest": "/build/favicon.ico" },
+    { "src": "/logo192.png", "dest": "/build/logo192.png" },
+    { "src": "/logo512.png", "dest": "/build/logo512.png" },
+    { "src": "/robots.txt", "dest": "/build/robots.txt" },
+    { "src": "/sitemap.xml", "dest": "/build/sitemap.xml" },
+    { "src": "/(.*)", "dest": "/build/index.html" }
   ]
 }
