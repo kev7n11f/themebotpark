@@ -49,6 +49,15 @@ function getWelcomeMessage(botName) {
   return welcomes[botName] || "How can I help you today?";
 }
 
+// Handle GET requests to /chat (basic status check)
+router.get('/', (req, res) => {
+  res.json({ 
+    status: 'Chat API is working!',
+    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+    availableBots: ['RainMaker', 'HeartSync', 'FixItFrank', 'TellItLikeItIs']
+  });
+});
+
 // Handle POST requests to /chat
 router.post('/', async (req, res) => {
   try {

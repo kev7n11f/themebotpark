@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import { api } from '../utils/api';
 
 // Handle missing Stripe key gracefully
 const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 export default function UpgradeModal({ isOpen, onClose, botName }) {
-  const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const [error, setError] = useState('');
@@ -57,18 +57,12 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       // For debugging - check if we can reach the API at all
       console.log('Testing API connectivity...');
       
-      const testResponse = await fetch(`${apiBase}/api/stripe`, {
-        method: 'GET',
-      });
-      
-      console.log('API test response:', {
-        status: testResponse.status,
-        ok: testResponse.ok
-      });
-
-      if (!testResponse.ok) {
+      try {
+        const testResponse = await api.call('/api/stripe', { method: 'GET' });
+        console.log('API test response:', testResponse);
+      } catch (testError) {
         // If API is not accessible, use local storage fallback for demo
-        console.warn('API not accessible, using demo mode');
+        console.warn('API not accessible, using demo mode', testError);
         localStorage.setItem('hasSubscription', 'true');
         localStorage.setItem('messageCount', '0');
         window.location.href = '/subscription-success';
@@ -82,25 +76,12 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       }
       
       console.log('Making Stripe API call...');
-      const response = await fetch(`${apiBase}/api/stripe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: plans[selectedPlan].priceId,
-          successUrl: `${window.location.origin}/subscription-success`,
-          cancelUrl: `${window.location.origin}/chat`,
-        }),
-      });
+      const data = await api.createStripeSession(
+        plans[selectedPlan].priceId,
+        `${window.location.origin}/subscription-success`,
+        `${window.location.origin}/chat`
+      );
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('API Error:', errorData);
-        throw new Error(`Server error: ${response.status} - ${errorData}`);
-      }
-
-      const data = await response.json();
       console.log('Stripe session created:', data);
       
       if (!data.sessionId && !data.url) {

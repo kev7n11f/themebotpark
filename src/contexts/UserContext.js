@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { api } from '../utils/api';
 
 const UserContext = createContext();
 
@@ -28,25 +29,7 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      const response = await fetch(`${apiBase}/api/auth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'verify-token',
-          token
-        }),
-      });
-
-      if (!response.ok) {
-        setAuthError('Authentication server error. Please try again later.');
-        setIsLoading(false);
-        return;
-      }
-
-      const data = await response.json();
+      const data = await api.verifyToken(token);
 
       if (data.valid && data.user) {
         setUser(data.user);
@@ -60,6 +43,7 @@ export const UserProvider = ({ children }) => {
       }
       setIsLoading(false);
     } catch (error) {
+      console.error('Auth check error:', error);
       setAuthError('Authentication error.');
       setIsLoading(false);
     }
@@ -70,19 +54,8 @@ export const UserProvider = ({ children }) => {
     setIsLoading(true);
     setAuthError(null);
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      const response = await fetch(`${apiBase}/api/auth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'login',
-          email,
-          password
-        }),
-      });
-      const data = await response.json();
+      const data = await api.login(email, password);
+      
       if (data.success && data.token) {
         localStorage.setItem('authToken', data.token);
         setUser(data.user);
@@ -95,6 +68,7 @@ export const UserProvider = ({ children }) => {
         return { success: false, error: data.error || 'Login failed' };
       }
     } catch (error) {
+      console.error('Login error:', error);
       setAuthError('Login error.');
       return { success: false, error: 'Login error.' };
     } finally {
@@ -107,20 +81,8 @@ export const UserProvider = ({ children }) => {
     setIsLoading(true);
     setAuthError(null);
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      const response = await fetch(`${apiBase}/api/auth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'register',
-          email,
-          password,
-          name
-        }),
-      });
-      const data = await response.json();
+      const data = await api.register(email, password, name);
+      
       if (data.success && data.token) {
         localStorage.setItem('authToken', data.token);
         setUser(data.user);
@@ -133,6 +95,7 @@ export const UserProvider = ({ children }) => {
         return { success: false, error: data.error || 'Registration failed' };
       }
     } catch (error) {
+      console.error('Registration error:', error);
       setAuthError('Registration error.');
       return { success: false, error: 'Registration error.' };
     } finally {
@@ -145,18 +108,14 @@ export const UserProvider = ({ children }) => {
     setIsLoading(true);
     setAuthError(null);
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
-      const response = await fetch(`${apiBase}/api/auth`, {
+      const data = await api.call('/api/auth', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           action: 'forgot-password',
           email
-        }),
+        })
       });
-      const data = await response.json();
+      
       if (data.success) {
         return { success: true };
       } else {
@@ -164,6 +123,7 @@ export const UserProvider = ({ children }) => {
         return { success: false, error: data.error || 'Password reset failed' };
       }
     } catch (error) {
+      console.error('Password reset error:', error);
       setAuthError('Password reset error.');
       return { success: false, error: 'Password reset error.' };
     } finally {
