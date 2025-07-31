@@ -21,6 +21,6 @@ services:
     # SENDGRID_FROM_EMAIL=noreply@themebotpark.com
     # POSTHOG_API_KEY=phc_your_posthog_api_key
     # DATABASE_URL=postgresql://username:password@host:port/database_name
-    
+
     healthCheckPath: /api/auth
 # GET /api/auth - Returns API status
