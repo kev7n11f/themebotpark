@@ -27,10 +27,12 @@ app.use(helmet({
 }));
 
 // Enable CORS
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? (process.env.CORS_ORIGINS || 'https://themebotpark.vercel.app').split(',')
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://themebotpark.vercel.app'] 
-    : ['http://localhost:3000'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

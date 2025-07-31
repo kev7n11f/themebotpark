@@ -9,6 +9,7 @@ import Footer from './pages/Footer';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
+import NotFound from './pages/NotFound';
 import './styles/theme.css';
 
 export default function AppRouter() {
@@ -23,6 +24,7 @@ export default function AppRouter() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </Router>

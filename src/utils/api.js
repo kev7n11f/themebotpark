@@ -1,7 +1,7 @@
 // API configuration and utilities
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '' // Use relative URLs in production (Vercel serverless functions)
-  : 'http://localhost:3001'; // Local development server
+  ? process.env.REACT_APP_API_BASE_URL || 'https://themebotpark.onrender.com' // Backend on Render
+  : process.env.LOCAL_API_BASE_URL || 'http://localhost:3001'; // Local development
 
 export const api = {
   // Helper function to make API calls with consistent error handling

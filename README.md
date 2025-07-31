@@ -4,9 +4,11 @@
 
 Experience conversations with AI bots that have distinct personalities. From business strategy to relationship advice, find the perfect AI companion for your needs.
 
-## 🌟 Live Demo
+## 🌟 Live Production Site
 
-**<https://themebotpark-b35brpylq-kevins-projects-5e23f80d.vercel.app>**
+**<https://themebotpark.vercel.app>**
+
+*Try it now with demo account: demo@themebotpark.com / demo123*
 
 ## 🤖 Meet Our Bots
 

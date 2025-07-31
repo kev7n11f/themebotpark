@@ -1,33 +1,47 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const router = express.Router();
 
-// Demo user database (in production, use real database)
-const demoUsers = [
-  {
+// In production, replace this with a real database connection
+// For now, using in-memory storage with better structure
+const users = new Map();
+
+// Initialize with some test users (remove in production)
+const initializeUsers = async () => {
+  const hashedPassword1 = await bcrypt.hash('demo123', 10);
+  const hashedPassword2 = await bcrypt.hash('password', 10);
+  
+  users.set('demo@themebotpark.com', {
     id: 1,
     email: 'demo@themebotpark.com',
-    password: 'demo123', // In production, hash passwords!
+    password: hashedPassword1,
     name: 'Demo User',
     subscription: 'premium',
-    createdAt: new Date('2025-01-01')
-  },
-  {
+    createdAt: new Date('2025-01-01'),
+    emailVerified: true
+  });
+  
+  users.set('test@example.com', {
     id: 2,
     email: 'test@example.com',
-    password: 'password',
+    password: hashedPassword2,
     name: 'Test User',
     subscription: 'free',
-    createdAt: new Date()
-  }
-];
+    createdAt: new Date(),
+    emailVerified: true
+  });
+};
+
+initializeUsers();
 
 router.get('/', (req, res) => {
   res.json({ 
     status: 'Auth API is working!',
-    endpoints: ['/login', '/register', '/verify-token'],
-    authMethods: ['email', 'google']
+    endpoints: ['/login', '/register', '/verify-token', '/forgot-password'],
+    authMethods: ['email', 'google'],
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -49,6 +63,8 @@ router.post('/', postRateLimiter, async (req, res) => {
         return await handleRegister(req, res);
       case 'verify-token':
         return await handleVerifyToken(req, res);
+      case 'forgot-password':
+        return await handleForgotPassword(req, res);
       case 'logout':
         return await handleLogout(req, res);
       default:
@@ -68,10 +84,16 @@ async function handleLogin(req, res) {
     return res.status(400).json({ error: 'Email and password required' });
   }
 
-  // Find user (in production, query database)
-  const user = demoUsers.find(u => u.email === email && u.password === password);
+  // Find user
+  const user = users.get(email.toLowerCase());
 
   if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  // Verify password
+  const passwordValid = await bcrypt.compare(password, user.password);
+  if (!passwordValid) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
@@ -82,7 +104,7 @@ async function handleLogin(req, res) {
       email: user.email,
       subscription: user.subscription 
     },
-    process.env.JWT_SECRET || 'demo-secret-key',
+    process.env.JWT_SECRET || 'your-production-jwt-secret-key',
     { expiresIn: '7d' }
   );
 
@@ -93,7 +115,8 @@ async function handleLogin(req, res) {
       id: user.id,
       email: user.email,
       name: user.name,
-      subscription: user.subscription
+      subscription: user.subscription,
+      emailVerified: user.emailVerified
     }
   });
 }
@@ -106,23 +129,30 @@ async function handleRegister(req, res) {
     return res.status(400).json({ error: 'Email, password, and name required' });
   }
 
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  }
+
   // Check if user exists
-  const existingUser = demoUsers.find(u => u.email === email);
-  if (existingUser) {
+  if (users.has(email.toLowerCase())) {
     return res.status(409).json({ error: 'User already exists' });
   }
 
-  // Create new user (in production, hash password and save to database)
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create new user
   const newUser = {
-    id: demoUsers.length + 1,
-    email,
-    password, // Hash in production!
+    id: users.size + 1,
+    email: email.toLowerCase(),
+    password: hashedPassword,
     name,
     subscription: 'free',
-    createdAt: new Date()
+    createdAt: new Date(),
+    emailVerified: false
   };
 
-  demoUsers.push(newUser);
+  users.set(email.toLowerCase(), newUser);
 
   // Create JWT token
   const token = jwt.sign(
@@ -131,7 +161,7 @@ async function handleRegister(req, res) {
       email: newUser.email,
       subscription: newUser.subscription 
     },
-    process.env.JWT_SECRET || 'demo-secret-key',
+    process.env.JWT_SECRET || 'your-production-jwt-secret-key',
     { expiresIn: '7d' }
   );
 
@@ -142,7 +172,8 @@ async function handleRegister(req, res) {
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,
-      subscription: newUser.subscription
+      subscription: newUser.subscription,
+      emailVerified: newUser.emailVerified
     }
   });
 }
@@ -156,10 +187,10 @@ async function handleVerifyToken(req, res) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret-key');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-production-jwt-secret-key');
     
     // Find user to get latest info
-    const user = demoUsers.find(u => u.id === decoded.id);
+    const user = Array.from(users.values()).find(u => u.id === decoded.id);
     
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
@@ -171,12 +202,41 @@ async function handleVerifyToken(req, res) {
         id: user.id,
         email: user.email,
         name: user.name,
-        subscription: user.subscription
+        subscription: user.subscription,
+        emailVerified: user.emailVerified
       }
     });
   } catch (error) {
     res.status(401).json({ valid: false, error: 'Invalid token' });
   }
+}
+
+// Forgot password handler (would integrate with email service in production)
+async function handleForgotPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email required' });
+  }
+
+  const user = users.get(email.toLowerCase());
+  
+  if (!user) {
+    // Don't reveal if user exists for security
+    return res.json({ success: true, message: 'If the email exists, a reset link has been sent' });
+  }
+
+  // In production, you would:
+  // 1. Generate a secure reset token
+  // 2. Save it to the database with expiration
+  // 3. Send email with reset link
+  
+  console.log(`Password reset requested for: ${email}`);
+  
+  res.json({ 
+    success: true, 
+    message: 'If the email exists, a reset link has been sent'
+  });
 }
 
 // Logout handler
@@ -186,14 +246,24 @@ async function handleLogout(req, res) {
 }
 
 // Legacy routes for backward compatibility
-router.post('/login', (req, res) => {
-  const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET || 'demo-secret-key');
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  
+  const user = users.get(email?.toLowerCase());
+  if (!user || !await bcrypt.compare(password, user.password)) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign(
+    { email: user.email }, 
+    process.env.JWT_SECRET || 'your-production-jwt-secret-key'
+  );
   res.json({ token });
 });
 
 router.post('/google-login', (req, res) => {
-  // Placeholder for OAuth with Firebase or Passport.js
-  res.json({ message: 'Google login received' });
+  // Placeholder for OAuth with Google
+  res.json({ message: 'Google OAuth integration needed' });
 });
 
 module.exports = router;

@@ -15,7 +15,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     monthly: {
       name: 'Monthly Premium',
       price: '$9.99/month',
-      priceId: 'price_1QfCWjFqLK5Bra1A3pQAGqPz', // Real Stripe test price ID
+      priceId: process.env.REACT_APP_STRIPE_MONTHLY_PRICE_ID || 'price_1QfCWjFqLK5Bra1A3pQAGqPz', // Replace with your Stripe price ID
       features: [
         'Unlimited chat with all bots',
         'Priority response times',
@@ -27,7 +27,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     yearly: {
       name: 'Yearly Premium',
       price: '$99.99/year',
-      priceId: 'price_1QfCXAFqLK5Bra1AY8xQ9m2K', // Real Stripe test price ID
+      priceId: process.env.REACT_APP_STRIPE_YEARLY_PRICE_ID || 'price_1QfCXAFqLK5Bra1AY8xQ9m2K', // Replace with your Stripe price ID
       savings: 'Save 16%',
       features: [
         'Everything in Monthly',
@@ -46,7 +46,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     try {
       // Check if Stripe is available
       if (!stripePromise) {
-        throw new Error('Stripe is not configured. Please check your environment variables.');
+        throw new Error('Stripe is not configured. Please add your Stripe publishable key to environment variables.');
       }
 
       console.log('Starting Stripe checkout...', {
@@ -54,19 +54,8 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
         hasStripeKey: !!stripeKey
       });
 
-      // For debugging - check if we can reach the API at all
-      console.log('Testing API connectivity...');
-      
-      try {
-        const testResponse = await api.call('/api/stripe', { method: 'GET' });
-        console.log('API test response:', testResponse);
-      } catch (testError) {
-        // If API is not accessible, use local storage fallback for demo
-        console.warn('API not accessible, using demo mode', testError);
-        localStorage.setItem('hasSubscription', 'true');
-        localStorage.setItem('messageCount', '0');
-        window.location.href = '/subscription-success';
-        return;
+      if (!stripeKey) {
+        throw new Error('Stripe publishable key is missing. Please configure REACT_APP_STRIPE_PUBLISHABLE_KEY in your environment variables.');
       }
 
       const stripe = await stripePromise;
@@ -105,14 +94,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       }
     } catch (error) {
       console.error('Subscription error:', error);
-      setError(`Error: ${error.message}. Using demo mode instead.`);
-      
-      // Fallback to demo mode if Stripe fails
-      setTimeout(() => {
-        localStorage.setItem('hasSubscription', 'true');
-        localStorage.setItem('messageCount', '0');
-        window.location.href = '/subscription-success';
-      }, 2000);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
