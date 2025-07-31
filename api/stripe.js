@@ -1,4 +1,7 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe only if API key is available
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 module.exports = async (req, res) => {
   // Handle CORS
@@ -12,7 +15,7 @@ module.exports = async (req, res) => {
 
   if (req.method === 'GET') {
     return res.json({ 
-      status: 'Stripe API is working!',
+      status: 'Stripe API ready',
       hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
       environment: process.env.NODE_ENV || 'development'
     });

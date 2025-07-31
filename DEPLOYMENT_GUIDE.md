@@ -1,13 +1,16 @@
-# 🚀 ThemeBotPark Deployment Guide
+# 🚀 Production Deployment Guide - Vercel + Render
 
-## Quick Start for Development
+## 🏗️ **Architecture Overview**
 
-1. **Clone and Setup**
-   ```bash
-   git clone <repository-url>
-   cd themebotpark
-   npm install
-   ```
+### **Frontend (React) → Vercel**
+- **URL**: https://themebotpark.vercel.app
+- **Purpose**: Serve React app, static files, routing
+- **Configuration**: `vercel.json`, `package.json`
+
+### **Backend (API) → Render**
+- **URL**: https://themebotpark.onrender.com
+- **Purpose**: API endpoints, authentication, database
+- **Configuration**: `render.yaml`, `server.js`
 
 2. **Environment Configuration**
    ```bash

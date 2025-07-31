@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: themebotpark
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: CORS_ORIGINS
+        value: https://themebotpark.vercel.app,https://www.themebotpark.vercel.app
+    # Add these environment variables in Render dashboard:
+    # JWT_SECRET=your_secure_jwt_secret_key_at_least_32_characters_long
+    # OPENAI_API_KEY=sk-your_openai_api_key_here
+    # STRIPE_SECRET_KEY=sk_live_your_stripe_secret_key_here
+    # STRIPE_PUBLISHABLE_KEY=pk_live_your_stripe_publishable_key_here
+    # SENDGRID_API_KEY=SG.your_sendgrid_api_key
+    # SENDGRID_FROM_EMAIL=noreply@themebotpark.com
+    # POSTHOG_API_KEY=phc_your_posthog_api_key
+    # DATABASE_URL=postgresql://username:password@host:port/database_name
+    
+    healthCheckPath: /api/auth
+# GET /api/auth - Returns API status
