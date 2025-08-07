@@ -16,6 +16,7 @@ import SubscriptionSuccess from './pages/SubscriptionSuccess';
 // Components
 // import AuthModal from './components/AuthModal'; // TODO: Implement auth modal
 import ErrorBoundary from './components/ErrorBoundary';
+import OfflineIndicator from './components/OfflineIndicator';
 
 // Styles
 import './App.css';
@@ -27,6 +28,7 @@ export default function App() {
       <UserProvider>
         <Router basename={process.env.PUBLIC_URL}>
           <div className="app">
+            <OfflineIndicator />
             <main className="main-content">
               <Routes>
                 <Route path="/" element={<HomePage />} />
