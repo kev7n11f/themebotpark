@@ -8,7 +8,7 @@ Experience conversations with AI bots that have distinct personalities. From bus
 
 **<https://themebotpark.vercel.app>**
 
-*Try it now with demo account: demo@themebotpark.com / demo123*
+*Try it now with demo account: <demo@themebotpark.com> / demo123*
 
 ## 🤖 Meet Our Bots
 
