@@ -75,19 +75,47 @@ body {
   color: var(--primary-text);
   line-height: 1.6;
   overflow-x: hidden;
+  
+  /* Modern font smoothing */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Fallbacks for older browsers */
+  font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  
+  /* Ensure minimum font size on mobile */
+  -webkit-text-size-adjust: none;
 }
 
-/* Enhanced Typography */
+/* Enhanced Typography with browser fallbacks */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   line-height: 1.3;
   margin-bottom: var(--space-md);
+  
+  /* Fallback for browsers that don't support background-clip: text */
+  color: var(--primary-text);
+  
+  /* Modern gradient text for supporting browsers */
   background: linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
+  background: -webkit-linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
+  background: -moz-linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not (background-clip: text) {
+  h1, h2, h3, h4, h5, h6 {
+    background: none;
+    color: var(--primary-text);
+  }
 }
 
 h1 { font-size: 2.5rem; font-weight: 700; }
@@ -2336,5 +2364,171 @@ footer {
 
   .bot-section {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Browser Compatibility Utilities */
+.flex-container {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+  
+  -webkit-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.grid-container {
+  display: -ms-grid;     /* IE 10-11 */
+  display: grid;         /* Standard */
+  
+  /* IE 10-11 fallback */
+  -ms-grid-columns: 1fr;
+  -ms-grid-rows: auto;
+}
+
+/* Custom properties fallbacks for IE */
+@supports not (--css: variables) {
+  :root {
+    /* Fallback colors for IE */
+    background: #ffffff;
+    color: #202124;
+  }
+  
+  body {
+    background: #ffffff;
+    color: #202124;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .accent-primary {
+    background: #4a9eff !important;
+  }
+  
+  .accent-secondary {
+    background: #ff6b47 !important;
+  }
+}
+
+/* Flexbox fallbacks for IE 10-11 */
+.flex-center {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+/* Transform fallbacks */
+.transform-scale {
+  -webkit-transform: scale(1.05);
+  -moz-transform: scale(1.05);
+  -ms-transform: scale(1.05);
+  -o-transform: scale(1.05);
+  transform: scale(1.05);
+}
+
+/* Transition fallbacks */
+.transition-all {
+  -webkit-transition: all var(--transition-normal);
+  -moz-transition: all var(--transition-normal);
+  -ms-transition: all var(--transition-normal);
+  -o-transition: all var(--transition-normal);
+  transition: all var(--transition-normal);
+}
+
+/* Box shadow fallbacks */
+.shadow-card {
+  /* IE 8 fallback */
+  filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=0, OffY=4, Color='#33000000');
+  
+  /* Modern browsers */
+  -webkit-box-shadow: var(--shadow-md);
+  -moz-box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* Border radius fallbacks */
+.rounded {
+  -webkit-border-radius: var(--radius-md);
+  -moz-border-radius: var(--radius-md);
+  border-radius: var(--radius-md);
+}
+
+/* Gradient fallbacks */
+.gradient-primary {
+  background: #4a9eff; /* Fallback for IE 8-9 */
+  background: -webkit-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  background: -moz-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  background: -ms-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  background: -o-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+}
+
+/* Backdrop filter fallback */
+@supports not (backdrop-filter: blur(10px)) {
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.9); /* Darker fallback */
+  }
+  
+  .slide-menu {
+    background: rgba(26, 26, 26, 0.98); /* More opaque fallback */
+  }
+}
+
+/* CSS Grid fallbacks for IE 11 */
+@supports not (display: grid) {
+  .features-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xl);
+  }
+  
+  .features-grid .feature-card {
+    flex: 1 1 300px;
+    min-width: 300px;
+  }
+  
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+  
+  .hero-stats .stat {
+    flex: 1 1 150px;
+  }
+  
+  .bots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xl);
+  }
+  
+  .bots-grid .bot-card {
+    flex: 1 1 300px;
+    min-width: 300px;
+  }
+}
+
+/* Sticky positioning fallback */
+@supports not (position: sticky) {
+  .main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+  }
+  
+  body {
+    padding-top: 70px; /* Adjust based on nav height */
   }
 }

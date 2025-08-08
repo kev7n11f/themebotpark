@@ -1,101 +1,68 @@
-// API configuration and utilities
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_BASE_URL || 'https://themebotpark.onrender.com' // Backend on Render
-  : process.env.LOCAL_API_BASE_URL || 'http://localhost:3001'; // Local development
+// Import enhanced API utilities
+import { api as enhancedApi, API_BASE_URL, offlineHandler, requestQueue } from './apiUtils';
 
-export const api = {
-  // Helper function to make API calls with consistent error handling
-  async call(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        ...options,
-      });
+// Re-export enhanced API utilities
+export { 
+  API_BASE_URL, 
+  offlineHandler, 
+  requestQueue 
+};
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+// Main enhanced API
+export const api = enhancedApi;
 
-      return await response.json();
-    } catch (error) {
-      console.error(`API call failed to ${endpoint}:`, error);
-      throw error;
-    }
-  },
-
-  // Specific API methods
+// Keep backward compatibility with existing specific methods
+export const apiLegacy = {
   async login(email, password) {
-    return this.call('/api/auth', {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'login',
-        email,
-        password
-      })
+    return enhancedApi.post('/api/auth', {
+      action: 'login',
+      email,
+      password
     });
   },
 
   async register(email, password, name) {
-    return this.call('/api/auth', {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'register',
-        email,
-        password,
-        name
-      })
+    return enhancedApi.post('/api/auth', {
+      action: 'register',
+      email,
+      password,
+      name
     });
   },
 
   async verifyToken(token) {
-    return this.call('/api/auth', {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'verify-token',
-        token
-      })
+    return enhancedApi.post('/api/auth', {
+      action: 'verify-token',
+      token
     });
   },
 
   async sendChatMessage(mode, message, messages = [], userId = '') {
-    return this.call('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        mode,
-        message,
-        messages,
-        userId
-      })
+    return enhancedApi.post('/api/chat', {
+      mode,
+      message,
+      messages,
+      userId
     });
   },
 
   async createStripeSession(priceId, successUrl, cancelUrl) {
-    return this.call('/api/stripe', {
-      method: 'POST',
-      body: JSON.stringify({
-        priceId,
-        successUrl,
-        cancelUrl
-      })
+    return enhancedApi.post('/api/stripe', {
+      priceId,
+      successUrl,
+      cancelUrl
     });
   },
 
   async sendContactMessage(name, email, subject, message) {
-    return this.call('/api/contact', {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        email,
-        subject,
-        message
-      })
+    return enhancedApi.post('/api/contact', {
+      name,
+      email,
+      subject,
+      message
     });
   }
 };
 
+// For backward compatibility, also export as default
 export default api;
