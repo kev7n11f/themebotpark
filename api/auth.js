@@ -1,6 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
+const { env } = require('../config/env');
+const { signUser } = require('../utils/jwt');
 const router = express.Router();
 
 // Demo user database (in production, use real database)
@@ -8,7 +11,7 @@ const demoUsers = [
   {
     id: 1,
     email: 'demo@themebotpark.com',
-    password: 'demo123', // In production, hash passwords!
+    password: 'demo123', // Will be hashed on startup
     name: 'Demo User',
     subscription: 'premium',
     createdAt: new Date('2025-01-01')
@@ -16,12 +19,24 @@ const demoUsers = [
   {
     id: 2,
     email: 'test@example.com',
-    password: 'password',
+    password: 'password', // Will be hashed on startup
     name: 'Test User',
     subscription: 'free',
     createdAt: new Date()
   }
 ];
+
+// Hash existing demo user passwords on startup if not already hashed
+async function hashDemoUserPasswords() {
+  for (const user of demoUsers) {
+    if (!user.password.startsWith('$2')) { // Not a bcrypt hash
+      user.password = await bcrypt.hash(user.password, env.bcryptRounds);
+    }
+  }
+}
+
+// Initialize demo user passwords
+hashDemoUserPasswords().catch(console.error);
 
 router.use((req, res, next) => {
   // Handle CORS
@@ -46,8 +61,8 @@ router.get('/', (req, res) => {
 
 // Configure rate limiter for POST / route
 const postRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: env.rateLimit.windowMinutes * 60 * 1000,
+  max: env.rateLimit.maxRequests,
   message: { error: 'Too many requests, please try again later.' }
 });
 
@@ -81,23 +96,27 @@ async function handleLogin(req, res) {
     return res.status(400).json({ error: 'Email and password required' });
   }
 
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
   // Find user (in production, query database)
-  const user = demoUsers.find(u => u.email === email && u.password === password);
+  const user = demoUsers.find(u => u.email === email);
 
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
+  // Compare password with hash
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
   // Create JWT token
-  const token = jwt.sign(
-    { 
-      id: user.id, 
-      email: user.email,
-      subscription: user.subscription 
-    },
-    process.env.JWT_SECRET || 'demo-secret-key',
-    { expiresIn: '7d' }
-  );
+  const token = signUser(user);
 
   res.json({
     success: true,
@@ -119,17 +138,31 @@ async function handleRegister(req, res) {
     return res.status(400).json({ error: 'Email, password, and name required' });
   }
 
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
+  // Password policy enforcement
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+  }
+
   // Check if user exists
   const existingUser = demoUsers.find(u => u.email === email);
   if (existingUser) {
     return res.status(409).json({ error: 'User already exists' });
   }
 
-  // Create new user (in production, hash password and save to database)
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, env.bcryptRounds);
+
+  // Create new user (in production, save to database)
   const newUser = {
     id: demoUsers.length + 1,
     email,
-    password, // Hash in production!
+    password: hashedPassword,
     name,
     subscription: 'free',
     createdAt: new Date()
@@ -138,15 +171,7 @@ async function handleRegister(req, res) {
   demoUsers.push(newUser);
 
   // Create JWT token
-  const token = jwt.sign(
-    { 
-      id: newUser.id, 
-      email: newUser.email,
-      subscription: newUser.subscription 
-    },
-    process.env.JWT_SECRET || 'demo-secret-key',
-    { expiresIn: '7d' }
-  );
+  const token = signUser(newUser);
 
   res.json({
     success: true,
@@ -169,7 +194,7 @@ async function handleVerifyToken(req, res) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret-key');
+    const decoded = jwt.verify(token, env.jwtSecret);
     
     // Find user to get latest info
     const user = demoUsers.find(u => u.id === decoded.id);

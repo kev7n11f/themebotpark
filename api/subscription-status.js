@@ -1,4 +1,6 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { env } = require('../config/env');
+
+const stripe = require('stripe')(env.stripe.secretKey);
 
 module.exports = async (req, res) => {
   // Handle CORS
