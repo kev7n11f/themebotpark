@@ -1,13 +1,18 @@
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
-const cors = require('cors');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
 const app = express();
 
-// Load environment variables
+// Load environment variables and validate
 require('dotenv').config();
+const { env, assertEnv } = require('./config/env');
+const { createCorsMiddleware } = require('./middleware/cors');
+
+// Validate environment variables at startup
+assertEnv();
 
 // Basic security middleware
 app.use(helmet({
@@ -26,17 +31,13 @@ app.use(helmet({
   }
 }));
 
-// Enable CORS
-const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? (process.env.CORS_ORIGINS || 'https://themebotpark.vercel.app').split(',')
-  : ['http://localhost:3000', 'http://localhost:3001'];
+// Request logging (conditional)
+if (env.logLevel !== 'silent') {
+  app.use(morgan('combined'));
+}
 
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+// Enable CORS with centralized configuration
+app.use(createCorsMiddleware());
 
 // Enable gzip compression
 app.use(compression());
@@ -44,10 +45,10 @@ app.use(compression());
 // Parse JSON bodies
 app.use(express.json({ limit: '1mb' }));
 
-// Rate limiting
+// Rate limiting with configurable settings
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: env.rateLimit.windowMinutes * 60 * 1000,
+  max: env.rateLimit.maxRequests
 });
 app.use('/api/', limiter);
 
@@ -58,12 +59,18 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    environment: process.env.NODE_ENV || 'development',
+    environment: env.nodeEnv,
     version: require('./package.json').version,
     checks: {
       server: 'ok',
       memory: process.memoryUsage().heapUsed < 500 * 1024 * 1024 ? 'ok' : 'warning', // 500MB threshold
-      openai: !!process.env.OPENAI_API_KEY ? 'configured' : 'missing'
+      openai: !!env.openAiKey ? 'configured' : 'missing',
+      stripe: !!env.stripe.secretKey ? 'configured' : 'missing',
+      email: (env.email.sendgridKey || env.email.smtp.host) 
+        ? 'configured' 
+        : env.email.sendgridKey || env.email.smtp.host 
+          ? 'partial' 
+          : 'missing'
     }
   };
 
@@ -83,7 +90,7 @@ app.get('/health/detailed', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'themebotpark-api',
     version: require('./package.json').version,
-    environment: process.env.NODE_ENV || 'development',
+    environment: env.nodeEnv,
     uptime: {
       seconds: process.uptime(),
       human: Math.floor(process.uptime() / 3600) + 'h ' + Math.floor((process.uptime() % 3600) / 60) + 'm'
@@ -100,8 +107,18 @@ app.get('/health/detailed', (req, res) => {
     },
     dependencies: {
       openai_api: {
-        status: !!process.env.OPENAI_API_KEY ? 'configured' : 'missing',
-        configured: !!process.env.OPENAI_API_KEY
+        status: !!env.openAiKey ? 'configured' : 'missing',
+        configured: !!env.openAiKey
+      },
+      stripe: {
+        status: !!env.stripe.secretKey ? 'configured' : 'missing',
+        configured: !!env.stripe.secretKey,
+        webhook_configured: !!env.stripe.webhookSecret
+      },
+      email: {
+        status: (env.email.sendgridKey || env.email.smtp.host) ? 'configured' : 'missing',
+        sendgrid: !!env.email.sendgridKey,
+        smtp: !!env.email.smtp.host
       },
       database: {
         status: 'not_applicable', // Add real DB check if needed
@@ -124,7 +141,7 @@ app.get('/health/detailed', (req, res) => {
     detailed.issues.push('High memory usage: ' + memoryUsageMB + 'MB');
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!env.openAiKey) {
     detailed.status = 'degraded';
     detailed.issues = detailed.issues || [];
     detailed.issues.push('OpenAI API key not configured');
@@ -136,8 +153,8 @@ app.get('/health/detailed', (req, res) => {
 // Readiness check (for Kubernetes/Docker)
 app.get('/ready', (req, res) => {
   // Check if the service is ready to accept requests
-  const isReady = process.env.NODE_ENV === 'production' 
-    ? !!process.env.OPENAI_API_KEY 
+  const isReady = env.nodeEnv === 'production' 
+    ? !!env.openAiKey 
     : true;
 
   if (isReady) {
@@ -193,8 +210,11 @@ app.use('/api/contact', require('./contact'));
 app.use('/api/analytics', require('./analytics'));
 app.use('/api/creator', require('./creator'));
 
+// Stripe webhook (must be before JSON parsing middleware for raw body)
+app.use('/', require('./stripe-webhook'));
+
 // Serve React build in production
-if (process.env.NODE_ENV === 'production') {
+if (env.nodeEnv === 'production') {
   app.use(express.static(path.join(__dirname, 'build')));
   app.use(express.static(path.join(__dirname, 'public')));
   app.get('*', limiter, (req, res) => {
@@ -225,7 +245,7 @@ app.use((err, req, res, next) => {
   });
   
   // Don't leak error details in production
-  const message = process.env.NODE_ENV === 'production'
+  const message = env.nodeEnv === 'production'
     ? 'An unexpected error occurred'
     : err.message;
     
@@ -235,12 +255,12 @@ app.use((err, req, res, next) => {
     message,
     errorId,
     timestamp: new Date().toISOString(),
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
+    ...(env.nodeEnv !== 'production' && { stack: err.stack })
   });
 });
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = env.port;
 
 let server;
 
@@ -248,8 +268,10 @@ function startServer() {
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 ThemeBotPark server running on port ${PORT}`);
     console.log(`📊 Health check available at http://localhost:${PORT}/health`);
-    console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📝 OpenAI configured: ${!!process.env.OPENAI_API_KEY ? 'Yes' : 'No'}`);
+    console.log(`🔧 Environment: ${env.nodeEnv}`);
+    console.log(`📝 OpenAI configured: ${!!env.openAiKey ? 'Yes' : 'No'}`);
+    console.log(`💳 Stripe configured: ${!!env.stripe.secretKey ? 'Yes' : 'No'}`);
+    console.log(`📧 Email configured: ${!!(env.email.sendgridKey || env.email.smtp.host) ? 'Yes' : 'No'}`);
   });
 
   server.on('error', (error) => {
@@ -330,7 +352,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Memory monitoring
-if (process.env.NODE_ENV === 'production') {
+if (env.nodeEnv === 'production') {
   setInterval(() => {
     const usage = process.memoryUsage();
     const usageMB = Math.round(usage.heapUsed / 1024 / 1024);

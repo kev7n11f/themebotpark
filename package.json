@@ -12,6 +12,7 @@
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
     "nodemailer": "^7.0.5",
     "openai": "^5.10.1",
     "package": "^1.0.1",
@@ -49,7 +50,7 @@
       "not dead",
       "not op_mini all",
       "last 2 Chrome versions",
-      "last 2 Firefox versions", 
+      "last 2 Firefox versions",
       "last 2 Safari versions",
       "last 2 Edge versions",
       "ie 11"

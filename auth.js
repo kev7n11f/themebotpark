@@ -2,6 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
+const { env } = require('./config/env');
+const { signUser } = require('./utils/jwt');
 const router = express.Router();
 
 // In production, replace this with a real database connection
@@ -10,8 +12,8 @@ const users = new Map();
 
 // Initialize with some test users (remove in production)
 const initializeUsers = async () => {
-  const hashedPassword1 = await bcrypt.hash('demo123', 10);
-  const hashedPassword2 = await bcrypt.hash('password', 10);
+  const hashedPassword1 = await bcrypt.hash('demo123', env.bcryptRounds);
+  const hashedPassword2 = await bcrypt.hash('password', env.bcryptRounds);
   
   users.set('demo@themebotpark.com', {
     id: 1,
@@ -41,14 +43,14 @@ router.get('/', (req, res) => {
     status: 'Auth API is working!',
     endpoints: ['/login', '/register', '/verify-token', '/forgot-password'],
     authMethods: ['email', 'google'],
-    environment: process.env.NODE_ENV || 'development'
+    environment: env.nodeEnv
   });
 });
 
 // Configure rate limiter for POST routes
 const postRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: env.rateLimit.windowMinutes * 60 * 1000,
+  max: env.rateLimit.maxRequests,
   message: { error: 'Too many requests, please try again later.' }
 });
 
@@ -84,6 +86,12 @@ async function handleLogin(req, res) {
     return res.status(400).json({ error: 'Email and password required' });
   }
 
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
   // Find user
   const user = users.get(email.toLowerCase());
 
@@ -98,15 +106,7 @@ async function handleLogin(req, res) {
   }
 
   // Create JWT token
-  const token = jwt.sign(
-    { 
-      id: user.id, 
-      email: user.email,
-      subscription: user.subscription 
-    },
-    process.env.JWT_SECRET || 'your-production-jwt-secret-key',
-    { expiresIn: '7d' }
-  );
+  const token = signUser(user);
 
   res.json({
     success: true,
@@ -129,8 +129,14 @@ async function handleRegister(req, res) {
     return res.status(400).json({ error: 'Email, password, and name required' });
   }
 
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters long' });
   }
 
   // Check if user exists
@@ -139,7 +145,7 @@ async function handleRegister(req, res) {
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, env.bcryptRounds);
 
   // Create new user
   const newUser = {
@@ -155,15 +161,7 @@ async function handleRegister(req, res) {
   users.set(email.toLowerCase(), newUser);
 
   // Create JWT token
-  const token = jwt.sign(
-    { 
-      id: newUser.id, 
-      email: newUser.email,
-      subscription: newUser.subscription 
-    },
-    process.env.JWT_SECRET || 'your-production-jwt-secret-key',
-    { expiresIn: '7d' }
-  );
+  const token = signUser(newUser);
 
   res.json({
     success: true,
@@ -187,7 +185,7 @@ async function handleVerifyToken(req, res) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-production-jwt-secret-key');
+    const decoded = jwt.verify(token, env.jwtSecret);
     
     // Find user to get latest info
     const user = Array.from(users.values()).find(u => u.id === decoded.id);
@@ -256,7 +254,7 @@ router.post('/login', async (req, res) => {
 
   const token = jwt.sign(
     { email: user.email }, 
-    process.env.JWT_SECRET || 'your-production-jwt-secret-key'
+    env.jwtSecret
   );
   res.json({ token });
 });

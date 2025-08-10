@@ -1,13 +1,25 @@
 const express = require('express');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const app = express();
 require('dotenv').config();
 
-// Rate limiting middleware
-const rateLimit = require('express-rate-limit');
+// Load environment configuration
+const { env, assertEnv } = require('./config/env');
+const { createCorsMiddleware } = require('./middleware/cors');
+
+// Validate environment variables
+assertEnv();
+
+// Basic security middleware
+app.use(helmet());
+app.use(createCorsMiddleware());
+
+// Rate limiting middleware with configurable settings
 const catchAllLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: env.rateLimit.windowMinutes * 60 * 1000,
+  max: env.rateLimit.maxRequests,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
@@ -53,5 +65,5 @@ app.get('*', catchAllLimiter, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3002;
+const PORT = env.port || 3002;
 app.listen(PORT, () => console.log(`🟢 ThemeBotPark Server running on port ${PORT}`));

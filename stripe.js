@@ -1,36 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const { env } = require('./config/env');
 
 // Initialize Stripe only if API key is available
-const stripe = process.env.STRIPE_SECRET_KEY 
-  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+const stripe = env.stripe.secretKey 
+  ? require('stripe')(env.stripe.secretKey)
   : null;
 
 // Stripe payment routes
 router.get('/', (req, res) => {
   res.json({ 
     status: 'Stripe API ready',
-    hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-    environment: process.env.NODE_ENV || 'development'
+    hasStripeKey: !!env.stripe.secretKey,
+    environment: env.nodeEnv
   });
 });
 
 router.post('/', async (req, res) => {
   try {
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!env.stripe.secretKey) {
       return res.status(500).json({
         success: false,
         error: 'Stripe secret key not configured'
       });
     }
 
-    const { priceId, successUrl, cancelUrl } = req.body;
+    const { plan, successUrl, cancelUrl } = req.body;
 
+    if (!plan) {
+      return res.status(400).json({
+        success: false,
+        error: 'Plan is required (basic, pro, or premium)'
+      });
+    }
+
+    // Validate plan and get price ID
+    const priceId = env.stripe.prices[plan];
     if (!priceId) {
       return res.status(400).json({
         success: false,
-        error: 'Price ID is required'
+        error: `Invalid plan: ${plan}. Available plans: ${Object.keys(env.stripe.prices).join(', ')}`
       });
+    }
+
+    if (env.logLevel === 'debug') {
+      console.log(`[Stripe] Creating checkout for plan: ${plan}, priceId: ${priceId}`);
     }
 
     // Create Stripe checkout session
@@ -43,8 +57,8 @@ router.post('/', async (req, res) => {
         },
       ],
       mode: 'subscription',
-      success_url: successUrl + '?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: cancelUrl,
+      success_url: (env.stripe.successUrl || successUrl || env.clientUrl + '/subscription-success') + '?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: env.stripe.cancelUrl || cancelUrl || env.clientUrl + '/subscription-cancelled',
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
       customer_creation: 'always',
