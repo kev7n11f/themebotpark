@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
+
+// Error reporting
+import { errorReporter } from './utils/errorReporting';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -14,7 +17,6 @@ import Footer from './pages/Footer';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
 
 // Components
-// import AuthModal from './components/AuthModal'; // TODO: Implement auth modal
 import ErrorBoundary from './components/ErrorBoundary';
 import OfflineIndicator from './components/OfflineIndicator';
 
@@ -23,6 +25,17 @@ import './App.css';
 import './styles/theme.css';
 
 export default function App() {
+  useEffect(() => {
+    // Initialize error reporting
+    console.log('ThemeBotPark App initialized');
+    
+    // Add debugging info in development
+    if (process.env.NODE_ENV === 'development') {
+      window.getErrors = () => errorReporter.getErrors();
+      window.getErrorSummary = () => errorReporter.getErrorSummary();
+    }
+  }, []);
+
   return (
     <ErrorBoundary>
       <UserProvider>

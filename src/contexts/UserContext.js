@@ -43,8 +43,13 @@ export const UserProvider = ({ children }) => {
       }
       setIsLoading(false);
     } catch (error) {
-      console.error('Auth check error:', error);
-      setAuthError('Authentication error.');
+      // Only log actual errors, not network issues
+      if (error.name !== 'TypeError' && !error.message.includes('fetch')) {
+        console.error('Auth check error:', error);
+      }
+      localStorage.removeItem('authToken');
+      localStorage.setItem('hasSubscription', 'false');
+      setAuthError(null); // Don't show auth errors on initial load
       setIsLoading(false);
     }
   };
