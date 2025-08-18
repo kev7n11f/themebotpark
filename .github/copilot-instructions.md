@@ -5,7 +5,7 @@
 ThemeBotPark is a multi-personality AI chatbot platform built with React 18.3.1 and Node.js/Express. The application features secure authentication, premium subscriptions via Stripe, and unique AI chatbot personalities powered by OpenAI's GPT models.
 
 **Live Production URL:** https://themebotpark.vercel.app
-**Demo Account:** demo@themebotpark.com / demo123
+**Demo Account:** [demo credentials available in secure documentation]
 
 ## Technology Stack
 
