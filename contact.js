@@ -1,26 +1,27 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
+const { env } = require('./config/env');
 const router = express.Router();
 
-// Configure email transporter (using SendGrid as example)
+// Configure email transporter (using SendGrid or SMTP)
 const createEmailTransporter = () => {
-  if (process.env.SENDGRID_API_KEY) {
-    return nodemailer.createTransporter({
+  if (env.email.sendgridKey) {
+    return nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
         user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY
+        pass: env.email.sendgridKey
       }
     });
-  } else if (process.env.SMTP_HOST) {
-    return nodemailer.createTransporter({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 587,
+  } else if (env.email.smtp.host) {
+    return nodemailer.createTransport({
+      host: env.email.smtp.host,
+      port: env.email.smtp.port,
       secure: false,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        user: env.email.smtp.user,
+        pass: env.email.smtp.pass
       }
     });
   }
@@ -29,8 +30,8 @@ const createEmailTransporter = () => {
 
 // Rate limiting for contact form
 const contactRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  windowMs: env.contactRateLimit.windowMinutes * 60 * 1000,
+  max: env.contactRateLimit.maxRequests,
   message: { error: 'Too many contact form submissions, please try again later.' }
 });
 
@@ -71,8 +72,8 @@ router.post('/', contactRateLimit, async (req, res) => {
       try {
         // Send email to admin
         await transporter.sendMail({
-          from: process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER,
-          to: process.env.ADMIN_EMAIL || 'admin@themebotpark.com',
+          from: env.email.sendgridFrom || env.email.smtp.user,
+          to: env.email.admin,
           subject: `Contact Form: ${subject}`,
           html: `
             <h2>New Contact Form Submission</h2>
@@ -88,7 +89,7 @@ router.post('/', contactRateLimit, async (req, res) => {
 
         // Send confirmation email to user
         await transporter.sendMail({
-          from: process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER,
+          from: env.email.sendgridFrom || env.email.smtp.user,
           to: email,
           subject: 'Thank you for contacting ThemeBotPark',
           html: `
@@ -136,7 +137,7 @@ router.post('/', contactRateLimit, async (req, res) => {
 router.get('/status', (req, res) => {
   res.json({ 
     status: 'Contact API ready',
-    emailConfigured: !!(process.env.SENDGRID_API_KEY || process.env.SMTP_HOST),
+    emailConfigured: !!(env.email.sendgridKey || env.email.smtp.host),
     supportEmail: 'support@themebotpark.com',
     businessEmail: 'business@themebotpark.com'
   });
