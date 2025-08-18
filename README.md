@@ -70,8 +70,8 @@ cd themebotpark
 npm install
 
 # Set up environment variables
-cp .env.example .env
-# Add your API keys (OpenAI, Stripe, etc.)
+cp .env.template .env
+# Edit .env file with your API keys (OpenAI, Stripe, etc.)
 
 # Run development server
 npm run dev
@@ -123,3 +123,65 @@ This repository includes a GitHub Actions workflow (`.github/workflows/deploy.ym
 3. Monitor build status in the **Actions** tab.
 
 Now every commit to `main` triggers an automatic deployment on Vercel! 🎉
+
+## Environment & Security Configuration
+
+### Environment Setup
+
+1. **Copy Environment Template**
+   ```bash
+   cp .env.template .env
+   ```
+
+2. **Configure Required Variables**
+
+   For **development**:
+   - `OPENAI_API_KEY` - Your OpenAI API key
+   - `JWT_SECRET` - Will be auto-generated if not provided (dev only)
+   - Other variables have sensible defaults
+
+   For **production**:
+   - `OPENAI_API_KEY` - **Required** - Your OpenAI API key
+   - `JWT_SECRET` - **Required** - Strong random string (32+ characters)
+   - `STRIPE_SECRET_KEY` - **Required** - Your Stripe secret key
+   - `REACT_APP_API_BASE_URL` - **Required** - Your API base URL
+   - `PUBLIC_URL` - **Required** - Your frontend public URL
+   - `CORS_ORIGINS` - **Required** - Comma-separated allowed origins
+
+3. **Configure Optional Variables**
+
+   **Stripe Plans (recommended)**:
+   ```
+   STRIPE_PRICE_BASIC=price_xxxxx_basic
+   STRIPE_PRICE_PRO=price_xxxxx_pro  
+   STRIPE_PRICE_PREMIUM=price_xxxxx_premium
+   STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXXXXXX
+   ```
+
+   **Email Configuration (choose one)**:
+   ```
+   # SendGrid
+   SENDGRID_API_KEY=SG.your_api_key
+   SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+   
+   # OR SMTP
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your_email@gmail.com
+   SMTP_PASS=your_app_password
+   ```
+
+### Security Features
+
+- **Password Hashing**: Bcrypt with configurable salt rounds
+- **JWT Authentication**: Strong secret required in production
+- **Rate Limiting**: Global and per-endpoint limits (configurable)
+- **CORS Protection**: Restricted to configured origins
+- **HTTP Security**: Helmet middleware for security headers
+- **Plan-based Stripe**: No arbitrary price IDs accepted from clients
+- **Environment Validation**: Required variables checked at startup
+
+### Documentation
+
+- See `docs/SECURITY.md` for detailed security overview
+- All environment variables documented in `.env.template`
