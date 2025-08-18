@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
+const validator = require('validator');
 const router = express.Router();
 
 // In production, replace this with a real database connection
@@ -127,6 +128,11 @@ async function handleRegister(req, res) {
 
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'Email, password, and name required' });
+  }
+
+  // Validate email format
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
   }
 
   if (password.length < 6) {

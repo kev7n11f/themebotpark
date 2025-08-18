@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const validator = require('validator');
 const router = express.Router();
 
 // Demo user database (in production, use real database)
@@ -117,6 +118,11 @@ async function handleRegister(req, res) {
 
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'Email, password, and name required' });
+  }
+
+  // Validate email format
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
   }
 
   // Check if user exists
