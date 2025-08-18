@@ -187,7 +187,6 @@ EMAIL_USER=your-email
 EMAIL_PASS=your-app-password
 
 # Database (if applicable)
-DATABASE_URL=...
 ```
 
 ### Testing Scenarios
