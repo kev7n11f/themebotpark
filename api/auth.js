@@ -96,8 +96,13 @@ async function handleLogin(req, res) {
     return res.status(400).json({ error: 'Email and password required' });
   }
 
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Validate email length (RFC 5321 limit)
+  if (email.length > 254) {
+    return res.status(400).json({ error: 'Email address too long' });
+  }
+
+  // Basic email validation with ReDoS-safe regex
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: 'Invalid email format' });
   }
@@ -138,8 +143,13 @@ async function handleRegister(req, res) {
     return res.status(400).json({ error: 'Email, password, and name required' });
   }
 
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Validate email length (RFC 5321 limit)
+  if (email.length > 254) {
+    return res.status(400).json({ error: 'Email address too long' });
+  }
+
+  // Basic email validation with ReDoS-safe regex
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: 'Invalid email format' });
   }

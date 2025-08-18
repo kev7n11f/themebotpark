@@ -28,8 +28,15 @@ module.exports = async (req, res) => {
         });
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // Validate email length (RFC 5321 limit)
+      if (email.length > 254) {
+        return res.status(400).json({ 
+          error: 'Email address too long'
+        });
+      }
+
+      // Validate email format with ReDoS-safe regex
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({ 
           error: 'Invalid email format'
