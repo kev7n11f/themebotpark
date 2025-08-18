@@ -13,7 +13,7 @@ if (env.stripe.webhookSecret && env.stripe.secretKey) {
       event = stripe.webhooks.constructEvent(req.body, sig, env.stripe.webhookSecret);
     } catch (err) {
       console.error('[StripeWebhook] Signature verification failed:', err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      return res.status(400).json({ error: `Webhook Error: ${err.message}` });
     }
 
     const { type } = event;
