@@ -25,6 +25,18 @@ jobs:
           node-version: "18"
           cache: "npm"
 
+      - name: Check required Vercel secrets
+        run: |
+          if [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "❌ Missing VERCEL_ORG_ID or VERCEL_PROJECT_ID secret."
+            echo "Please set these secrets in your repository settings:"
+            echo "- VERCEL_ORG_ID: Your Vercel organization ID"
+            echo "- VERCEL_PROJECT_ID: Your Vercel project ID"
+            echo "You can find these values in your Vercel project settings."
+            exit 1
+          fi
+          echo "✅ Vercel secrets are properly configured"
+
       - name: Install dependencies
         run: npm ci
 
