@@ -386,11 +386,23 @@ export class VisibilityManager {
   }
 
   onVisible(callback) {
+    if (!this.callbacks || !this.callbacks.visible) {
+      this.callbacks = {
+        visible: new Set(),
+        hidden: new Set()
+      };
+    }
     this.callbacks.visible.add(callback);
     return () => this.callbacks.visible.delete(callback);
   }
 
   onHidden(callback) {
+    if (!this.callbacks || !this.callbacks.hidden) {
+      this.callbacks = {
+        visible: new Set(),
+        hidden: new Set()
+      };
+    }
     this.callbacks.hidden.add(callback);
     return () => this.callbacks.hidden.delete(callback);
   }

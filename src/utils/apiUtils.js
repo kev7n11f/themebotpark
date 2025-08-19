@@ -276,10 +276,12 @@ export const api = {
 
 // Offline detection and handling
 export const offlineHandler = {
-  isOnline: navigator.onLine,
+  isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
   callbacks: new Set(),
 
   init() {
+    if (typeof window === 'undefined') return;
+    
     window.addEventListener('online', () => {
       this.isOnline = true;
       this.notifyCallbacks('online');
@@ -304,6 +306,9 @@ export const offlineHandler = {
   },
 
   onStatusChange(callback) {
+    if (!this.callbacks) {
+      this.callbacks = new Set();
+    }
     this.callbacks.add(callback);
     return () => this.callbacks.delete(callback);
   },
