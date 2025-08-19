@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { offlineHandler } from '../utils/apiUtils';
 
 const OfflineIndicator = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
   const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
@@ -17,9 +19,11 @@ const OfflineIndicator = () => {
       }
     };
 
-    const unsubscribe = offlineHandler.onStatusChange(handleStatusChange);
-    
-    return unsubscribe;
+    // Add safety check for offlineHandler
+    if (offlineHandler && typeof offlineHandler.onStatusChange === 'function') {
+      const unsubscribe = offlineHandler.onStatusChange(handleStatusChange);
+      return unsubscribe;
+    }
   }, [showNotification]);
 
   if (!showNotification && isOnline) {
