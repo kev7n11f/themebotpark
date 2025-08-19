@@ -397,9 +397,13 @@ export const requestQueue = {
 };
 
 // Initialize offline handling and request queue
-if (typeof window !== 'undefined') {
-  offlineHandler.init();
-  requestQueue.init();
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  try {
+    offlineHandler.init();
+    requestQueue.init();
+  } catch (error) {
+    console.warn('Failed to initialize offline handlers:', error);
+  }
 }
 
 export default api;

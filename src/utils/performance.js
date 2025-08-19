@@ -417,31 +417,35 @@ let performanceMonitor = null;
 let memoryMonitor = null;
 let visibilityManager = null;
 
-if (typeof window !== 'undefined') {
-  performanceMonitor = new PerformanceMonitor();
-  memoryMonitor = new MemoryMonitor();
-  visibilityManager = new VisibilityManager();
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  try {
+    performanceMonitor = new PerformanceMonitor();
+    memoryMonitor = new MemoryMonitor();
+    visibilityManager = new VisibilityManager();
 
-  // Start memory monitoring in production
-  if (process.env.NODE_ENV === 'production') {
-    memoryMonitor.start();
+    // Start memory monitoring in production
+    if (process.env.NODE_ENV === 'production') {
+      memoryMonitor.start();
+    }
+
+    // Send performance report before page unload
+    window.addEventListener('beforeunload', () => {
+      if (performanceMonitor) {
+        performanceMonitor.sendReport();
+        performanceMonitor.cleanup();
+      }
+      if (memoryMonitor) {
+        memoryMonitor.stop();
+      }
+    });
+
+    // Analyze bundle on load
+    window.addEventListener('load', () => {
+      setTimeout(analyzeBundlePerformance, 2000);
+    });
+  } catch (error) {
+    console.warn('Failed to initialize performance monitoring:', error);
   }
-
-  // Send performance report before page unload
-  window.addEventListener('beforeunload', () => {
-    if (performanceMonitor) {
-      performanceMonitor.sendReport();
-      performanceMonitor.cleanup();
-    }
-    if (memoryMonitor) {
-      memoryMonitor.stop();
-    }
-  });
-
-  // Analyze bundle on load
-  window.addEventListener('load', () => {
-    setTimeout(analyzeBundlePerformance, 2000);
-  });
 }
 
 export {
