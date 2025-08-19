@@ -44,6 +44,11 @@
     "nodemon": "^3.1.10",
     "vercel": "^41.0.2"
   },
+  "overrides": {
+    "resolve-url-loader": {
+      "postcss": "^8.4.31"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
