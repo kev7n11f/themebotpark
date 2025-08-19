@@ -64,8 +64,8 @@ app.get('/health', (req, res) => {
     checks: {
       server: 'ok',
       memory: process.memoryUsage().heapUsed < 500 * 1024 * 1024 ? 'ok' : 'warning', // 500MB threshold
-      openai: !!env.openAiKey ? 'configured' : 'missing',
-      stripe: !!env.stripe.secretKey ? 'configured' : 'missing',
+      openai: env.openAiKey ? 'configured' : 'missing',
+      stripe: env.stripe.secretKey ? 'configured' : 'missing',
       email: (env.email.sendgridKey || env.email.smtp.host) 
         ? 'configured' 
         : env.email.sendgridKey || env.email.smtp.host 
@@ -107,11 +107,11 @@ app.get('/health/detailed', (req, res) => {
     },
     dependencies: {
       openai_api: {
-        status: !!env.openAiKey ? 'configured' : 'missing',
+        status: env.openAiKey ? 'configured' : 'missing',
         configured: !!env.openAiKey
       },
       stripe: {
-        status: !!env.stripe.secretKey ? 'configured' : 'missing',
+        status: env.stripe.secretKey ? 'configured' : 'missing',
         configured: !!env.stripe.secretKey,
         webhook_configured: !!env.stripe.webhookSecret
       },
@@ -269,9 +269,9 @@ function startServer() {
     console.log(`🚀 ThemeBotPark server running on port ${PORT}`);
     console.log(`📊 Health check available at http://localhost:${PORT}/health`);
     console.log(`🔧 Environment: ${env.nodeEnv}`);
-    console.log(`📝 OpenAI configured: ${!!env.openAiKey ? 'Yes' : 'No'}`);
-    console.log(`💳 Stripe configured: ${!!env.stripe.secretKey ? 'Yes' : 'No'}`);
-    console.log(`📧 Email configured: ${!!(env.email.sendgridKey || env.email.smtp.host) ? 'Yes' : 'No'}`);
+    console.log(`📝 OpenAI configured: ${env.openAiKey ? 'Yes' : 'No'}`);
+    console.log(`💳 Stripe configured: ${env.stripe.secretKey ? 'Yes' : 'No'}`);
+    console.log(`📧 Email configured: ${(env.email.sendgridKey || env.email.smtp.host) ? 'Yes' : 'No'}`);
   });
 
   server.on('error', (error) => {
