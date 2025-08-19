@@ -108,17 +108,17 @@ app.get('/health/detailed', (req, res) => {
     dependencies: {
       openai_api: {
         status: env.openAiKey ? 'configured' : 'missing',
-        configured: env.openAiKey ? true : false
+        configured: Boolean(env.openAiKey)
       },
       stripe: {
         status: env.stripe.secretKey ? 'configured' : 'missing',
-        configured: env.stripe.secretKey ? true : false,
-        webhook_configured: env.stripe.webhookSecret ? true : false
+        configured: Boolean(env.stripe.secretKey),
+        webhook_configured: Boolean(env.stripe.webhookSecret)
       },
       email: {
         status: (env.email.sendgridKey || env.email.smtp.host) ? 'configured' : 'missing',
-        sendgrid: env.email.sendgridKey ? true : false,
-        smtp: env.email.smtp.host ? true : false
+        sendgrid: Boolean(env.email.sendgridKey),
+        smtp: Boolean(env.email.smtp.host)
       },
       database: {
         status: 'not_applicable', // Add real DB check if needed
