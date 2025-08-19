@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { UserProvider } from './contexts/UserContext';
 
 // Error reporting
@@ -40,16 +41,17 @@ export default function App() {
   return (
     <ErrorBoundary>
       <SafeComponentWrapper>
-        <UserProvider>
-          <Router basename={process.env.PUBLIC_URL}>
-            <div className="app">
-              <OfflineIndicator />
-              <main className="main-content">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<ContactUs />} />
+        <HelmetProvider>
+          <UserProvider>
+            <Router basename={process.env.PUBLIC_URL}>
+              <div className="app">
+                <OfflineIndicator />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<ContactUs />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/dashboard" element={<CreatorDashboard />} />
@@ -60,6 +62,7 @@ export default function App() {
           </div>
         </Router>
       </UserProvider>
+      </HelmetProvider>
       </SafeComponentWrapper>
     </ErrorBoundary>
   );
