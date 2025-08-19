@@ -52,35 +52,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Health check endpoints
+// Health check endpoints - Simple format for deployment tools
 app.get('/health', (req, res) => {
-  const healthCheck = {
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    environment: env.nodeEnv,
-    version: require('./package.json').version,
-    checks: {
-      server: 'ok',
-      memory: process.memoryUsage().heapUsed < 500 * 1024 * 1024 ? 'ok' : 'warning', // 500MB threshold
-      openai: env.openAiKey ? 'configured' : 'missing',
-      stripe: env.stripe.secretKey ? 'configured' : 'missing',
-      email: (env.email.sendgridKey || env.email.smtp.host) 
-        ? 'configured' 
-        : env.email.sendgridKey || env.email.smtp.host 
-          ? 'partial' 
-          : 'missing'
-    }
-  };
-
-  // Overall health status
-  const hasWarnings = Object.values(healthCheck.checks).some(status => status === 'warning' || status === 'error');
-  if (hasWarnings) {
-    healthCheck.status = 'degraded';
-  }
-
-  res.status(healthCheck.status === 'healthy' ? 200 : 503).json(healthCheck);
+  res.status(200).json({ ok: true });
 });
 
 // Detailed health check for monitoring systems
