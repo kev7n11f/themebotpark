@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /**
  * Enhanced Service Worker for ThemeBotPark
  * Provides offline functionality, caching strategies, and performance optimization
