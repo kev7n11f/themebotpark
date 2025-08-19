@@ -108,17 +108,17 @@ app.get('/health/detailed', (req, res) => {
     dependencies: {
       openai_api: {
         status: env.openAiKey ? 'configured' : 'missing',
-        configured: !!env.openAiKey
+        configured: env.openAiKey ? true : false
       },
       stripe: {
         status: env.stripe.secretKey ? 'configured' : 'missing',
-        configured: !!env.stripe.secretKey,
-        webhook_configured: !!env.stripe.webhookSecret
+        configured: env.stripe.secretKey ? true : false,
+        webhook_configured: env.stripe.webhookSecret ? true : false
       },
       email: {
         status: (env.email.sendgridKey || env.email.smtp.host) ? 'configured' : 'missing',
-        sendgrid: !!env.email.sendgridKey,
-        smtp: !!env.email.smtp.host
+        sendgrid: env.email.sendgridKey ? true : false,
+        smtp: env.email.smtp.host ? true : false
       },
       database: {
         status: 'not_applicable', // Add real DB check if needed
@@ -154,7 +154,7 @@ app.get('/health/detailed', (req, res) => {
 app.get('/ready', (req, res) => {
   // Check if the service is ready to accept requests
   const isReady = env.nodeEnv === 'production' 
-    ? !!env.openAiKey 
+    ? env.openAiKey ? true : false
     : true;
 
   if (isReady) {
