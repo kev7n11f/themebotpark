@@ -19,6 +19,7 @@ import SubscriptionSuccess from './pages/SubscriptionSuccess';
 // Components
 import ErrorBoundary from './components/ErrorBoundary';
 import OfflineIndicator from './components/OfflineIndicator';
+import SafeComponentWrapper from './components/SafeComponentWrapper';
 
 // Styles
 import './App.css';
@@ -38,16 +39,17 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <UserProvider>
-        <Router basename={process.env.PUBLIC_URL}>
-          <div className="app">
-            <OfflineIndicator />
-            <main className="main-content">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/chat" element={<Chat />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<ContactUs />} />
+      <SafeComponentWrapper>
+        <UserProvider>
+          <Router basename={process.env.PUBLIC_URL}>
+            <div className="app">
+              <OfflineIndicator />
+              <main className="main-content">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<ContactUs />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/dashboard" element={<CreatorDashboard />} />
@@ -58,6 +60,7 @@ export default function App() {
           </div>
         </Router>
       </UserProvider>
+      </SafeComponentWrapper>
     </ErrorBoundary>
   );
 }
