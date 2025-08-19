@@ -1,23 +1,16 @@
-/* eslint-env serviceworker */
-/* eslint-disable no-restricted-globals */
 /**
  * Enhanced Service Worker for ThemeBotPark
  * Provides offline functionality, caching strategies, and performance optimization
  */
 
-// eslint-disable-next-line no-unused-vars
-const CACHE_NAME = 'themebotpark-v2.0.0';
+// Removed unused CACHE_NAME to fix ESLint error
+// Removed unused CACHE_NAME to fix ESLint error
 const STATIC_CACHE = 'themebotpark-static-v2.0.0';
 const DYNAMIC_CACHE = 'themebotpark-dynamic-v2.0.0';
 const API_CACHE = 'themebotpark-api-v2.0.0';
 
-// Cache strategies for different resource types
-// eslint-disable-next-line no-unused-vars
-const CACHE_STRATEGIES = {
-  static: 'cache-first',     // JS, CSS, images
-  dynamic: 'network-first',  // HTML pages
-  api: 'network-first'       // API calls
-};
+// Removed unused CACHE_STRATEGIES to fix ESLint error
+// Removed unused CACHE_STRATEGIES to fix ESLint error
 
 // Resources to cache immediately on install
 const STATIC_ASSETS = [
@@ -44,7 +37,7 @@ const NO_CACHE_PATTERNS = [
   /\.(mp4|webm|ogg)$/
 ];
 
-// Install event - cache static assets
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
   
@@ -56,7 +49,8 @@ self.addEventListener('install', (event) => {
         console.log('Static assets cached successfully');
         
         // Skip waiting to activate immediately
-        self.skipWaiting();
+  // eslint-disable-next-line no-restricted-globals
+  self.skipWaiting();
       } catch (error) {
         console.error('Failed to cache static assets:', error);
       }
@@ -64,7 +58,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate event - cleanup old caches
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
   
@@ -85,7 +79,8 @@ self.addEventListener('activate', (event) => {
         );
         
         // Take control of all pages immediately
-        self.clients.claim();
+  // eslint-disable-next-line no-restricted-globals
+  self.clients.claim();
         console.log('Service Worker activated successfully');
       } catch (error) {
         console.error('Error during activation:', error);
@@ -94,13 +89,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - handle all network requests
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
   
   // Skip non-GET requests and chrome-extension requests
-  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') {
+  if (request.method !== 'GET' || request.url.startsWith('chrome-extension:')) {
     return;
   }
   
@@ -114,6 +108,8 @@ self.addEventListener('fetch', (event) => {
 
 // Enhanced request handler with fallbacks
 async function handleRequest(request) {
+  // url variable removed as it was unused (ESLint fix)
+  
   try {
     // Determine cache strategy based on resource type
     if (isStaticAsset(request)) {
@@ -214,6 +210,8 @@ async function updateCacheInBackground(request, cache) {
 
 // Fallback handler for when both network and cache fail
 async function handleFallback(request) {
+  // url variable removed as it was unused (ESLint fix)
+  
   // For HTML pages, return offline page
   if (request.headers.get('accept')?.includes('text/html')) {
     const offlineResponse = await getOfflinePage();
@@ -355,7 +353,9 @@ function isApiCall(request) {
 }
 
 // Background sync for API calls (if supported)
+// eslint-disable-next-line no-restricted-globals
 if ('sync' in self.registration) {
+  // eslint-disable-next-line no-restricted-globals
   self.addEventListener('sync', (event) => {
     if (event.tag === 'api-sync') {
       event.waitUntil(syncApiCalls());
@@ -368,7 +368,8 @@ async function syncApiCalls() {
     console.log('Syncing API calls...');
     // This would integrate with the request queue from apiUtils
     // Send a message to the main thread to process queued requests
-    const clients = await self.clients.matchAll();
+  // eslint-disable-next-line no-restricted-globals
+  const clients = await self.clients.matchAll();
     clients.forEach(client => {
       client.postMessage({
         type: 'SYNC_API_CALLS',
@@ -381,12 +382,14 @@ async function syncApiCalls() {
 }
 
 // Handle messages from main thread
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data;
   
   switch (type) {
     case 'SKIP_WAITING':
-      self.skipWaiting();
+  // eslint-disable-next-line no-restricted-globals
+  self.skipWaiting();
       break;
       
     case 'CACHE_URLS':

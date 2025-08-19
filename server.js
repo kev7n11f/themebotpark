@@ -153,8 +153,8 @@ app.get('/health/detailed', (req, res) => {
 // Readiness check (for Kubernetes/Docker)
 app.get('/ready', (req, res) => {
   // Check if the service is ready to accept requests
-  const isReady = env.nodeEnv === 'production' 
-    ? env.openAiKey ? true : false
+  const isReady = env.nodeEnv === 'production'
+    ? Boolean(env.openAiKey)
     : true;
 
   if (isReady) {
