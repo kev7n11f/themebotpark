@@ -3,8 +3,9 @@
  * Provides offline functionality, caching strategies, and performance optimization
  */
 
-// Removed unused CACHE_NAME to fix ESLint error
-// Removed unused CACHE_NAME to fix ESLint error
+/* eslint-env serviceworker */
+/* eslint-disable no-restricted-globals */
+
 const STATIC_CACHE = 'themebotpark-static-v2.0.0';
 const DYNAMIC_CACHE = 'themebotpark-dynamic-v2.0.0';
 const API_CACHE = 'themebotpark-api-v2.0.0';
