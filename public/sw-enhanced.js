@@ -1,15 +1,18 @@
+/* eslint-env serviceworker */
 /* eslint-disable no-restricted-globals */
 /**
  * Enhanced Service Worker for ThemeBotPark
  * Provides offline functionality, caching strategies, and performance optimization
  */
 
+// eslint-disable-next-line no-unused-vars
 const CACHE_NAME = 'themebotpark-v2.0.0';
 const STATIC_CACHE = 'themebotpark-static-v2.0.0';
 const DYNAMIC_CACHE = 'themebotpark-dynamic-v2.0.0';
 const API_CACHE = 'themebotpark-api-v2.0.0';
 
 // Cache strategies for different resource types
+// eslint-disable-next-line no-unused-vars
 const CACHE_STRATEGIES = {
   static: 'cache-first',     // JS, CSS, images
   dynamic: 'network-first',  // HTML pages
@@ -111,8 +114,6 @@ self.addEventListener('fetch', (event) => {
 
 // Enhanced request handler with fallbacks
 async function handleRequest(request) {
-  const url = new URL(request.url);
-  
   try {
     // Determine cache strategy based on resource type
     if (isStaticAsset(request)) {
@@ -213,8 +214,6 @@ async function updateCacheInBackground(request, cache) {
 
 // Fallback handler for when both network and cache fail
 async function handleFallback(request) {
-  const url = new URL(request.url);
-  
   // For HTML pages, return offline page
   if (request.headers.get('accept')?.includes('text/html')) {
     const offlineResponse = await getOfflinePage();
