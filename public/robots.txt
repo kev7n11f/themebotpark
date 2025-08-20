@@ -15,4 +15,4 @@ Allow: /privacy
 Allow: /terms
 
 # Sitemap
-Sitemap: https://themebotpark.vercel.app/sitemap.xml
+Sitemap: https://themebotpark.com/sitemap.xml
