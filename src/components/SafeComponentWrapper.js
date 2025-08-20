@@ -60,7 +60,7 @@ const SafeComponentWrapper = ({ children }) => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: '#f8f9fa',
+        background: 'var(--primary-bg, #121316)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -68,22 +68,23 @@ const SafeComponentWrapper = ({ children }) => {
         zIndex: 9999
       }}>
         <div style={{
-          background: 'white',
+          background: 'var(--card-bg, #17181c)',
           padding: '2rem',
           borderRadius: '8px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
           textAlign: 'center',
           maxWidth: '500px',
-          margin: '1rem'
+          margin: '1rem',
+          border: '1px solid var(--border-color, #262a33)'
         }}>
-          <h2 style={{ color: '#dc3545', marginBottom: '1rem' }}>Initialization Error</h2>
-          <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
+          <h2 style={{ color: 'var(--accent-error, #ff4757)', marginBottom: '1rem' }}>Initialization Error</h2>
+          <p style={{ color: 'var(--secondary-text, #b3b7c2)', marginBottom: '1.5rem' }}>
             Unable to initialize the application. Please refresh the page or try again later.
           </p>
           <button 
             onClick={() => window.location.reload()}
             style={{
-              background: '#007bff',
+              background: 'var(--accent-primary, #4a9eff)',
               color: 'white',
               border: 'none',
               padding: '0.75rem 1.5rem',
@@ -107,7 +108,7 @@ const SafeComponentWrapper = ({ children }) => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: '#f8f9fa',
+        background: 'var(--primary-bg, #121316)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -115,13 +116,13 @@ const SafeComponentWrapper = ({ children }) => {
       }}>
         <div style={{
           textAlign: 'center',
-          color: '#6c757d'
+          color: 'var(--secondary-text, #b3b7c2)'
         }}>
           <div style={{
             width: '40px',
             height: '40px',
-            border: '4px solid #e9ecef',
-            borderTop: '4px solid #007bff',
+            border: '4px solid var(--surface-bg, #1b1d22)',
+            borderTop: '4px solid var(--accent-primary, #4a9eff)',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
             margin: '0 auto 1rem'

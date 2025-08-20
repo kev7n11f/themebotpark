@@ -139,10 +139,10 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
 }
 
 // API configuration
-// If REACT_APP_API_BASE_URL is not set in production, use same-origin by setting API_BASE_URL to undefined
+// Use same-origin when not explicitly configured. In development, default to the local API server.
 export const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? (process.env.REACT_APP_API_BASE_URL || undefined) // undefined means same-origin
-  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3001');
+  ? (process.env.REACT_APP_API_BASE_URL || '')
+  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3011');
 
 // Circuit breakers for different API endpoints
 const circuitBreakers = {
@@ -155,7 +155,8 @@ const circuitBreakers = {
 export const api = {
   // Helper function to make API calls with comprehensive error handling
   async call(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const base = API_BASE_URL || '';
+    const url = `${base}${endpoint}`;
     const circuitBreaker = this.getCircuitBreaker(endpoint);
     
     try {

@@ -28,7 +28,7 @@ const env = {
   apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001',
   serverUrl: process.env.SERVER_URL || 'http://localhost:3001',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
-  corsOrigins: splitCSV(process.env.CORS_ORIGINS || 'http://localhost:3000'),
+  corsOrigins: splitCSV(process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3001'),
   openAiKey: process.env.OPENAI_API_KEY,
   jwtSecret: process.env.JWT_SECRET,
   bcryptRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10),

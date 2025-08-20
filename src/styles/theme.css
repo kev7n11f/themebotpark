@@ -1,17 +1,18 @@
-/* Enhanced Theme for ThemeBotPark - Light/Professional Design */
+/* Enhanced Theme for ThemeBotPark - Dark/Premium Design */
 
 :root {
-  /* Light Color Palette */
-  --primary-bg: #ffffff;
-  --secondary-bg: #f8f9fa;
-  --card-bg: #ffffff;
-  --surface-bg: #f1f3f4;
-  --hover-bg: #e8eaed;
+  /* Dark Color Palette */
+  --primary-bg: #121316;
+  --primary-bg-rgb: 18, 19, 22;
+  --secondary-bg: #0f1013;
+  --card-bg: #17181c;
+  --surface-bg: #1b1d22;
+  --hover-bg: #20232a;
   
-  --primary-text: #202124;
-  --secondary-text: #5f6368;
-  --muted-text: #9aa0a6;
-  --accent-text: #4a9eff;
+  --primary-text: #e8eaf0;
+  --secondary-text: #b3b7c2;
+  --muted-text: #8a909b;
+  --accent-text: #9ec6ff;
   
   --accent-primary: #4a9eff;
   --accent-secondary: #ff6b47;
@@ -19,20 +20,20 @@
   --accent-warning: #ffb347;
   --accent-error: #ff4757;
   
-  --border-color: #dadce0;
-  --border-hover: #bdc1c6;
+  --border-color: #262a33;
+  --border-hover: #2f3540;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  --gradient-primary: linear-gradient(135deg, #4a9eff 0%, #2a6fd6 100%);
   --gradient-secondary: linear-gradient(135deg, #ff6b47 0%, #ff4757 100%);
   --gradient-success: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
-  --gradient-surface: linear-gradient(135deg, #f8f9fa 0%, #e8eaed 100%);
+  --gradient-surface: linear-gradient(135deg, #14161a 0%, #0f1013 100%);
   
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.20);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
   
   /* Border Radius */
   --radius-sm: 6px;
@@ -2355,106 +2356,60 @@ footer {
 /* Ensure fade-in class works on pages */
 .chat-page.fade-in { animation: fadeInUp 300ms ease-out both; }
 
-/* ...existing code... */
-
-/* Dark Theme Overrides */
-[data-theme="dark"] {
-  /* Color Palette */
-  --primary-bg: #121316;
-  --secondary-bg: #16181c;
-  --card-bg: #1b1e24;
-  --surface-bg: #20242b;
-  --hover-bg: #28303a;
-
-  --primary-text: #f2f3f5;
-  --secondary-text: #c2c7d0;
-  --muted-text: #8b93a1;
-  --accent-text: #6cb0ff;
-
-  --accent-primary: #6cb0ff;
-  --accent-secondary: #ff7c5f;
-  --accent-success: #15d190;
-  --accent-warning: #ffc45f;
-  --accent-error: #ff6b6b;
-
-  --border-color: #2a2f38;
-  --border-hover: #3a4150;
-
-  --gradient-primary: linear-gradient(135deg, #6cb0ff 0%, #2a7bd6 100%);
-  --gradient-secondary: linear-gradient(135deg, #ff7c5f 0%, #ff5e6a 100%);
-  --gradient-success: linear-gradient(135deg, #15d190 0%, #0fbf80 100%);
-  --gradient-surface: linear-gradient(135deg, #16181c 0%, #1c2027 100%);
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.65);
-
-  --primary-bg-rgb: 18, 19, 22;
+/* Mobile-first responsive refinements */
+:root {
+  --container-max: 1200px;
 }
 
-/* Utility: gradient text class (used in Home hero) */
-.text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.container,
+.bots-section, .features-section, .cta-section,
+.footer-content, .footer-bottom,
+.dashboard,
+.about-page,
+.chat-page {
+  width: 100%;
+  max-width: var(--container-max);
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Utility: subtle entrance animation */
-.fade-in {
-  animation: fadeInUp 500ms var(--transition-normal) both;
+/* Prevent overly wide content on mobile */
+img, video, canvas, svg { max-width: 100%; height: auto; }
+
+/* Tighten hero and headings on smaller screens */
+@media (max-width: 1024px) {
+  .hero-title { font-size: 2.75rem; }
+}
+@media (max-width: 768px) {
+  .hero-section { padding: var(--space-xl) var(--space-lg); min-height: 70vh; }
+  .hero-title { font-size: 2.1rem; line-height: 1.2; }
+  .hero-subtitle { font-size: 1rem; max-width: 100%; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .stat { padding: var(--space-md); }
+  .bot-section { padding: var(--space-xl); }
+  .bot-title { font-size: 1.5rem; }
+  .bot-description { font-size: 1rem; }
+  .features-grid { grid-template-columns: 1fr; }
+  .main-nav { padding: var(--space-sm) var(--space-lg); }
+}
+@media (max-width: 480px) {
+  .hero-title { font-size: 1.8rem; }
+  .hero-stats { grid-template-columns: 1fr; }
+  .chat-page { height: calc(100vh - 80px); }
+  .chat-input { min-height: 48px; }
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translate3d(0, 10px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+/* Consistent spacing scale for sections */
+.section-header h2 { letter-spacing: 0.2px; }
+.bots-section, .features-section, .cta-section { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }
+
+/* Card polish for dark mode */
+.card, .feature-card, .bot-section, .success-content {
+  border-color: var(--border-color);
+  background: var(--card-bg);
 }
 
-/* Button glow accent */
-.glow {
-  position: relative;
-}
-.glow:after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: radial-gradient(60% 60% at 50% 50%, rgba(74, 158, 255, 0.35), transparent 70%);
-  filter: blur(8px);
-  z-index: -1;
-}
-
-/* Theme toggle button styling */
-.theme-toggle {
-  background: var(--surface-bg);
-  border: 1px solid var(--border-color);
-  color: var(--primary-text);
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.theme-toggle:hover {
-  background: var(--hover-bg);
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
-}
-
-/* Improve sticky nav translucency fallback var */
-.main-nav {
-  background: rgba(var(--primary-bg-rgb), 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Ensure premium labels use the defined gold gradient */
-.user-subscription.premium {
-  background: var(--gradient-gold);
-  color: #2b2110;
-}
-.user-menu-item.premium { color: var(--accent-gold); }
+/* Ensure main background is always dark */
+html[data-theme="dark"], body { background: var(--primary-bg); }

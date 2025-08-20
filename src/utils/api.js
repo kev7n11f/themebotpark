@@ -8,11 +8,10 @@ export {
   requestQueue 
 };
 
-// Main enhanced API
-export const api = enhancedApi;
+// Merge enhanced API with legacy convenience methods
+export const api = {
+  ...enhancedApi,
 
-// Keep backward compatibility with existing specific methods
-export const apiLegacy = {
   async login(email, password) {
     return enhancedApi.post('/api/auth', {
       action: 'login',

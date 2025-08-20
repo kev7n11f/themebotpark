@@ -49,7 +49,7 @@ if (missingFeatures.length > 0) {
       left: 0;
       width: 100%;
       height: 100%;
-      background: #f8f9fa;
+      background: var(--primary-bg, #121316);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -57,20 +57,21 @@ if (missingFeatures.length > 0) {
       z-index: 9999;
     ">
       <div style="
-        background: white;
+        background: var(--card-bg, #17181c);
         padding: 2rem;
         border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         text-align: center;
         max-width: 500px;
         margin: 1rem;
+        border: 1px solid var(--border-color, #262a33);
       ">
-        <h2 style="color: #dc3545; margin-bottom: 1rem;">Browser Not Supported</h2>
-        <p style="color: #6c757d; margin-bottom: 1.5rem;">
+        <h2 style="color: var(--accent-error, #ff4757); margin-bottom: 1rem;">Browser Not Supported</h2>
+        <p style="color: var(--secondary-text, #b3b7c2); margin-bottom: 1.5rem;">
           Your browser doesn't support some features required by ThemeBotPark.
           Please update to a modern browser like Chrome, Firefox, Safari, or Edge.
         </p>
-        <p style="color: #6c757d; font-size: 0.9rem;">
+        <p style="color: var(--muted-text, #8a909b); font-size: 0.9rem;">
           Missing features: ${missingFeatures.join(', ')}
         </p>
       </div>
