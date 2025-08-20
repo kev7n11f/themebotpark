@@ -56,6 +56,11 @@
   --transition-fast: 0.15s ease-out;
   --transition-normal: 0.25s ease-out;
   --transition-slow: 0.4s ease-out;
+
+  /* Gold Accent */
+  --accent-gold: #ffd700;
+  /* Gold Gradient for Premium Labels */
+  --gradient-gold: linear-gradient(90deg, #ffd700 0%, #ffb347 100%);
 }
 
 /* Global Styles */
@@ -76,12 +81,11 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   
-  /* Modern font smoothing */
+  /* Font smoothing for modern browsers */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
   /* Fallbacks for older browsers */
-  font-smoothing: auto;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
@@ -906,7 +910,7 @@ button:hover:before {
   z-index: 50;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  background: rgba(var(--primary-bg-rgb), 0.9);
+  background: rgba(var(--primary-bg-rgb), 0.85);
 }
 
 .nav-brand h1 {
@@ -1506,7 +1510,7 @@ footer {
 
 .user-subscription.premium {
   background: var(--gradient-gold);
-  color: white;
+  color: #2b2110;
 }
 
 .user-subscription.free {
@@ -1578,9 +1582,7 @@ footer {
   background: var(--surface-bg);
 }
 
-.user-menu-item.premium {
-  color: var(--accent-gold);
-}
+.user-menu-item.premium { color: var(--accent-gold); }
 
 .user-menu-item.logout {
   color: var(--accent-error);
@@ -2316,219 +2318,143 @@ footer {
   background-color: #d63031;
 }
 
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .popular-bots {
-    grid-template-columns: 1fr;
-  }
-  
-  .bots-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .bot-stats {
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-  
-  .bot-stat {
-    flex-basis: 30%;
-  }
+/* Skeleton loader (used in Chat booting state) */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--surface-bg), var(--hover-bg), var(--surface-bg));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
 }
 
-.hero-section {
-  display: flex;
-  flex-direction: column;
+.skeleton-line { height: 16px; border-radius: 8px; }
+.w-20 { width: 20%; }
+.w-30 { width: 30%; }
+.w-40 { width: 40%; }
+.w-50 { width: 50%; }
+.w-60 { width: 60%; }
+.w-70 { width: 70%; }
+.w-80 { width: 80%; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Typing dots inline animation */
+.typing-dots { display: inline-flex; gap: 2px; }
+.typing-dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; animation: bounce 1s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: .15s; }
+.typing-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+/* Upgrade button accent */
+.upgrade-btn { background: var(--gradient-secondary); color: #fff; border: none; padding: .5rem .9rem; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
+.upgrade-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* Ensure fade-in class works on pages */
+.chat-page.fade-in { animation: fadeInUp 300ms ease-out both; }
+
+/* ...existing code... */
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  /* Color Palette */
+  --primary-bg: #121316;
+  --secondary-bg: #16181c;
+  --card-bg: #1b1e24;
+  --surface-bg: #20242b;
+  --hover-bg: #28303a;
+
+  --primary-text: #f2f3f5;
+  --secondary-text: #c2c7d0;
+  --muted-text: #8b93a1;
+  --accent-text: #6cb0ff;
+
+  --accent-primary: #6cb0ff;
+  --accent-secondary: #ff7c5f;
+  --accent-success: #15d190;
+  --accent-warning: #ffc45f;
+  --accent-error: #ff6b6b;
+
+  --border-color: #2a2f38;
+  --border-hover: #3a4150;
+
+  --gradient-primary: linear-gradient(135deg, #6cb0ff 0%, #2a7bd6 100%);
+  --gradient-secondary: linear-gradient(135deg, #ff7c5f 0%, #ff5e6a 100%);
+  --gradient-success: linear-gradient(135deg, #15d190 0%, #0fbf80 100%);
+  --gradient-surface: linear-gradient(135deg, #16181c 0%, #1c2027 100%);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.65);
+
+  --primary-bg-rgb: 18, 19, 22;
+}
+
+/* Utility: gradient text class (used in Home hero) */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Utility: subtle entrance animation */
+.fade-in {
+  animation: fadeInUp 500ms var(--transition-normal) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Button glow accent */
+.glow {
+  position: relative;
+}
+.glow:after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(74, 158, 255, 0.35), transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* Theme toggle button styling */
+.theme-toggle {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  color: var(--primary-text);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
   align-items: center;
-  padding: var(--space-lg);
-}
-
-.bot-section {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .hero-section {
-    flex-direction: row;
-  }
-
-  .bot-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Browser Compatibility Utilities */
-.flex-container {
-  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-  display: -ms-flexbox;      /* TWEENER - IE 10 */
-  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
-  
-  -webkit-box-direction: normal;
-  -webkit-box-orient: horizontal;
-  -ms-flex-direction: row;
-  flex-direction: row;
-}
-
-.grid-container {
-  display: -ms-grid;     /* IE 10-11 */
-  display: grid;         /* Standard */
-  
-  /* IE 10-11 fallback */
-  -ms-grid-columns: 1fr;
-  -ms-grid-rows: auto;
-}
-
-/* Custom properties fallbacks for IE */
-@supports not (--css: variables) {
-  :root {
-    /* Fallback colors for IE */
-    background: #ffffff;
-    color: #202124;
-  }
-  
-  body {
-    background: #ffffff;
-    color: #202124;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .accent-primary {
-    background: #4a9eff !important;
-  }
-  
-  .accent-secondary {
-    background: #ff6b47 !important;
-  }
-}
-
-/* Flexbox fallbacks for IE 10-11 */
-.flex-center {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.theme-toggle:hover {
+  background: var(--hover-bg);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
 }
 
-/* Transform fallbacks */
-.transform-scale {
-  -webkit-transform: scale(1.05);
-  -moz-transform: scale(1.05);
-  -ms-transform: scale(1.05);
-  -o-transform: scale(1.05);
-  transform: scale(1.05);
+/* Improve sticky nav translucency fallback var */
+.main-nav {
+  background: rgba(var(--primary-bg-rgb), 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* Transition fallbacks */
-.transition-all {
-  -webkit-transition: all var(--transition-normal);
-  -moz-transition: all var(--transition-normal);
-  -ms-transition: all var(--transition-normal);
-  -o-transition: all var(--transition-normal);
-  transition: all var(--transition-normal);
+/* Ensure premium labels use the defined gold gradient */
+.user-subscription.premium {
+  background: var(--gradient-gold);
+  color: #2b2110;
 }
-
-/* Box shadow fallbacks */
-.shadow-card {
-  /* IE 8 fallback */
-  filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=0, OffY=4, Color='#33000000');
-  
-  /* Modern browsers */
-  -webkit-box-shadow: var(--shadow-md);
-  -moz-box-shadow: var(--shadow-md);
-  box-shadow: var(--shadow-md);
-}
-
-/* Border radius fallbacks */
-.rounded {
-  -webkit-border-radius: var(--radius-md);
-  -moz-border-radius: var(--radius-md);
-  border-radius: var(--radius-md);
-}
-
-/* Gradient fallbacks */
-.gradient-primary {
-  background: #4a9eff; /* Fallback for IE 8-9 */
-  background: -webkit-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-  background: -moz-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-  background: -ms-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-  background: -o-linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-}
-
-/* Backdrop filter fallback */
-@supports not (backdrop-filter: blur(10px)) {
-  .modal-overlay {
-    background: rgba(0, 0, 0, 0.9); /* Darker fallback */
-  }
-  
-  .slide-menu {
-    background: rgba(26, 26, 26, 0.98); /* More opaque fallback */
-  }
-}
-
-/* CSS Grid fallbacks for IE 11 */
-@supports not (display: grid) {
-  .features-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xl);
-  }
-  
-  .features-grid .feature-card {
-    flex: 1 1 300px;
-    min-width: 300px;
-  }
-  
-  .hero-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-lg);
-  }
-  
-  .hero-stats .stat {
-    flex: 1 1 150px;
-  }
-  
-  .bots-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xl);
-  }
-  
-  .bots-grid .bot-card {
-    flex: 1 1 300px;
-    min-width: 300px;
-  }
-}
-
-/* Sticky positioning fallback */
-@supports not (position: sticky) {
-  .main-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-  }
-  
-  body {
-    padding-top: 70px; /* Adjust based on nav height */
-  }
-}
+.user-menu-item.premium { color: var(--accent-gold); }

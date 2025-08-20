@@ -6,7 +6,6 @@ import ScrollWrapper from '../components/ScrollWrapper';
 // import FixItFrank from '../components/BotSection/FixItFrank'; // TODO: Add FixItFrank bot
 // import TellItLikeItIs from '../components/BotSection/TellItLikeItIs'; // TODO: Add TellItLikeItIs bot
 import BotSection from '../components/BotSection/BotSection';
-import UserHeader from '../components/UserHeader';
 import SEOHead from '../components/SEOHead';
 
 export default function HomePage() {
@@ -37,13 +36,6 @@ export default function HomePage() {
     <ScrollWrapper>
       <div className={`homepage ${isVisible ? 'fade-in' : ''}`}>
         <SEOHead />
-        {/* Navigation */}
-        <nav className="main-nav">
-          <div className="nav-brand">
-            <h1>🤖 ThemeBotPark</h1>
-          </div>
-          <UserHeader />
-        </nav>
 
         {/* Hero Section */}
         <section className="hero-section">

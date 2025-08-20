@@ -7,7 +7,7 @@ export default function SEOHead({
   keywords = "AI chatbot, artificial intelligence, conversation AI, bot personalities, AI assistant, chat AI, business AI, relationship AI",
   author = "Kevin Franklin",
   url = "https://themebotpark.vercel.app",
-  image = "https://themebotpark.vercel.app/og-image.png",
+  image = "/og-image.svg",
   type = "website",
   canonical,
   noindex = false,

@@ -46,12 +46,12 @@ export const apiLegacy = {
     });
   },
 
-  async createStripeSession(priceId, successUrl, cancelUrl) {
-    return enhancedApi.post('/api/stripe', {
-      priceId,
-      successUrl,
-      cancelUrl
-    });
+  async createStripeSession(priceId, successUrl, cancelUrl, plan = undefined) {
+    // Prefer explicit priceId; if not provided, allow plan mapping on server
+    const payload = { successUrl, cancelUrl };
+    if (priceId) payload.priceId = priceId;
+    if (!priceId && plan) payload.plan = plan;
+    return enhancedApi.post('/api/stripe', payload);
   },
 
   async sendContactMessage(name, email, subject, message) {

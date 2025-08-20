@@ -25,26 +25,30 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const { plan, successUrl, cancelUrl } = req.body;
+    // Accept either a direct priceId or a logical plan name
+    const { priceId: bodyPriceId, plan, successUrl, cancelUrl } = req.body;
 
-    if (!plan) {
-      return res.status(400).json({
-        success: false,
-        error: 'Plan is required (basic, pro, or premium)'
-      });
+    let priceId = bodyPriceId;
+
+    // If plan provided, map from env-configured prices
+    if (!priceId && plan) {
+      priceId = env.stripe.prices[plan];
     }
 
-    // Validate plan and get price ID
-    const priceId = env.stripe.prices[plan];
     if (!priceId) {
+      const availablePlans = Object.keys(env.stripe.prices).filter(Boolean).join(', ') || 'none';
       return res.status(400).json({
         success: false,
-        error: `Invalid plan: ${plan}. Available plans: ${Object.keys(env.stripe.prices).join(', ')}`
+        error: 'Missing priceId or invalid plan',
+        details: {
+          receivedPlan: plan || null,
+          availablePlans
+        }
       });
     }
 
     if (env.logLevel === 'debug') {
-      console.log(`[Stripe] Creating checkout for plan: ${plan}, priceId: ${priceId}`);
+      console.log(`[Stripe] Creating checkout for priceId: ${priceId}${plan ? ` (plan: ${plan})` : ''}`);
     }
 
     // Create Stripe checkout session

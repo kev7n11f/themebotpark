@@ -3,6 +3,15 @@ import UpgradeModal from '../components/UpgradeModal';
 import SEOHead from '../components/SEOHead';
 import { api } from '../utils/api';
 
+// Lightweight typing indicator
+function TypingDots() {
+  return (
+    <span className="typing-dots" aria-live="polite" aria-label="Bot is typing">
+      <span>.</span><span>.</span><span>.</span>
+    </span>
+  );
+}
+
 function Chat() {
   const [bot, setBot] = useState('');
   // const [prompt, setPrompt] = useState(''); // TODO: Implement prompt functionality
@@ -14,6 +23,7 @@ function Chat() {
   const [messageCount, setMessageCount] = useState(0);
   const [error, setError] = useState(null); // Error state for handling errors
   const [userId, setUserId] = useState('');
+  const [booting, setBooting] = useState(true);
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs'];
@@ -199,12 +209,53 @@ function Chat() {
         }]);
 
         setError('Failed to load chat data. Please try again later.');
-      });
+      })
+      .finally(() => setBooting(false));
 
   }, []);
 
-  if (!bot) {
-    return <div className="loading">Loading bot...</div>;
+  if (!bot || booting) {
+    return (
+      <section className="chat-page fade-in" aria-busy="true" aria-live="polite">
+        <div className="chat-header">
+          <div>
+            <div className="skeleton-line w-60 skeleton" />
+            <div className="skeleton-line w-40 skeleton" style={{ marginTop: '0.5rem' }} />
+          </div>
+          <div className="header-actions">
+            <span className="skeleton-line w-20 skeleton" style={{ height: '28px', borderRadius: '8px' }} />
+            <span className="skeleton-line w-20 skeleton" style={{ height: '28px', borderRadius: '8px' }} />
+          </div>
+        </div>
+        <div className="chat-container">
+          <div className="chat-messages">
+            <div className="message bot">
+              <div className="message-content">
+                <div className="skeleton-line w-80 skeleton" />
+                <div className="skeleton-line w-60 skeleton" style={{ marginTop: '0.5rem' }} />
+              </div>
+            </div>
+            <div className="message user">
+              <div className="message-content">
+                <div className="skeleton-line w-70 skeleton" />
+              </div>
+            </div>
+            <div className="message bot">
+              <div className="message-content">
+                <div className="skeleton-line w-50 skeleton" />
+                <div className="skeleton-line w-30 skeleton" style={{ marginTop: '0.5rem' }} />
+              </div>
+            </div>
+          </div>
+          <div className="chat-input-container">
+            <div className="chat-input-wrapper">
+              <div className="skeleton-line w-80 skeleton" style={{ height: '60px', borderRadius: '12px' }} />
+              <div className="skeleton-line w-20 skeleton" style={{ height: '60px', borderRadius: '12px' }} />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   if (messages.length === 0) {
@@ -212,7 +263,7 @@ function Chat() {
   }
 
   return (
-    <section className="chat-page">
+    <section className="chat-page fade-in">
       <SEOHead 
         title={`Chat with ${bot} - AI Conversation`}
         description={`Have an intelligent conversation with ${bot}, an AI bot with a unique personality. ${getWelcomeMessage(bot)}`}
@@ -274,7 +325,7 @@ function Chat() {
             <div className="message bot">
               <div className="message-content">
                 <strong>{bot}:</strong>
-                <p className="typing">Thinking...</p>
+                <p className="typing"><TypingDots /></p>
               </div>
             </div>
           )}
@@ -289,14 +340,15 @@ function Chat() {
               placeholder={shouldDisableInput() ? 'Subscribe to continue chatting...' : `Message ${bot}...`}
               className="chat-input"
               rows="3"
-              disabled={shouldDisableInput()}
+              disabled={shouldDisableInput() || booting}
             />
             <button 
               onClick={shouldDisableInput() ? () => setShowPaywall(true) : sendMessage} 
-              disabled={(!inputMessage.trim() || isLoading) && !shouldDisableInput()}
+              disabled={((!inputMessage.trim() || isLoading) && !shouldDisableInput()) || booting}
               className="send-button"
+              aria-busy={isLoading}
             >
-              {shouldDisableInput() ? 'Subscribe' : isLoading ? 'Sending...' : 'Send'}
+              {shouldDisableInput() ? 'Subscribe' : isLoading ? 'Sending' : 'Send'}
             </button>
           </div>
         </div>
