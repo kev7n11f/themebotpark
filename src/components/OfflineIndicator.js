@@ -38,9 +38,9 @@ const OfflineIndicator = () => {
         left: '50%',
         transform: 'translateX(-50%)',
         background: isOnline 
-          ? 'var(--accent-success, #00d084)' 
-          : 'var(--accent-warning, #ffb347)',
-        color: 'white',
+          ? 'var(--accent-success)' 
+          : 'var(--accent-warning)',
+        color: 'var(--primary-text)',
         padding: 'var(--space-md, 1rem) var(--space-lg, 1.5rem)',
         borderRadius: 'var(--radius-lg, 16px)',
         boxShadow: 'var(--shadow-lg, 0 8px 40px rgba(0,0,0,0.16))',
@@ -60,8 +60,8 @@ const OfflineIndicator = () => {
       
       <span>
         {isOnline 
-          ? 'You\'re back online!' 
-          : 'You\'re offline. Some features may not work properly.'
+          ? "You're back online!" 
+          : "You're offline. Some features may not work properly."
         }
       </span>
       
@@ -69,9 +69,9 @@ const OfflineIndicator = () => {
         <button
           onClick={() => setShowNotification(false)}
           style={{
-            background: 'rgba(255, 255, 255, 0.2)',
-            border: 'none',
-            color: 'white',
+            background: 'var(--hover-bg)',
+            border: '1px solid var(--border-color)',
+            color: 'var(--primary-text)',
             borderRadius: 'var(--radius-sm, 6px)',
             padding: 'var(--space-xs, 0.25rem) var(--space-sm, 0.5rem)',
             cursor: 'pointer',

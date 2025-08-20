@@ -44,7 +44,7 @@ export default function App() {
       <SafeComponentWrapper>
         <HelmetProvider>
           <UserProvider>
-            <Router basename={process.env.PUBLIC_URL}>
+            <Router>
               <div className="app">
                 <OfflineIndicator />
                 <Header />

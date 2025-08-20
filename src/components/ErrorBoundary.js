@@ -67,8 +67,8 @@ class ErrorBoundary extends React.Component {
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'var(--surface-bg, #f8f9fa)',
-          color: 'var(--primary-text, #202124)',
+          background: 'var(--surface-bg, #1b1d22)',
+          color: 'var(--primary-text, #e8eaf0)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -76,14 +76,14 @@ class ErrorBoundary extends React.Component {
           fontFamily: 'var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)'
         }}>
           <div style={{
-            background: 'var(--card-bg, white)',
+            background: 'var(--card-bg, #17181c)',
             padding: '2rem',
             borderRadius: 'var(--radius-lg, 12px)',
-            boxShadow: 'var(--shadow-lg, 0 8px 40px rgba(0,0,0,0.16))',
+            boxShadow: 'var(--shadow-lg, 0 8px 40px rgba(0,0,0,0.5))',
             textAlign: 'center',
             maxWidth: '600px',
             margin: '1rem',
-            border: '1px solid var(--border-color, #dadce0)'
+            border: '1px solid var(--border-color, #262a33)'
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>😕</div>
             <h2 style={{ 
@@ -94,7 +94,7 @@ class ErrorBoundary extends React.Component {
               Something went wrong
             </h2>
             <p style={{ 
-              color: 'var(--secondary-text, #5f6368)', 
+              color: 'var(--secondary-text, #b3b7c2)', 
               marginBottom: '1.5rem',
               lineHeight: 1.5
             }}>
@@ -105,11 +105,11 @@ class ErrorBoundary extends React.Component {
               <details style={{
                 marginBottom: '1.5rem',
                 textAlign: 'left',
-                background: 'var(--surface-bg, #f8f9fa)',
+                background: 'var(--surface-bg, #1b1d22)',
                 padding: '1rem',
                 borderRadius: 'var(--radius-sm, 6px)',
                 fontSize: '0.875rem',
-                border: '1px solid var(--border-color, #dadce0)'
+                border: '1px solid var(--border-color, #262a33)'
               }}>
                 <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
                   Error Details (Development)
@@ -175,8 +175,8 @@ class ErrorBoundary extends React.Component {
                 onClick={() => window.location.href = '/'}
                 style={{
                   background: 'transparent',
-                  color: 'var(--primary-text, #202124)',
-                  border: '1px solid var(--border-color, #dadce0)',
+                  color: 'var(--primary-text, #e8eaf0)',
+                  border: '1px solid var(--border-color, #262a33)',
                   padding: '0.75rem 1.5rem',
                   borderRadius: 'var(--radius-md, 8px)',
                   cursor: 'pointer',
@@ -185,7 +185,7 @@ class ErrorBoundary extends React.Component {
                   transition: 'all 0.2s ease'
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.background = 'var(--surface-bg, #f8f9fa)';
+                  e.target.style.background = 'var(--surface-bg, #1b1d22)';
                 }}
                 onMouseOut={(e) => {
                   e.target.style.background = 'transparent';
@@ -197,7 +197,7 @@ class ErrorBoundary extends React.Component {
 
             <p style={{ 
               fontSize: '0.875rem', 
-              color: 'var(--muted-text, #9aa0a6)', 
+              color: 'var(--muted-text, #8a909b)', 
               marginTop: '1.5rem' 
             }}>
               If this problem persists, please contact support.
