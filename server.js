@@ -22,7 +22,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", "data:", "https:", "http:"],
-      connectSrc: ["'self'", "https://api.openai.com", "https://api.stripe.com"],
+      connectSrc: ["'self'", "https://api.openai.com", "https://api.stripe.com", "https://app.posthog.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
@@ -41,6 +41,9 @@ app.use(createCorsMiddleware());
 
 // Enable gzip compression
 app.use(compression());
+
+// IMPORTANT: Stripe webhook must be registered BEFORE JSON body parsing
+app.use('/', require('./stripe-webhook'));
 
 // Parse JSON bodies
 app.use(express.json({ limit: '1mb' }));
@@ -184,9 +187,6 @@ app.use('/api/contact', require('./contact'));
 app.use('/api/analytics', require('./analytics'));
 app.use('/api/creator', require('./creator'));
 
-// Stripe webhook (must be before JSON parsing middleware for raw body)
-app.use('/', require('./stripe-webhook'));
-
 // Serve React build in production
 if (env.nodeEnv === 'production') {
   app.use(express.static(path.join(__dirname, 'build')));
@@ -234,11 +234,11 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = env.port;
-
 let server;
 
-function startServer() {
+function startServer(port, attempt = 0) {
+  const PORT = port || env.port;
+
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 ThemeBotPark server running on port ${PORT}`);
     console.log(`📊 Health check available at http://localhost:${PORT}/health`);
@@ -262,7 +262,15 @@ function startServer() {
         break;
       case 'EADDRINUSE':
         console.error(bind + ' is already in use');
-        process.exit(1);
+        // In development, automatically try next port to avoid manual intervention
+        if (env.nodeEnv !== 'production' && attempt < 10) {
+          const nextPort = PORT + 1;
+          console.log(`🔁 Attempting to start on next available port: ${nextPort}`);
+          // Small delay before retry
+          setTimeout(() => startServer(nextPort, attempt + 1), 500);
+        } else {
+          process.exit(1);
+        }
         break;
       default:
         throw error;

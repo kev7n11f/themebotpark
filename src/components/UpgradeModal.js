@@ -68,7 +68,8 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       const data = await api.createStripeSession(
         plans[selectedPlan].priceId,
         `${window.location.origin}/subscription-success`,
-        `${window.location.origin}/chat`
+        `${window.location.origin}/chat`,
+        selectedPlan // Pass the plan name as a fallback
       );
 
       console.log('Stripe session created:', data);

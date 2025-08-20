@@ -21,6 +21,7 @@ import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import ErrorBoundary from './components/ErrorBoundary';
 import OfflineIndicator from './components/OfflineIndicator';
 import SafeComponentWrapper from './components/SafeComponentWrapper';
+import Header from './components/Header';
 
 // Styles
 import './App.css';
@@ -46,6 +47,7 @@ export default function App() {
             <Router basename={process.env.PUBLIC_URL}>
               <div className="app">
                 <OfflineIndicator />
+                <Header />
                 <main className="main-content">
                   <Routes>
                     <Route path="/" element={<HomePage />} />

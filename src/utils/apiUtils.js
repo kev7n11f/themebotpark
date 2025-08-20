@@ -139,9 +139,10 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
 }
 
 // API configuration
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_BASE_URL || 'https://themebotpark.onrender.com'
-  : process.env.LOCAL_API_BASE_URL || 'http://localhost:3001';
+// If REACT_APP_API_BASE_URL is not set in production, use same-origin by setting API_BASE_URL to undefined
+export const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? (process.env.REACT_APP_API_BASE_URL || undefined) // undefined means same-origin
+  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3001');
 
 // Circuit breakers for different API endpoints
 const circuitBreakers = {
