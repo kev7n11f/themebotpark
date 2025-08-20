@@ -23,12 +23,12 @@ const requiredInProd = [
 
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.API_PORT || process.env.PORT || '3001', 10),
+  port: parseInt(process.env.API_PORT || process.env.PORT || '3010', 10),
   publicUrl: process.env.PUBLIC_URL || 'http://localhost:3000',
-  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001',
-  serverUrl: process.env.SERVER_URL || 'http://localhost:3001',
+  apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3010',
+  serverUrl: process.env.SERVER_URL || 'http://localhost:3010',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
-  corsOrigins: splitCSV(process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3001'),
+  corsOrigins: splitCSV(process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3010'),
   openAiKey: process.env.OPENAI_API_KEY,
   jwtSecret: process.env.JWT_SECRET,
   bcryptRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10),
