@@ -201,14 +201,15 @@ function Chat() {
       })
       .catch(err => {
         console.error('Error loading bot:', err);
+        // Graceful local fallback welcome
         setMessages([{
-          id: 0,
-          sender: 'system',
-          text: 'An error occurred while loading the bot. Please try again later.',
+          id: 1,
+          sender: 'bot',
+          text: `Hello! I'm ${activeBot}. ${getWelcomeMessage(activeBot)}`,
           timestamp: new Date()
         }]);
-
-        setError('Failed to load chat data. Please try again later.');
+        // keep a subtle error state for banner, but don’t block UX
+        setError('Failed to load chat data. Using offline mode.');
       })
       .finally(() => setBooting(false));
 

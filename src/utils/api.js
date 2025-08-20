@@ -37,12 +37,18 @@ export const api = {
   },
 
   async sendChatMessage(mode, message, messages = [], userId = '') {
-    return enhancedApi.post('/api/chat', {
-      mode,
-      message,
-      messages,
-      userId
-    });
+    try {
+      return await enhancedApi.post('/api/chat', {
+        mode,
+        message,
+        messages,
+        userId
+      });
+    } catch (err) {
+      // Local fallback if API is unavailable
+      const fallback = getLocalChatFallback(mode, message);
+      return { response: fallback, fallback: true, error: err?.message || 'offline' };
+    }
   },
 
   async createStripeSession(priceId, successUrl, cancelUrl, plan = undefined) {
@@ -62,6 +68,19 @@ export const api = {
     });
   }
 };
+
+// Lightweight local fallback generator mirroring server behavior
+function getLocalChatFallback(botName, input) {
+  const tips = {
+    RainMaker: "Here's a quick business tip: Focus on solving real problems people will pay for. 🌧️💰",
+    HeartSync: "Authenticity starts with understanding your own needs and patterns. 💓",
+    FixItFrank: "Try the simplest path first, then narrow down variables one by one. 🛠️",
+    TellItLikeItIs: "Face the issue head-on. Clarity beats comfort. 🧨"
+  };
+  const lead = tips[botName] || 'I\'m here to help. Ask me anything!';
+  const echo = input ? `\n\nYou said: "${String(input).slice(0, 240)}"` : '';
+  return `${lead}${echo}`;
+}
 
 // For backward compatibility, also export as default
 export default api;
