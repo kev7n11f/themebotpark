@@ -8,7 +8,7 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://themebotpark.vercel.app/</loc>
+    <loc>https://themebotpark.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <lastmod>2025-07-21</lastmod>
@@ -16,7 +16,7 @@
 
   <!-- About Page -->
   <url>
-    <loc>https://themebotpark.vercel.app/about</loc>
+    <loc>https://themebotpark.com/about</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2025-07-21</lastmod>
@@ -24,7 +24,7 @@
 
   <!-- Contact Page -->
   <url>
-    <loc>https://themebotpark.vercel.app/contact</loc>
+    <loc>https://themebotpark.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2025-07-21</lastmod>
@@ -32,7 +32,7 @@
 
   <!-- Privacy Policy -->
   <url>
-    <loc>https://themebotpark.vercel.app/privacy</loc>
+    <loc>https://themebotpark.com/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
     <lastmod>2025-07-21</lastmod>
@@ -40,7 +40,7 @@
 
   <!-- Terms of Service -->
   <url>
-    <loc>https://themebotpark.vercel.app/terms</loc>
+    <loc>https://themebotpark.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
     <lastmod>2025-07-21</lastmod>
@@ -48,28 +48,28 @@
 
   <!-- Bot-specific landing pages (if you add them later) -->
   <url>
-    <loc>https://themebotpark.vercel.app/bots/rainmaker</loc>
+    <loc>https://themebotpark.com/bots/rainmaker</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2025-07-21</lastmod>
   </url>
 
   <url>
-    <loc>https://themebotpark.vercel.app/bots/heartsync</loc>
+    <loc>https://themebotpark.com/bots/heartsync</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2025-07-21</lastmod>
   </url>
 
   <url>
-    <loc>https://themebotpark.vercel.app/bots/fixitfrank</loc>
+    <loc>https://themebotpark.com/bots/fixitfrank</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2025-07-21</lastmod>
   </url>
 
   <url>
-    <loc>https://themebotpark.vercel.app/bots/tellitlikeitis</loc>
+    <loc>https://themebotpark.com/bots/tellitlikeitis</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>2025-07-21</lastmod>
