@@ -237,7 +237,7 @@ app.use((err, req, res, next) => {
 let server;
 
 function startServer(port, attempt = 0) {
-  const PORT = port || env.port;
+  const PORT = process.env.PORT || env.port || 3010;
 
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 ThemeBotPark server running on port ${PORT}`);
