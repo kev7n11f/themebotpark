@@ -38,6 +38,7 @@ The unfiltered truth-teller. Provides honest, direct feedback without sugarcoati
 - **🎨 Modern UI** - Clean, professional interface
 - **⚡ Performance Optimized** - Fast loading with PWA support
 - **🔍 SEO Optimized** - Schema.org markup, meta tags, sitemap
+- **📊 Analytics** - Vercel Analytics for comprehensive website analytics and performance monitoring
 
 ## 🚀 Tech Stack
 
@@ -123,6 +124,27 @@ This repository includes a GitHub Actions workflow (`.github/workflows/deploy.ym
 3. Monitor build status in the **Actions** tab.
 
 Now every commit to `main` triggers an automatic deployment on Vercel! 🎉
+
+## 📊 Analytics & Performance Monitoring
+
+ThemeBotPark includes comprehensive analytics and performance monitoring through Vercel Analytics:
+
+### Features
+- **📈 Page Views & User Sessions** - Automatic tracking of all website interactions
+- **⚡ Core Web Vitals** - Real-time performance metrics and user experience scores
+- **🚀 Speed Insights** - Page load times and performance optimization recommendations
+- **🔒 Privacy-First** - GDPR compliant with no cookies or personal data collection
+
+### Setup
+Analytics is automatically enabled when deployed to Vercel. No additional configuration required!
+
+### Viewing Data
+1. Visit your [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select the ThemeBotPark project
+3. Navigate to the "Analytics" tab
+4. View real-time metrics and historical data
+
+For detailed information, see [`ANALYTICS.md`](./ANALYTICS.md).
 
 ## Environment & Security Configuration
 
