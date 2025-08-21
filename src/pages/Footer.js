@@ -26,9 +26,9 @@ export default function Footer() {
           <h4>Support</h4>
           <ul>
             <li><a href="/contact">Contact Us</a></li>
-            <li><a href="#help">Help Center</a></li>
-            <li><a href="#status">Status</a></li>
-            <li><a href="#api">API Docs</a></li>
+            <li><a href="/help">Help Center</a></li>
+            <li><a href="/status">Status</a></li>
+            <li><a href="/api-docs">API Docs</a></li>
           </ul>
         </div>
 
@@ -37,8 +37,8 @@ export default function Footer() {
           <ul>
             <li><a href="/privacy">Privacy Policy</a></li>
             <li><a href="/terms">Terms of Service</a></li>
-            <li><a href="#cookies">Cookie Policy</a></li>
-            <li><a href="#security">Security</a></li>
+            <li><a href="/cookies">Cookie Policy</a></li>
+            <li><a href="/security">Security</a></li>
           </ul>
         </div>
       </div>

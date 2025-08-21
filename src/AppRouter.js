@@ -8,6 +8,11 @@ import CreatorDashboard from './pages/CreatorDashboard';
 import Footer from './pages/Footer';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import CookiePolicy from './pages/CookiePolicy';
+import Security from './pages/Security';
+import HelpCenter from './pages/HelpCenter';
+import ApiDocs from './pages/ApiDocs';
+import Status from './pages/Status';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import NotFound from './pages/NotFound';
 import './styles/theme.css';
@@ -23,6 +28,11 @@ export default function AppRouter() {
         <Route path="/dashboard" element={<CreatorDashboard />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="/security" element={<Security />} />
+        <Route path="/help" element={<HelpCenter />} />
+        <Route path="/api-docs" element={<ApiDocs />} />
+        <Route path="/status" element={<Status />} />
         <Route path="/subscription-success" element={<SubscriptionSuccess />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
