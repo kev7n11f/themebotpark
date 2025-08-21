@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { UserProvider } from './contexts/UserContext';
 
 // Error reporting
@@ -66,6 +68,8 @@ export default function App() {
       </UserProvider>
       </HelmetProvider>
       </SafeComponentWrapper>
+      <Analytics />
+      <SpeedInsights />
     </ErrorBoundary>
   );
 }
