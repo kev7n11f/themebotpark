@@ -1,9 +1,14 @@
 const OpenAI = require('openai');
 
-// Create OpenAI client only if API key is available
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+// Create OpenAI client only if API key is available and valid
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  try {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  } catch (error) {
+    console.error('Failed to initialize OpenAI client:', error.message);
+  }
+}
 
 // Export the serverless function directly
 module.exports = async (req, res) => {
@@ -128,13 +133,50 @@ function getWelcomeMessage(botName) {
 }
 
 function getFallbackResponse(botName, message) {
-  // Simple fallback responses based on bot personality
-  const fallbackResponses = {
-    RainMaker: "Here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
-    HeartSync: "Remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
-    FixItFrank: "Have you tried turning it off and on again? Sometimes the simplest solutions work best! 🛠️",
-    TellItLikeItIs: "Here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨"
+  // Enhanced fallback responses with context awareness
+  const responses = {
+    RainMaker: [
+      "Here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
+      "Revenue streams are like rivers - find the source and let it flow naturally. What problem are you solving? 💡",
+      "Marketing is about connecting value with need. What's your unique value proposition? 📈",
+      "Success comes from consistent action. What's one small step you can take today toward your goals? 🚀"
+    ],
+    HeartSync: [
+      "Remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
+      "Patterns in relationships often repeat until we learn the lesson. What are you noticing in your connections? 🔍",
+      "Emotional intelligence is about understanding both your feelings and others'. How are you feeling right now? 🌟",
+      "The heart knows what the mind sometimes forgets. What's your intuition telling you? 💭"
+    ],
+    FixItFrank: [
+      "Have you tried turning it off and on again? Sometimes the simplest solutions work best! 🛠️",
+      "Let's break this down step by step. What's the exact error message you're seeing? 🔧",
+      "Technical problems usually have logical solutions. Have you checked the basics first? ⚙️",
+      "Debugging is like detective work. What's the last thing that was working before this broke? 🕵️"
+    ],
+    TellItLikeItIs: [
+      "Here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨",
+      "If you're not getting the results you want, something needs to change. What are you willing to do differently? 💥",
+      "Success requires honesty with yourself. Are you being real about what's working and what's not? 🎯",
+      "The hard truth is that comfort zones rarely lead to growth. What's one uncomfortable action you could take? 🔥"
+    ]
   };
 
-  return fallbackResponses[botName] || "I'm here to help you. What would you like to talk about?";
+  const botResponses = responses[botName] || responses.RainMaker;
+  
+  // Simple keyword matching for more relevant responses
+  const lowerMessage = message.toLowerCase();
+  let relevantResponses = botResponses;
+  
+  if (botName === 'RainMaker' && (lowerMessage.includes('business') || lowerMessage.includes('money') || lowerMessage.includes('sell'))) {
+    relevantResponses = botResponses.filter(r => r.includes('business') || r.includes('revenue') || r.includes('value'));
+  } else if (botName === 'HeartSync' && (lowerMessage.includes('relationship') || lowerMessage.includes('love') || lowerMessage.includes('feel'))) {
+    relevantResponses = botResponses.filter(r => r.includes('relationship') || r.includes('emotional') || r.includes('heart'));
+  } else if (botName === 'FixItFrank' && (lowerMessage.includes('error') || lowerMessage.includes('problem') || lowerMessage.includes('fix'))) {
+    relevantResponses = botResponses.filter(r => r.includes('error') || r.includes('break') || r.includes('debug'));
+  } else if (botName === 'TellItLikeItIs' && (lowerMessage.includes('truth') || lowerMessage.includes('honest') || lowerMessage.includes('change'))) {
+    relevantResponses = botResponses.filter(r => r.includes('truth') || r.includes('honest') || r.includes('change'));
+  }
+  
+  // Return a random response from the relevant ones
+  return relevantResponses[Math.floor(Math.random() * relevantResponses.length)];
 }
