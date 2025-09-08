@@ -152,21 +152,7 @@ router.post('/', async (req, res) => {
     }
 
     // Fallback responses if OpenAI is not available or fails
-    const fallbackResponses = {
-      RainMaker: "Here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
-      HeartSync: "Remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
-      FixItFrank: "Have you tried turning it off and on again? Sometimes the simplest solutions work best! 🛠️",
-      TellItLikeItIs: "Here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨"
-    };
-    
-    // Add custom bot fallback responses
-    customBots.forEach(bot => {
-      if (!fallbackResponses[bot.name]) {
-        fallbackResponses[bot.name] = `I'm ${bot.name}, and I'm here to help! However, I'm in development mode right now. ${bot.emoji || '🤖'}`;
-      }
-    });
-
-    const fallbackResponse = fallbackResponses[botMode] || "I'm here to help you. What would you like to talk about?";
+    const fallbackResponse = getFallbackResponse(botMode, message);
     
     // Save fallback response to memory
     memory.saveToMemory(userIdentifier, botMode, fallbackResponse, false);
@@ -253,5 +239,63 @@ router.get('/available-bots', (req, res) => {
   
   res.json({ success: true, bots: allBots });
 });
+
+// Function to get dynamic fallback response based on bot name and user message
+function getFallbackResponse(botName, message) {
+  // Dynamic fallback responses based on bot personality and user message
+  const responses = {
+    RainMaker: [
+      "Here's a quick business tip: Focus on solving real problems that people will pay for. That's where the money rains! 🌧️💰",
+      "Business success comes from understanding your market and delivering value. What problem are you trying to solve?",
+      "Revenue streams are everywhere - you just need to identify the pain points and offer solutions.",
+      "The best business ideas come from personal experience. What's frustrating you that could be turned into a product?"
+    ],
+    HeartSync: [
+      "Remember: authentic relationships start with being honest with yourself about what you truly need and want. 💓",
+      "Emotional patterns often repeat until we consciously choose to change them. What patterns do you notice in your relationships?",
+      "Self-awareness is the foundation of meaningful connections. Take time to reflect on your own needs.",
+      "Every relationship teaches us something about ourselves. What's the most important lesson you've learned recently?"
+    ],
+    FixItFrank: [
+      "Have you tried turning it off and on again? Sometimes the simplest solutions work best! 🛠️",
+      "Let's break this down systematically. What's the exact error message or behavior you're seeing?",
+      "Technical problems usually have logical explanations. Let's trace through the steps one by one.",
+      "Don't assume it's complicated - start with the basics and work your way up."
+    ],
+    TellItLikeItIs: [
+      "Here's the truth - most problems can be solved by facing them head-on instead of avoiding them. 🧨",
+      "The uncomfortable reality is that growth requires discomfort. What's holding you back?",
+      "Success rarely comes from playing it safe. What's the bold action you know you should take?",
+      "If you're waiting for the perfect moment, you'll wait forever. Start now with what you have."
+    ]
+  };
+
+  const botResponses = responses[botName] || responses.RainMaker;
+  
+  // If user provided a message, try to make response more contextual
+  if (message && message.length > 10) {
+    // Simple keyword matching for more relevant responses
+    const lowerMessage = message.toLowerCase();
+    
+    if (botName === 'RainMaker' && (lowerMessage.includes('business') || lowerMessage.includes('money') || lowerMessage.includes('idea'))) {
+      return botResponses[1]; // Business-focused response
+    }
+    
+    if (botName === 'HeartSync' && (lowerMessage.includes('relationship') || lowerMessage.includes('love') || lowerMessage.includes('feel'))) {
+      return botResponses[1]; // Relationship-focused response
+    }
+    
+    if (botName === 'FixItFrank' && (lowerMessage.includes('error') || lowerMessage.includes('problem') || lowerMessage.includes('broken'))) {
+      return botResponses[1]; // Technical troubleshooting response
+    }
+    
+    if (botName === 'TellItLikeItIs' && (lowerMessage.includes('help') || lowerMessage.includes('advice') || lowerMessage.includes('truth'))) {
+      return botResponses[1]; // Direct advice response
+    }
+  }
+  
+  // Return random response from the bot's pool
+  return botResponses[Math.floor(Math.random() * botResponses.length)];
+}
 
 module.exports = router;
