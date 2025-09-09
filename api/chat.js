@@ -21,6 +21,15 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  // Test endpoint to verify serverless function is working
+  if (req.method === 'GET' && req.url === '/api/chat/test') {
+    return res.json({ 
+      message: 'Serverless function is working',
+      timestamp: new Date().toISOString(),
+      headers: req.headers
+    });
+  }
+
   if (req.method === 'GET') {
     return res.json({ 
       status: 'Chat API is working!',
