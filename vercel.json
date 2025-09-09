@@ -1,37 +1,12 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     },
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/static/(.*)", "dest": "/static/$1" },
-    { "src": "/images/(.*)", "dest": "/images/$1" },
-    { "src": "/(manifest.json|favicon.ico|favicon.svg|logo192.png|logo512.png|robots.txt|sitemap.xml|og-image.svg)", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/static/(.*)",
-      "headers": [ { "key": "cache-control", "value": "public, max-age=31536000, immutable" } ]
-    },
-    {
-      "source": "/(manifest.json|favicon.ico|favicon.svg|logo192.png|logo512.png|robots.txt|sitemap.xml|og-image.svg)",
-      "headers": [ { "key": "cache-control", "value": "public, max-age=86400" } ]
-    },
-    {
-      "source": "/images/(.*)",
-      "headers": [ { "key": "cache-control", "value": "public, max-age=86400" } ]
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
