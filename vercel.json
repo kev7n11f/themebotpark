@@ -7,17 +7,19 @@
       "config": {
         "distDir": "build"
       }
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
     }
   ],
-  "rewrites": [
-    { "source": "/static/(.*)", "destination": "/static/$1" },
-    { "source": "/images/(.*)", "destination": "/images/$1" },
-    { "source": "/(manifest.json|favicon.ico|favicon.svg|logo192.png|logo512.png|robots.txt|sitemap.xml|og-image.svg)", "destination": "/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/images/(.*)", "dest": "/images/$1" },
+    { "src": "/(manifest.json|favicon.ico|favicon.svg|logo192.png|logo512.png|robots.txt|sitemap.xml|og-image.svg)", "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
     {
