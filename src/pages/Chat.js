@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
+import VoiceControls from '../components/VoiceControls';
 import SEOHead from '../components/SEOHead';
 import { getBotImage } from '../utils/botImages';
 import { api } from '../utils/api';
@@ -269,7 +270,7 @@ function Chat() {
   }
 
   return (
-    <section className="chat-page fade-in">
+    <section className="chat-page fade-in" data-bot={bot}>
       <SEOHead 
         title={`Chat with ${bot} - AI Conversation`}
         description={`Have an intelligent conversation with ${bot}, an AI bot with a unique personality. ${getWelcomeMessage(bot)}`}
@@ -318,6 +319,11 @@ function Chat() {
             </div>
           </div>
           <div className="header-actions">
+            <VoiceControls 
+              botId={bot} 
+              lastMessage={messages.length > 0 ? messages[messages.length - 1]?.text : ''} 
+              autoSpeak={messages.length > 0 && messages[messages.length - 1]?.sender === 'bot'}
+            />
             <span className="message-limit">{getMessageLimitText()}</span>
             <button onClick={() => window.history.back()} className="back-button">← Back to Bots</button>
           </div>
