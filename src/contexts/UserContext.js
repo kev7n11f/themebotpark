@@ -74,8 +74,9 @@ export const UserProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setAuthError('Login error.');
-      return { success: false, error: 'Login error.' };
+      const errorMessage = error.message || error.error || 'Login failed. Please try again.';
+      setAuthError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +87,9 @@ export const UserProvider = ({ children }) => {
     setIsLoading(true);
     setAuthError(null);
     try {
+      console.log('UserContext: Starting registration for:', email);
       const data = await api.register(email, password, name);
+      console.log('UserContext: Registration response success:', data.success, 'error:', data.error);
       
       if (data.success && data.token) {
         localStorage.setItem('authToken', data.token);
@@ -94,15 +97,19 @@ export const UserProvider = ({ children }) => {
         setIsAuthenticated(true);
         setAuthError(null);
         localStorage.setItem('hasSubscription', data.user.subscription === 'premium' ? 'true' : 'false');
+        console.log('UserContext: Registration successful');
         return { success: true };
       } else {
-        setAuthError(data.error || 'Registration failed');
-        return { success: false, error: data.error || 'Registration failed' };
+        const errorMsg = data.error || 'Registration failed';
+        console.log('UserContext: Registration failed with error:', errorMsg);
+        setAuthError(errorMsg);
+        return { success: false, error: errorMsg };
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      setAuthError('Registration error.');
-      return { success: false, error: 'Registration error.' };
+      console.error('Registration error caught:', error);
+      const errorMessage = error.message || error.error || 'Registration failed. Please try again.';
+      setAuthError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
@@ -160,6 +167,8 @@ export const UserProvider = ({ children }) => {
       {authError && (
         <div style={{background:'#fee',color:'#c33',padding:'1rem',margin:'1rem',border:'1px solid #fcc',borderRadius:'4px'}}>
           <strong>Authentication Error:</strong> {authError}
+          <br />
+          <small>Check browser console for detailed debugging information.</small>
         </div>
       )}
       {children}

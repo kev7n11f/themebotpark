@@ -81,7 +81,7 @@ class CircuitBreaker {
 // Enhanced fetch with retry logic and exponential backoff
 async function fetchWithRetry(url, options = {}, retries = 3) {
   const {
-    timeout = 10000,
+    timeout = url.includes('/auth') ? 30000 : 10000, // 30s for auth, 10s for others
     retryDelay = 1000,
     retryMultiplier = 2,
     maxRetryDelay = 30000,
@@ -94,7 +94,10 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
     try {
       // Add timeout to the request
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      const timeoutId = setTimeout(() => {
+        console.log(`Request timeout after ${timeout}ms for ${url}`);
+        controller.abort();
+      }, timeout);
       
       const response = await fetch(url, {
         ...fetchOptions,
@@ -104,9 +107,14 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
+        // For auth endpoints, always return the response (don't throw) so we can get the error message
+        if (url.includes('/auth')) {
+          return response; // Return the response so we can get the error message from JSON
+        }
+        
         // Don't retry on 4xx errors (client errors)
         if (response.status >= 400 && response.status < 500) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          return response; // Return response to handle error properly
         }
         
         // Retry on 5xx errors (server errors) and network errors
@@ -117,10 +125,15 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
     } catch (error) {
       lastError = error;
       
+      // Provide better error messages for timeout/abort
+      if (error.name === 'AbortError') {
+        lastError = new Error(`Request timeout after ${timeout}ms. Please try again.`);
+      }
+      
       // Don't retry on abort (timeout) or 4xx errors
       if (error.name === 'AbortError' || 
           (error.message.includes('HTTP 4') && !error.message.includes('408'))) {
-        throw error;
+        throw lastError;
       }
       
       if (i < retries) {
@@ -142,7 +155,7 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
 // Use same-origin when not explicitly configured. In development, default to the local API server.
 export const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? (process.env.REACT_APP_API_BASE_URL || '')
-  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3011');
+  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3016');
 
 // Circuit breakers for different API endpoints
 const circuitBreakers = {
@@ -173,8 +186,38 @@ export const api = {
 
       // Handle different content types
       const contentType = response.headers.get('content-type');
+      
+      // Handle HTTP error responses (4xx, 5xx) that contain JSON error messages
+      if (!response.ok) {
+        let errorData;
+        try {
+          if (contentType && contentType.includes('application/json')) {
+            errorData = await response.json();
+          } else {
+            const errorText = await response.text();
+            errorData = { error: errorText };
+          }
+        } catch (parseError) {
+          // If we can't parse the error response, create a generic error
+          errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+        }
+        
+        return {
+          success: false,
+          error: errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`,
+          status: response.status,
+          ...errorData
+        };
+      }
+      
+      // Handle successful responses
       if (contentType && contentType.includes('application/json')) {
-        return await response.json();
+        const jsonData = await response.json();
+        // Ensure we always have a success flag for successful responses
+        if (jsonData && typeof jsonData === 'object' && !Object.prototype.hasOwnProperty.call(jsonData, 'success')) {
+          jsonData.success = true;
+        }
+        return jsonData;
       } else {
         return await response.text();
       }
@@ -208,6 +251,19 @@ export const api = {
       });
     }
 
+    // Handle timeout errors specifically
+    if (originalError.message.includes('timeout') || originalError.name === 'AbortError') {
+      if (endpoint.includes('/auth')) {
+        return {
+          success: false,
+          error: 'Registration is taking longer than expected. Please check your internet connection and try again.',
+          status: 408,
+          endpoint: endpoint,
+          timestamp: new Date().toISOString()
+        };
+      }
+    }
+
     // Provide fallback responses for critical endpoints
     if (endpoint.includes('/chat') && originalError.message.includes('Circuit breaker')) {
       return {
@@ -224,12 +280,14 @@ export const api = {
       };
     }
 
-    // Default error response
-    const error = new Error(originalError.message || 'Network error occurred');
-    error.status = originalError.status || 500;
-    error.endpoint = endpoint;
-    error.timestamp = new Date().toISOString();
-    throw error;
+    // Default error response - return error object instead of throwing
+    return {
+      success: false,
+      error: originalError.message || 'Network error occurred',
+      status: originalError.status || 500,
+      endpoint: endpoint,
+      timestamp: new Date().toISOString()
+    };
   },
 
   // Specific methods for common operations
@@ -238,11 +296,12 @@ export const api = {
   },
 
   async post(endpoint, data, options = {}) {
-    return this.call(endpoint, {
+    const result = await this.call(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
       ...options
     });
+    return result;
   },
 
   async put(endpoint, data, options = {}) {

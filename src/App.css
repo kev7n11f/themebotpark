@@ -1,19 +1,239 @@
-/* Basic styles for the App component */
+/* Enhanced App styles with modern design system */
+@import './styles/design-system.css';
+
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  color: var(--neutral-800);
+  background: var(--neutral-50);
+  transition: all 0.3s ease;
 }
 
-/* Footer social button styles */
+/* Global layout improvements */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enhanced global button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: var(--space-3) var(--space-6);
+  font-weight: 600;
+  font-size: var(--text-base);
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary-600);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+  border: 1px solid var(--neutral-300);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--neutral-300);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--neutral-600);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--neutral-100);
+  color: var(--neutral-800);
+}
+
+/* Enhanced footer styles */
 .footer-link {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  margin: 0 0.25rem;
-  font-size: 1.2rem;
-  transition: transform 0.2s ease;
+  padding: var(--space-2);
+  margin: 0 var(--space-1);
+  font-size: var(--text-lg);
+  color: var(--neutral-500);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-link:hover {
   transform: scale(1.1);
+  color: var(--primary-600);
+  background: rgba(14, 165, 233, 0.1);
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--neutral-200) 25%,
+    var(--neutral-100) 50%,
+    var(--neutral-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+.App *:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-400);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .App {
+    background: var(--neutral-900);
+    color: var(--neutral-100);
+  }
+  
+  .btn-secondary {
+    background: var(--neutral-700);
+    color: var(--neutral-200);
+    border-color: var(--neutral-600);
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--neutral-600);
+  }
+  
+  .btn-ghost {
+    color: var(--neutral-300);
+  }
+  
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--neutral-800);
+    color: var(--neutral-100);
+  }
+  
+  .footer-link {
+    color: var(--neutral-400);
+  }
+  
+  .footer-link:hover {
+    color: var(--primary-400);
+    background: rgba(14, 165, 233, 0.2);
+  }
+  
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--neutral-700) 25%,
+      var(--neutral-600) 50%,
+      var(--neutral-700) 75%
+    );
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--neutral-800);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--neutral-600);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--neutral-500);
+  }
+}
+
+/* Print styles */
+@media print {
+  .App {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .btn,
+  .footer-link {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
 }

@@ -236,8 +236,8 @@ app.use((err, req, res, next) => {
 // Start server
 let server;
 
-function startServer(port, attempt = 0) {
-  const PORT = process.env.PORT || env.port || 3010;
+function startServer(port = null, attempt = 0) {
+  const PORT = port || process.env.PORT || env.port || 3010;
 
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 ThemeBotPark server running on port ${PORT}`);
@@ -261,7 +261,7 @@ function startServer(port, attempt = 0) {
         process.exit(1);
         break;
       case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        console.error(`Port ${PORT} is already in use`);
         // In development, automatically try next port to avoid manual intervention
         if (env.nodeEnv !== 'production' && attempt < 10) {
           const nextPort = PORT + 1;

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Registration Test</title>
+</head>
+<body>
+    <h1>Simple Registration Test</h1>
+    <p>This tests the registration API directly without any complex error handling.</p>
+    
+    <button onclick="testSimpleRegistration()">Test Registration</button>
+    <button onclick="testExistingUser()">Test Existing User Error</button>
+    <button onclick="testShortPassword()">Test Short Password Error</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function testSimpleRegistration() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                console.log('Starting simple registration test...');
+                
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'register',
+                        email: 'simple-test@example.com',
+                        password: 'testpassword123',
+                        name: 'Simple Test User'
+                    })
+                });
+                
+                console.log('Response received:', response);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                result.innerHTML = `
+                    <h3>Response:</h3>
+                    <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                    <p><strong>OK:</strong> ${response.ok}</p>
+                    <p><strong>Data:</strong></p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Error in simple test:', error);
+                result.innerHTML = `
+                    <h3>Error:</h3>
+                    <p>${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+        
+        async function testExistingUser() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing existing user...';
+            
+            try {
+                // First create a user
+                await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'register',
+                        email: 'existing@example.com',
+                        password: 'testpassword123',
+                        name: 'Existing User'
+                    })
+                });
+                
+                // Then try to create the same user again
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'register',
+                        email: 'existing@example.com',
+                        password: 'testpassword123',
+                        name: 'Duplicate User'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Existing user test - Response:', response.status, data);
+                
+                result.innerHTML = `
+                    <h3>Existing User Test:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Expected:</strong> 409 with error message</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Error in existing user test:', error);
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function testShortPassword() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing short password...';
+            
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'register',
+                        email: 'shortpass@example.com',
+                        password: '123',
+                        name: 'Short Pass User'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Short password test - Response:', response.status, data);
+                
+                result.innerHTML = `
+                    <h3>Short Password Test:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Expected:</strong> 400 with password length error</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Error in short password test:', error);
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
