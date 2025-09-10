@@ -16,6 +16,17 @@ const VoiceControls = ({ botId = 'SafeSpace', lastMessage = '', autoSpeak = fals
     return () => clearInterval(interval);
   }, []);
 
+  // Define handleSpeak before the auto-speak useEffect to satisfy ESLint no-use-before-define
+  const handleSpeak = useCallback(async (text = lastMessage) => {
+    if (!text || speaking) return;
+    
+    try {
+      await voiceManager.speak(text, botId);
+    } catch (error) {
+      console.error('Speech error:', error);
+    }
+  }, [lastMessage, speaking, botId]);
+
   // Auto-speak new bot messages if enabled
   useEffect(() => {
     if (voiceEnabled && autoSpeak && lastMessage && !speaking) {
@@ -27,16 +38,6 @@ const VoiceControls = ({ botId = 'SafeSpace', lastMessage = '', autoSpeak = fals
   useEffect(() => {
     localStorage.setItem(`voice-enabled-${botId}`, voiceEnabled.toString());
   }, [voiceEnabled, botId]);
-
-  const handleSpeak = useCallback(async (text = lastMessage) => {
-    if (!text || speaking) return;
-    
-    try {
-      await voiceManager.speak(text, botId);
-    } catch (error) {
-      console.error('Speech error:', error);
-    }
-  }, [lastMessage, speaking, botId]);
 
   const handleStop = () => {
     voiceManager.stop();
