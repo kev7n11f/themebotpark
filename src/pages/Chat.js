@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import SEOHead from '../components/SEOHead';
+import { getBotImage } from '../utils/botImages';
 import { api } from '../utils/api';
+import './Chat.css';
 
 // Lightweight typing indicator
 function TypingDots() {
@@ -26,7 +28,7 @@ function Chat() {
   const [booting, setBooting] = useState(true);
 
   // Premium bots that require subscription
-  const premiumBots = ['HeartSync', 'TellItLikeItIs'];
+  const premiumBots = ['HeartSync', 'TellItLikeItIs', 'CreativeCanvas', 'WellnessWise'];
   const freeMessageLimit = 10;
 
   const getWelcomeMessage = (botName) => {
@@ -34,7 +36,10 @@ function Chat() {
       RainMaker: "Ready to brainstorm some income-generating ideas? Let's make it rain! 🌧️💰",
       HeartSync: "I'm here to help you understand your deeper patterns. What's on your heart? 💓",
       FixItFrank: "Got a problem that needs fixing? Let's troubleshoot this thing! 🛠️",
-      TellItLikeItIs: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨"
+      TellItLikeItIs: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨",
+      SafeSpace: "Welcome to your safe space. I'm here to help bridge understanding and mediate conversations. What situation would you like to talk through? 🕊️",
+      CreativeCanvas: "Ready to unleash your creativity? Let's paint outside the lines and explore new possibilities! 🎨✨",
+      WellnessWise: "Take a deep breath and welcome to your wellness journey. How can I support your well-being today? 🧘💚"
     };
     return welcomes[botName] || "How can I help you today?";
   };
@@ -297,10 +302,25 @@ function Chat() {
         </div>
       )}
       <div className="chat-header">
-        <h1>Chat with {bot}</h1>
-        <div className="header-actions">
-          <span className="message-limit">{getMessageLimitText()}</span>
-          <button onClick={() => window.history.back()} className="back-button">← Back to Bots</button>
+        <div className="chat-header-content">
+          <div className="bot-info">
+            <img 
+              src={getBotImage(bot, 'avatar')} 
+              alt={`${bot} avatar`}
+              className="bot-avatar"
+              onError={(e) => {
+                e.target.src = getBotImage(bot, 'fallback');
+              }}
+            />
+            <div>
+              <h1>Chat with {bot}</h1>
+              <p className="bot-status">Online • Ready to help</p>
+            </div>
+          </div>
+          <div className="header-actions">
+            <span className="message-limit">{getMessageLimitText()}</span>
+            <button onClick={() => window.history.back()} className="back-button">← Back to Bots</button>
+          </div>
         </div>
       </div>
       
@@ -315,6 +335,16 @@ function Chat() {
         <div className="chat-messages">
           {messages.map(message => (
             <div key={message.id} className={`message ${message.sender}`}>
+              {message.sender === 'bot' && (
+                <img 
+                  src={getBotImage(bot, 'avatar')} 
+                  alt={`${bot} avatar`}
+                  className="message-avatar"
+                  onError={(e) => {
+                    e.target.src = getBotImage(bot, 'fallback');
+                  }}
+                />
+              )}
               <div className="message-content">
                 <strong>{message.sender === 'bot' ? bot : 'You'}:</strong>
                 <p>{message.text}</p>

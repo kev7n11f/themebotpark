@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat API Debug Test</title>
+</head>
+<body>
+    <h1>ThemeBotPark Chat API Debug Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+    async function testChatAPI() {
+        const resultsDiv = document.getElementById('test-results');
+        
+        try {
+            resultsDiv.innerHTML += '<p>🧪 Testing chat API...</p>';
+            
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    mode: 'RainMaker',
+                    message: 'Hello from debug test',
+                    messages: [],
+                    userId: ''
+                })
+            });
+            
+            resultsDiv.innerHTML += `<p>📡 Response status: ${response.status}</p>`;
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                resultsDiv.innerHTML += `<p>❌ Error: ${errorText}</p>`;
+                return;
+            }
+            
+            const data = await response.json();
+            resultsDiv.innerHTML += `<p>✅ Success! Response: ${data.response}</p>`;
+            
+        } catch (error) {
+            resultsDiv.innerHTML += `<p>💥 JavaScript Error: ${error.message}</p>`;
+            console.error('Chat API test error:', error);
+        }
+    }
+    
+    // Run test when page loads
+    window.addEventListener('load', testChatAPI);
+    
+    // Also provide manual button
+    </script>
+    
+    <button onclick="testChatAPI()">Run Test Again</button>
+</body>
+</html>

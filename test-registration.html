@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Test</title>
+</head>
+<body>
+    <h1>ThemeBotPark Registration Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+    async function testRegistration() {
+        const resultsDiv = document.getElementById('test-results');
+        const testEmail = `testuser${Date.now()}@example.com`;
+        
+        try {
+            resultsDiv.innerHTML += '<p>🧪 Testing registration...</p>';
+            
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'register',
+                    email: testEmail,
+                    password: 'TestPassword123',
+                    name: 'Test User Registration'
+                })
+            });
+            
+            resultsDiv.innerHTML += `<p>📡 Response status: ${response.status}</p>`;
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                resultsDiv.innerHTML += `<p>❌ Registration Error: ${errorText}</p>`;
+                return;
+            }
+            
+            const data = await response.json();
+            resultsDiv.innerHTML += `<p>✅ Registration Success!</p>`;
+            resultsDiv.innerHTML += `<p>📧 Email: ${data.user.email}</p>`;
+            resultsDiv.innerHTML += `<p>👤 Name: ${data.user.name}</p>`;
+            resultsDiv.innerHTML += `<p>🎫 Subscription: ${data.user.subscription}</p>`;
+            resultsDiv.innerHTML += `<p>🔑 Token: ${data.token ? 'Generated' : 'Missing'}</p>`;
+            
+            // Test login with the same credentials
+            resultsDiv.innerHTML += '<p>🔄 Testing login with same credentials...</p>';
+            
+            const loginResponse = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'login',
+                    email: testEmail,
+                    password: 'TestPassword123'
+                })
+            });
+            
+            if (loginResponse.ok) {
+                const loginData = await loginResponse.json();
+                resultsDiv.innerHTML += `<p>✅ Login also works! Welcome back ${loginData.user.name}</p>`;
+            } else {
+                resultsDiv.innerHTML += `<p>⚠️ Registration worked but login failed</p>`;
+            }
+            
+        } catch (error) {
+            resultsDiv.innerHTML += `<p>💥 JavaScript Error: ${error.message}</p>`;
+            console.error('Registration test error:', error);
+        }
+    }
+    
+    // Run test when page loads
+    window.addEventListener('load', testRegistration);
+    </script>
+    
+    <button onclick="testRegistration()">Test Registration Again</button>
+</body>
+</html>

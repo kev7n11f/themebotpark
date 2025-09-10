@@ -37,8 +37,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         setIsLoading(false);
         return;
       }
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters');
+      if (formData.password.length < 8) {
+        setError('Password must be at least 8 characters');
         setIsLoading(false);
         return;
       }
@@ -49,7 +49,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
       if (mode === 'login') {
         result = await login(formData.email, formData.password);
       } else if (mode === 'register') {
+        console.log('AuthModal: Starting registration...');
         result = await register(formData.email, formData.password, formData.name);
+        console.log('AuthModal: Registration result success:', result.success, 'error:', result.error);
       } else if (mode === 'forgot') {
         result = await forgotPassword(formData.email);
       }
@@ -62,9 +64,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           setFormData({ email: '', password: '', name: '', confirmPassword: '' });
         }
       } else {
+        console.log('AuthModal: Setting error message:', result.error);
         setError(result.error);
       }
     } catch (error) {
+      console.error('AuthModal: Caught error:', error);
       setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);

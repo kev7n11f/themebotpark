@@ -21,12 +21,28 @@ export const api = {
   },
 
   async register(email, password, name) {
-    return enhancedApi.post('/api/auth', {
-      action: 'register',
-      email,
-      password,
-      name
-    });
+    console.log('api.js: Starting registration request for:', email);
+    try {
+      const result = await enhancedApi.post('/api/auth', {
+        action: 'register',
+        email,
+        password,
+        name
+      });
+      console.log('api.js: Registration response received:', {
+        success: result.success,
+        error: result.error,
+        status: result.status,
+        hasToken: !!result.token
+      });
+      return result;
+    } catch (error) {
+      console.error('api.js: Registration request failed:', error);
+      return {
+        success: false,
+        error: error.message || 'Registration request failed'
+      };
+    }
   },
 
   async verifyToken(token) {

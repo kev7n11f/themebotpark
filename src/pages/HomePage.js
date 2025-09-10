@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ScrollWrapper from '../components/ScrollWrapper';
-// import SlideMenu from '../components/SlideMenu'; // TODO: Implement slide menu
-// import RainMaker from '../components/BotSection/RainMaker'; // TODO: Add RainMaker bot
-// import HeartSync from '../components/BotSection/HeartSync'; // TODO: Add HeartSync bot
-// import FixItFrank from '../components/BotSection/FixItFrank'; // TODO: Add FixItFrank bot
-// import TellItLikeItIs from '../components/BotSection/TellItLikeItIs'; // TODO: Add TellItLikeItIs bot
-import BotSection from '../components/BotSection/BotSection';
+import BotCard from '../components/BotSection/BotCard-simple';
 import SEOHead from '../components/SEOHead';
+import { getBotImage } from '../utils/botImages';
+import '../styles/design-system.css';
+import './HomePage.css';
 
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +50,7 @@ export default function HomePage() {
             </p>
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">4</span>
+                <span className="stat-number">7</span>
                 <span className="stat-label">AI Personalities</span>
               </div>
               <div className="stat">
@@ -78,66 +76,156 @@ export default function HomePage() {
         {/* Bot Sections */}
         <section className="bots-section">
           <div className="section-header">
-            <h2>Meet Your AI Companions</h2>
-            <p>Each bot has a unique personality designed for different needs</p>
+            <h2>
+              Meet Your AI Companions
+            </h2>
+            <p>
+              Each bot has a unique personality designed for different needs
+            </p>
           </div>
 
-          <BotSection
-            title="RainMaker 🌧️"
-            description="Strategic AI focused on crafting and launching income-generating ideas. Get clarity, focus, and business insight."
-            image="https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/rainmaker-header_sqm8lk.jpg"
-            botId="RainMaker"
-            features={["Business Strategy", "Revenue Ideas", "Market Analysis", "Growth Tactics"]}
-            tier="free"
-          />
+          <div className="bots-grid">
+            <BotCard
+              title="RainMaker 🌧️"
+              description="Strategic AI focused on crafting and launching income-generating ideas. Get clarity, focus, and business insight."
+              image={getBotImage('RainMaker', 'homepage')}
+              botId="RainMaker"
+              features={["Business Strategy", "Revenue Ideas", "Market Analysis", "Growth Tactics"]}
+              tier="free"
+              personality={{
+                traits: ["Strategic", "Results-driven", "Entrepreneurial"]
+              }}
+              stats={{
+                conversations: "12.5k",
+                rating: "4.8"
+              }}
+            />
 
-          <BotSection
-            title="HeartSync 💓"
-            description="Empathetic AI that reveals patterns in love, purpose, and relationships. Experience emotional intelligence and reflection."
-            image="https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/heartsync-header_h8m8lz.jpg"
-            botId="HeartSync"
-            features={["Relationship Guidance", "Emotional Intelligence", "Life Purpose", "Personal Growth"]}
-            tier="premium"
-          />
+            <BotCard
+              title="HeartSync 💓"
+              description="Empathetic AI that reveals patterns in love, purpose, and relationships. Experience emotional intelligence and reflection."
+              image={getBotImage('HeartSync', 'homepage')}
+              botId="HeartSync"
+              features={["Relationship Guidance", "Emotional Intelligence", "Life Purpose", "Personal Growth"]}
+              tier="premium"
+              personality={{
+                traits: ["Empathetic", "Compassionate", "Insightful"]
+              }}
+              stats={{
+                conversations: "8.2k",
+                rating: "4.9"
+              }}
+            />
 
-          <BotSection
-            title="FixItFrank 🛠️"
-            description="Clever, sarcastic, and skilled technical troubleshooter. Get to the root of problems efficiently with humor."
-            image="https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/fixitfrank-header_awutmy.jpg"
-            botId="FixItFrank"
-            features={["Technical Support", "Problem Solving", "Debugging", "System Optimization"]}
-            tier="free"
-          />
+            <BotCard
+              title="FixItFrank 🛠️"
+              description="Clever, sarcastic, and skilled technical troubleshooter. Get to the root of problems efficiently with humor."
+              image={getBotImage('FixItFrank', 'homepage')}
+              botId="FixItFrank"
+              features={["Technical Support", "Problem Solving", "Debugging", "System Optimization"]}
+              tier="free"
+              personality={{
+                traits: ["Witty", "Technical", "Efficient"]
+              }}
+              stats={{
+                conversations: "15.7k",
+                rating: "4.7"
+              }}
+            />
 
-          <BotSection
-            title="TellItLikeItIs 🧨"
-            description="Unfiltered truth-teller delivering blunt insights with integrity. No sugarcoating—just clarity."
-            image="https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/tellitlikeitis-header_pbgdpf.jpg"
-            botId="TellItLikeItIs"
-            features={["Honest Feedback", "Reality Check", "Direct Advice", "Truth Telling"]}
-            tier="premium"
-          />
+            <BotCard
+              title="TellItLikeItIs 🧨"
+              description="Unfiltered truth-teller delivering blunt insights with integrity. No sugarcoating—just clarity."
+              image={getBotImage('TellItLikeItIs', 'homepage')}
+              botId="TellItLikeItIs"
+              features={["Honest Feedback", "Reality Check", "Direct Advice", "Truth Telling"]}
+              tier="premium"
+              personality={{
+                traits: ["Direct", "Honest", "No-nonsense"]
+              }}
+              stats={{
+                conversations: "6.3k",
+                rating: "4.6"
+              }}
+            />
+
+            <BotCard
+              title="SafeSpace 🕊️"
+              description="Compassionate mediator who helps bridge understanding between people. Creates safe spaces for difficult conversations."
+              image={getBotImage('SafeSpace', 'homepage')}
+              botId="SafeSpace"
+              features={["Conflict Resolution", "Mediation", "Communication Bridge", "Emotional Safety"]}
+              tier="free"
+              personality={{
+                traits: ["Mediating", "Neutral", "Peaceful"]
+              }}
+              stats={{
+                conversations: "4.1k",
+                rating: "4.9"
+              }}
+            />
+
+            <BotCard
+              title="CreativeCanvas 🎨"
+              description="Artistic muse that sparks creativity and provides inspiration. From brainstorming to artistic guidance and creative problem-solving."
+              image={getBotImage('CreativeCanvas', 'homepage')}
+              botId="CreativeCanvas"
+              features={["Creative Inspiration", "Artistic Guidance", "Brainstorming", "Design Thinking"]}
+              tier="premium"
+              personality={{
+                traits: ["Imaginative", "Inspiring", "Artistic"]
+              }}
+              stats={{
+                conversations: "7.8k",
+                rating: "4.7"
+              }}
+            />
+
+            <BotCard
+              title="WellnessWise 🧘"
+              description="Gentle wellness coach focused on mental health, mindfulness, and self-care. Supports your journey to inner peace and balance."
+              image={getBotImage('WellnessWise', 'homepage')}
+              botId="WellnessWise"
+              features={["Mental Health Support", "Mindfulness", "Self-Care", "Stress Management"]}
+              tier="premium"
+              personality={{
+                traits: ["Calming", "Supportive", "Mindful"]
+              }}
+              stats={{
+                conversations: "9.2k",
+                rating: "4.8"
+              }}
+            />
+          </div>
         </section>
 
         {/* Creator Bot Sections */}
         {creatorBots.length > 0 && (
           <>
             <div className="section-divider">
-              <h2>Community Created Bots</h2>
-              <p>Discover unique AI personalities crafted by our creator community</p>
+              <h2>
+                Community Created Bots
+              </h2>
+              <p>
+                Discover unique AI personalities crafted by our creator community
+              </p>
             </div>
             
-            {creatorBots.map(bot => (
-              <BotSection
-                key={bot.id || bot.name}
-                title={`${bot.name} ${bot.emoji}`}
-                description={bot.description}
-                image={bot.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=random&color=fff&size=512`}
-                botId={bot.name}
-                features={bot.features || []}
-                tier={bot.isPremium ? 'premium' : 'free'}
-              />
-            ))}
+            <div className="bots-grid">
+              {creatorBots.map(bot => (
+                <BotCard
+                  key={bot.id || bot.name}
+                  title={`${bot.name} ${bot.emoji}`}
+                  description={bot.description}
+                  image={bot.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=random&color=fff&size=512`}
+                  botId={bot.name}
+                  features={bot.features || []}
+                  tier={bot.isPremium ? 'premium' : 'free'}
+                  personality={bot.personality || {}}
+                  stats={bot.stats || {}}
+                />
+              ))}
+            </div>
             
             <div className="creator-cta">
               <h3>Want to create your own bot?</h3>

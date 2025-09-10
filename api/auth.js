@@ -68,6 +68,7 @@ const postRateLimiter = rateLimit({
 
 router.post('/', postRateLimiter, async (req, res) => {
   const { action } = req.body;
+  console.log('AUTH API: POST request received:', { action, hasBody: !!req.body });
 
   try {
     switch (action) {
@@ -80,10 +81,11 @@ router.post('/', postRateLimiter, async (req, res) => {
       case 'logout':
         return await handleLogout(req, res);
       default:
+        console.log('AUTH API: Invalid action:', action);
         return res.status(400).json({ error: 'Invalid action' });
     }
   } catch (error) {
-    console.error('Auth error:', error);
+    console.error('AUTH API: Unhandled error:', error);
     res.status(500).json({ error: 'Authentication service error' });
   }
 });
@@ -132,57 +134,76 @@ async function handleLogin(req, res) {
 
 // Register handler
 async function handleRegister(req, res) {
+  console.log('AUTH API: Registration request received:', {
+    email: req.body.email,
+    name: req.body.name,
+    hasPassword: !!req.body.password
+  });
+  
   const { email, password, name } = req.body;
 
   if (!email || !password || !name) {
+    console.log('AUTH API: Missing required fields');
     return res.status(400).json({ error: 'Email, password, and name required' });
   }
 
   // Basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
+    console.log('AUTH API: Invalid email format');
     return res.status(400).json({ error: 'Invalid email format' });
   }
 
   // Password policy enforcement
   if (password.length < 8) {
+    console.log('AUTH API: Password too short');
     return res.status(400).json({ error: 'Password must be at least 8 characters long' });
   }
 
   // Check if user exists
   const existingUser = demoUsers.find(u => u.email === email);
   if (existingUser) {
+    console.log('AUTH API: User already exists');
     return res.status(409).json({ error: 'User already exists' });
   }
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, env.bcryptRounds);
+  try {
+    // Hash password
+    console.log('AUTH API: Hashing password...');
+    const hashedPassword = await bcrypt.hash(password, env.bcryptRounds);
 
-  // Create new user (in production, save to database)
-  const newUser = {
-    id: demoUsers.length + 1,
-    email,
-    password: hashedPassword,
-    name,
-    subscription: 'free',
-    createdAt: new Date()
-  };
+    // Create new user (in production, save to database)
+    const newUser = {
+      id: demoUsers.length + 1,
+      email,
+      password: hashedPassword,
+      name,
+      subscription: 'free',
+      createdAt: new Date()
+    };
 
-  demoUsers.push(newUser);
+    demoUsers.push(newUser);
+    console.log('AUTH API: New user created:', { id: newUser.id, email: newUser.email });
 
-  // Create JWT token
-  const token = signUser(newUser);
+    // Create JWT token
+    console.log('AUTH API: Creating JWT token...');
+    const token = signUser(newUser);
 
-  res.json({
-    success: true,
-    token,
-    user: {
-      id: newUser.id,
-      email: newUser.email,
-      name: newUser.name,
-      subscription: newUser.subscription
-    }
-  });
+    console.log('AUTH API: Registration successful, sending response');
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        subscription: newUser.subscription
+      }
+    });
+  } catch (hashError) {
+    console.error('AUTH API: Error during registration:', hashError);
+    return res.status(500).json({ error: 'Registration failed due to server error' });
+  }
 }
 
 // Token verification handler
