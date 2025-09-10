@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import voiceManager, { isSpeechSupported, isSpeaking } from '../utils/voiceManager';
 import './VoiceControls.css';
 
@@ -21,14 +21,14 @@ const VoiceControls = ({ botId = 'SafeSpace', lastMessage = '', autoSpeak = fals
     if (voiceEnabled && autoSpeak && lastMessage && !speaking) {
       handleSpeak(lastMessage);
     }
-  }, [lastMessage, voiceEnabled, autoSpeak, speaking]);
+  }, [lastMessage, voiceEnabled, autoSpeak, speaking, handleSpeak]);
 
   // Save voice preference
   useEffect(() => {
     localStorage.setItem(`voice-enabled-${botId}`, voiceEnabled.toString());
   }, [voiceEnabled, botId]);
 
-  const handleSpeak = async (text = lastMessage) => {
+  const handleSpeak = useCallback(async (text = lastMessage) => {
     if (!text || speaking) return;
     
     try {
@@ -36,7 +36,7 @@ const VoiceControls = ({ botId = 'SafeSpace', lastMessage = '', autoSpeak = fals
     } catch (error) {
       console.error('Speech error:', error);
     }
-  };
+  }, [lastMessage, speaking, botId]);
 
   const handleStop = () => {
     voiceManager.stop();
