@@ -44,6 +44,9 @@
     "optimize": "npm run lint:fix && npm run build && npm run test:coverage"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
     "concurrently": "^9.0.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
