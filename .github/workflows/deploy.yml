@@ -33,17 +33,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Check required Vercel secrets
+      - name: Debug and validate Vercel secrets
         run: |
-          if [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "❌ Missing VERCEL_ORG_ID or VERCEL_PROJECT_ID secret."
-            echo "Please set these secrets in your repository settings:"
-            echo "- VERCEL_ORG_ID: Your Vercel organization ID"
-            echo "- VERCEL_PROJECT_ID: Your Vercel project ID"
-            echo "You can find these values in your Vercel project settings."
+          echo "🔍 Checking Vercel secrets availability..."
+          
+          # Check VERCEL_TOKEN
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "❌ VERCEL_TOKEN is not set or empty"
+            MISSING_SECRETS=true
+          else
+            echo "✅ VERCEL_TOKEN is present (length: ${#VERCEL_TOKEN})"
+          fi
+          
+          # Check VERCEL_ORG_ID
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            echo "❌ VERCEL_ORG_ID is not set or empty"
+            MISSING_SECRETS=true
+          else
+            echo "✅ VERCEL_ORG_ID is present (starts with: ${VERCEL_ORG_ID:0:8}...)"
+          fi
+          
+          # Check VERCEL_PROJECT_ID
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "❌ VERCEL_PROJECT_ID is not set or empty"
+            MISSING_SECRETS=true
+          else
+            echo "✅ VERCEL_PROJECT_ID is present (starts with: ${VERCEL_PROJECT_ID:0:8}...)"
+          fi
+          
+          # Exit with error if any secrets are missing
+          if [ "$MISSING_SECRETS" = true ]; then
+            echo ""
+            echo "❌ Missing required Vercel secrets detected!"
+            echo "Please ensure these secrets are set in your repository settings:"
+            echo "📋 Required secrets:"
+            echo "  - VERCEL_TOKEN: Your Vercel personal access token"
+            echo "  - VERCEL_ORG_ID: Your Vercel organization ID"
+            echo "  - VERCEL_PROJECT_ID: Your Vercel project ID"
+            echo ""
+            echo "🔧 To find these values:"
+            echo "  1. Go to your Vercel project settings"
+            echo "  2. Find Organization ID and Project ID in the project settings"
+            echo "  3. Generate a token in your Vercel account settings"
             exit 1
           fi
-          echo "✅ Vercel secrets are properly configured"
+          
+          echo "✅ All Vercel secrets are properly configured and available"
 
       - name: Install dependencies
         run: npm ci
@@ -75,7 +110,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          prod: true
+          vercel-args: '--prod'
 
       - name: Health check after deployment
         run: |
