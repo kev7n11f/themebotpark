@@ -13,3 +13,5 @@ Thumbs.db
 
 # Archive directory (contains moved obsolete files)
 _archive/
+
+.vercel
