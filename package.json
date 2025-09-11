@@ -10,7 +10,6 @@
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
     "start": "cross-env NODE_ENV=production node server.js",
-    "postinstall": "npm run build",
     "test": "react-scripts test",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject",
@@ -42,7 +41,7 @@
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^6.28.0",
-    "react-scripts": "^0.0.0",
+    "react-scripts": "^5.0.1",
     "stripe": "^18.3.0",
     "uuid": "^10.0.0"
   },
