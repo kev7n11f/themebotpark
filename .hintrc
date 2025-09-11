@@ -9,5 +9,15 @@
     "not firefox <= 139",
     "not firefox <= 140",
     "not opera <= 117"
-  ]
+  ],
+  "hints": {
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "-webkit-text-size-adjust"
+        ]
+      }
+    ]
+  }
 }
