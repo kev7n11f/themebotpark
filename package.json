@@ -11,8 +11,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
+    "framer-motion": "^11.11.11",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.453.0",
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.5",
     "openai": "^5.10.1",
@@ -20,11 +22,9 @@
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^6.28.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^0.0.0",
     "stripe": "^18.3.0",
-    "uuid": "^10.0.0",
-    "framer-motion": "^11.11.11",
-    "lucide-react": "^0.453.0"
+    "uuid": "^10.0.0"
   },
   "homepage": ".",
   "scripts": {
@@ -48,8 +48,8 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "nodemon": "^3.1.7",
-    "vercel": "^37.11.2",
     "prettier": "^3.3.3",
+    "vercel": "^41.0.2",
     "webpack-bundle-analyzer": "^4.10.2"
   },
   "overrides": {
