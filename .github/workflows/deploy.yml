@@ -54,18 +54,21 @@ jobs:
         continue-on-error: true # Don't fail the build on audit issues
 
       - name: Deploy to Vercel
-        id: deploy
-        run: |
-          npx vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
-          echo "::set-output name=url::$(npx vercel --token ${{ secrets.VERCEL_TOKEN }} ls | grep -E 'https://.*\.vercel\.app' | head -1 | awk '{print $1}')"
+        id: deploy-vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          prod: true
 
       - name: Health check after deployment
         run: |
           # Wait for deployment to be ready
           sleep 30
           
-          # Try to get the deployment URL from Vercel CLI
-          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
+          # Try to get the deployment URL from Vercel Action output
+          DEPLOY_URL="${{ steps.deploy-vercel.outputs.url }}"
           if [ -z "$DEPLOY_URL" ]; then
             DEPLOY_URL="https://themebotpark.vercel.app"
           fi
