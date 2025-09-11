@@ -86,13 +86,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* Fallbacks for older browsers */
+  /* Prevent font size inflation on mobile devices */
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  
-  /* Ensure minimum font size on mobile */
-  -webkit-text-size-adjust: none;
 }
 
 /* Enhanced Typography with browser fallbacks */
@@ -105,9 +103,9 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary-text);
   
   /* Modern gradient text for supporting browsers */
-  background: linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
-  background: -webkit-linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
   background: -moz-linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
+  background: -webkit-linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
+  background: linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -moz-background-clip: text;
@@ -2445,8 +2443,8 @@ html[data-theme="dark"], body { background: var(--primary-bg); }
   font-weight: 700;
   margin-bottom: var(--space-md);
   background: var(--gradient-primary);
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
