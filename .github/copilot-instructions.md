@@ -2,59 +2,68 @@
 
 ## Project Overview
 
-ThemeBotPark is a multi-personality AI chatbot platform built with React 18.3.1 and Node.js/Express. The application features secure authentication, premium subscriptions via Stripe, and unique AI chatbot personalities powered by OpenAI's GPT models.
+ThemeBotPark is a modern multi-personality AI chatbot platform built with React 18.3.1 and Node.js/Express. The application features secure authentication, premium subscriptions via Stripe, and 7 unique AI chatbot personalities powered by OpenAI's GPT models with intelligent fallback responses.
 
-**Live Production URL:** https://themebotpark.vercel.app
-**Demo Account:** [demo credentials available in secure documentation]
+**Live Production URL:** https://themebotpark.vercel.app  
+**Architecture:** Hybrid serverless (Vercel) + Express development server
 
 ## Technology Stack
 
 ### Frontend
-- **React 18.3.1** with React Router DOM 6.8.1
-- **Modern JavaScript (ES6+)** with JSX
-- **CSS3** with custom properties and responsive design
-- **PWA** support with service workers
+- **React 18.3.1** with React Router DOM 6.28.0
+- **Framer Motion 11.11.11** for animations 
+- **Lucide React 0.453.0** for modern icons
+- **Design System** with CSS custom properties and glassmorphism UI
+- **Vercel Analytics & Speed Insights** for performance monitoring
 - **React Helmet Async** for SEO optimization
 
 ### Backend
-- **Node.js/Express 4.18.2** RESTful API
+- **Node.js/Express 4.21.1** with security middleware (Helmet, CORS, rate limiting)
 - **JWT Authentication** with bcrypt password hashing
-- **OpenAI API 5.10.1** for AI chat functionality
-- **Stripe 18.3.0** for payment processing
+- **OpenAI API 5.10.1** with smart fallback system
+- **Stripe 18.3.0** for subscription management
 - **Nodemailer 7.0.5** for email functionality
 
-### Deployment & Infrastructure
-- **Vercel** serverless deployment (primary)
-- **GitHub Actions** CI/CD pipeline
-- **Environment-based configuration** (.env files)
+### Development & Infrastructure  
+- **Windows PowerShell** development environment
+- **Vercel** serverless deployment with `/api` functions
+- **Concurrently** for running client + server in development
+- **Cross-env** for Windows compatibility
 
-## Build System & Timing
+## Build System & Development Workflow
 
-### Development Commands
-```bash
-# Install dependencies (~30s)
+### Development Commands (Windows PowerShell)
+```powershell
+# Install dependencies (~30s) - includes automatic postinstall build
 npm install
 
-# Development with hot reload
-npm run dev          # Runs both client and server concurrently
-npm run client       # React dev server (port 3000)
-npm run server       # Express server with nodemon (port 5000)
+# Development with hot reload (ports 3000 + 5000)
+npm run dev          # Runs both client and server via concurrently
+npm run client       # React dev server only
+npm run server       # Express server with nodemon
 
-# Production build (~8s)
-npm run build        # Creates optimized production build
+# Production build (~8s) with legacy OpenSSL support
+npm run build        # Uses cross-env NODE_OPTIONS=--openssl-legacy-provider
 
 # Production server
-npm start            # Runs production server
+npm start           # NODE_ENV=production node server.js
 
-# Code quality
-npm run lint         # ESLint (currently shows 17 issues - 13 errors, 4 warnings)
-npm test             # Jest test runner
+# Code quality & analysis
+npm run lint        # ESLint (currently 17 issues - acceptable)
+npm run lint:fix    # Auto-fix linting issues
+npm run build:analyze  # Webpack bundle analyzer
+npm run optimize    # lint:fix + build + test:coverage
 ```
 
-### Build Performance Expectations
-- **npm install**: ~30 seconds (includes automatic build via postinstall)
-- **npm run build**: ~8 seconds (standalone build)
-- **ESLint**: Shows 17 issues (acceptable, mostly service worker globals)
+### Critical Architecture Patterns
+
+**Dual Server Pattern**: Development uses Express server (`server.js`) while production uses Vercel serverless functions (`/api/`). Both share identical endpoints.
+
+**Smart API Fallbacks**: `api/chat.js` includes sophisticated fallback responses when OpenAI API is unavailable, using keyword matching for contextual replies.
+
+**Bot Personality System**: Each bot has dedicated system prompts, welcome messages, and fallback responses. Personalities are defined in `/api/chat.js` with consistent emoji branding.
+
+**Environment Validation**: `config/env.js` + `assertEnv()` validates required variables at startup, preventing runtime failures.
 
 ## Project Structure
 
@@ -95,41 +104,82 @@ themebotpark/
 └── vercel.json           # Vercel deployment config
 ```
 
-## Key Bot Personalities
+## Key Bot Personalities & System Architecture
 
-### 🌧️ RainMaker
-- **Focus**: Business strategy, income generation, marketing
-- **Personality**: Strategic, results-oriented, entrepreneurial
-- **Use Cases**: Business planning, revenue optimization, growth strategies
+### 🌧️ RainMaker - Strategic Business AI
+- **System Prompt**: Strategic AI focused on income generation, marketing strategies, and ROI optimization
+- **Welcome**: "Ready to brainstorm some income-generating ideas? Let's make it rain! 🌧️💰"
+- **Fallback Pattern**: Business tips with ROI focus, problem-solving emphasis
 
-### 💓 HeartSync
-- **Focus**: Relationships, emotional intelligence, empathy
-- **Personality**: Compassionate, understanding, supportive
-- **Use Cases**: Relationship advice, emotional support, interpersonal guidance
+### 💓 HeartSync - Emotional Intelligence AI  
+- **System Prompt**: Empathetic AI for relationships, emotional patterns, and personal growth
+- **Welcome**: "I'm here to help you understand your deeper patterns. What's on your heart? 💓"
+- **Fallback Pattern**: Relationship insights, emotional awareness, pattern recognition
 
-### 🛠️ FixItFrank
-- **Focus**: Technical troubleshooting, problem-solving
-- **Personality**: Witty, efficient, technically knowledgeable
-- **Use Cases**: Technical support, debugging, system optimization
+### 🛠️ FixItFrank - Technical Troubleshooting AI
+- **System Prompt**: Witty, efficient technical troubleshooter with no-nonsense attitude  
+- **Welcome**: "Got a problem that needs fixing? Let's troubleshoot this thing! 🛠️"
+- **Fallback Pattern**: Debug methodologies, systematic problem-solving
 
-### 🧨 TellItLikeItIs
-- **Focus**: Honest feedback, direct communication
-- **Personality**: Unfiltered, straightforward, no-nonsense
-- **Use Cases**: Honest opinions, direct feedback, reality checks
+### 🧨 TellItLikeItIs - Direct Feedback AI
+- **System Prompt**: Unfiltered truth-teller delivering honest insights without sugarcoating
+- **Welcome**: "Ready for some unfiltered truth? Ask me anything - no sugarcoating! 🧨"  
+- **Fallback Pattern**: Reality checks, direct action steps, comfort zone challenges
 
-## Authentication & Security
+### 🕊️ SafeSpace - Conflict Mediation AI
+- **System Prompt**: Compassionate mediator creating safe spaces for difficult conversations
+- **Welcome**: "Welcome to your safe space. I'm here to help bridge understanding..."
+- **Fallback Pattern**: Perspective-taking, peaceful communication, empathy building
 
-### JWT Implementation
-- Tokens stored in localStorage
-- Server-side verification for protected routes
-- Bcrypt password hashing (rounds: 10)
-- Rate limiting on API endpoints
+### 🎨 CreativeCanvas - Artistic Inspiration AI
+- **System Prompt**: Artistic muse for creativity, brainstorming, and design thinking
+- **Welcome**: "Ready to unleash your creativity? Let's paint outside the lines..."
+- **Fallback Pattern**: Creative prompts, innovation techniques, artistic encouragement
 
-### User Validation Scenarios
-1. **Registration Flow**: Email validation, password strength, duplicate checking
-2. **Login Flow**: Credential verification, JWT generation, user session
-3. **Protected Routes**: Token validation, expiration handling
-4. **Password Reset**: Email verification, secure token generation
+### 🧘 WellnessWise - Mental Health & Wellness AI
+- **System Prompt**: Gentle wellness coach for mental health, mindfulness, and self-care
+- **Welcome**: "Take a deep breath and welcome to your wellness journey..."
+- **Fallback Pattern**: Self-care guidance, mindfulness techniques, gentle progress
+
+## API Architecture & Smart Fallbacks
+
+### Core API Pattern (`/api/chat.js`)
+```javascript
+// Dual-mode serverless function with intelligent fallbacks
+module.exports = async (req, res) => {
+  const { mode, message, messages } = req.body;
+  
+  // OpenAI integration with contextual fallbacks
+  if (!openai) {
+    return res.json({
+      response: getFallbackResponse(mode, message),
+      fallback: true
+    });
+  }
+  
+  // Conversation history preservation
+  const conversationHistory = [
+    { role: 'system', content: botPrompts[mode] },
+    ...messages.map(msg => ({ 
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text 
+    })),
+    { role: 'user', content: message }
+  ];
+}
+```
+
+### Authentication Flow (`src/contexts/UserContext.js`)
+- **JWT Storage**: localStorage with automatic verification
+- **Error Handling**: Silent failures on initial load, explicit errors on user actions  
+- **State Management**: React Context with loading states and subscription tracking
+- **API Integration**: Unified auth actions (login/register/verify) via `src/utils/api.js`
+
+### Design System Architecture (`src/styles/design-system.css`)
+- **Bot-Specific Variables**: Each personality has dedicated CSS custom properties
+- **Color Gradients**: `--{botname}-gradient` for personality-based theming
+- **Glassmorphism**: Modern UI patterns with backdrop-blur and transparency
+- **Responsive Foundation**: Mobile-first design with semantic breakpoints
 
 ## API Endpoints
 
@@ -155,20 +205,30 @@ themebotpark/
 
 ## Development Workflow
 
-### Local Development Setup
-```bash
+### Local Development Setup (Windows PowerShell)
+```powershell
 # 1. Clone and install
 git clone <repository>
 cd themebotpark
 npm install
 
 # 2. Environment setup
-cp .env.example .env
+cp .env.template .env
 # Configure: OPENAI_API_KEY, STRIPE_SECRET_KEY, JWT_SECRET, etc.
 
-# 3. Start development
+# 3. Start development (dual-server mode)
 npm run dev  # Starts both client (3000) and server (5000)
 ```
+
+### Critical Development Patterns
+
+**Environment Validation**: `config/env.js` exports validated environment configuration and `assertEnv()` function. Always use `env.variableName` instead of `process.env.VARIABLE`.
+
+**Error Boundaries**: All components wrapped in `ErrorBoundary` and `SafeComponentWrapper` for graceful degradation.
+
+**Offline Resilience**: Enhanced API utilities in `src/utils/apiUtils.js` with request queuing and retry logic.
+
+**Bot Navigation**: `localStorage.setItem('activeBot', botId)` followed by navigation to `/chat` preserves bot selection across routes.
 
 ### Environment Variables Required
 ```bash
@@ -289,20 +349,27 @@ EMAIL_PASS=your-app-password
 
 ## Common Issues & Solutions
 
+### Common Issues & Solutions
+
+### Windows Development Issues
+- **OpenSSL Legacy Provider**: Always use `cross-env NODE_OPTIONS=--openssl-legacy-provider` for React scripts
+- **PowerShell Execution**: Commands optimized for Windows PowerShell v5.1
+- **Port Conflicts**: Ensure ports 3000 and 5000 are available
+
 ### Build Issues
-- **OpenSSL Legacy Provider**: Use `NODE_OPTIONS=--openssl-legacy-provider`
-- **Memory Limits**: Increase Node.js heap size if needed
+- **Memory Limits**: Increase Node.js heap size if needed with `--max-old-space-size=4096`
 - **Dependency Conflicts**: Check package-lock.json for version mismatches
+- **ESLint Acceptance**: 17 issues (13 errors, 4 warnings) is acceptable baseline
 
 ### Development Issues
-- **Port Conflicts**: Ensure ports 3000 and 5000 are available
-- **Environment Variables**: Verify all required variables are set
-- **CORS Errors**: Check server.js CORS configuration
+- **Environment Variables**: Verify all required variables are set in `.env` (not `.env.example`)
+- **CORS Errors**: Check `middleware/cors.js` configuration and `CORS_ORIGINS` env var
+- **Dual Server Architecture**: Development uses Express (`server.js`), production uses Vercel (`/api/`)
 
 ### Deployment Issues
-- **Vercel Functions**: Ensure API routes follow Vercel serverless format
-- **Environment Variables**: Configure in Vercel dashboard
-- **Build Failures**: Check build logs for missing dependencies
+- **Vercel Functions**: Ensure API routes export serverless handlers: `module.exports = async (req, res) => {}`
+- **Environment Variables**: Configure in Vercel dashboard, not just local `.env`
+- **Static Routes**: Vercel.json routing handles SPA fallback to `/build/index.html`
 
 ## Security Considerations
 
