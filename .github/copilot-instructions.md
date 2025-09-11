@@ -99,9 +99,14 @@ themebotpark/
 │   ├── contact.js          # Contact form handler
 │   ├── stripe.js           # Payment processing
 │   └── subscription-status.js # Subscription management
+├── config/                  # Environment configuration
+├── middleware/              # Express middleware
+├── utils/                   # Utility functions
 ├── server.js               # Express server (dev/production)
+├── stripe-webhook.js       # Stripe webhook handler
 ├── package.json           # Dependencies and scripts
-└── vercel.json           # Vercel deployment config
+├── vercel.json           # Vercel deployment config
+└── _archive/              # Archived obsolete files (gitignored)
 ```
 
 ## Key Bot Personalities & System Architecture
