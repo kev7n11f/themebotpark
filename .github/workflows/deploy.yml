@@ -37,16 +37,21 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          CI: false
+          NODE_OPTIONS: --openssl-legacy-provider
 
-      # Add Vercel CLI if needed for deploy (optional, if not handled by Vercel GitHub integration)
-      # - name: Install Vercel CLI
-      #   run: npm install -g vercel
+      - name: Deploy to Vercel
+        id: deploy-vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
 
-      # - name: Deploy to Vercel
-      #   env:
-      #     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      #   run: vercel --prod --token $VERCEL_TOKEN --confirm
-
-      # If using Vercel for GitHub integration, no CLI step is needed
+      - name: Deployment summary
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🌐 URL: https://themebotpark.vercel.app"
+          echo "🏥 Health: https://themebotpark.vercel.app/health"
