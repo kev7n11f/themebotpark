@@ -1,4 +1,24 @@
 {
+  "name": "themebotpark",
+  "version": "1.0.0",
+  "description": "A fullstack app using React and Node.js/Express",
+  "homepage": ".",
+  "scripts": {
+    "client": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "server": "nodemon server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
+    "start": "cross-env NODE_ENV=production node server.js",
+    "postinstall": "npm run build",
+    "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "optimize": "npm run lint:fix && npm run build && npm run test:coverage"
+  },
   "dependencies": {
     "@stripe/stripe-js": "^4.8.0",
     "@vercel/analytics": "^1.3.1",
@@ -22,26 +42,9 @@
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^6.28.0",
-    "react-scripts": "^0.0.0",
+    "react-scripts": "^5.0.1",
     "stripe": "^18.3.0",
     "uuid": "^10.0.0"
-  },
-  "homepage": ".",
-  "scripts": {
-    "client": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "server": "nodemon server.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
-    "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
-    "start": "cross-env NODE_ENV=production node server.js",
-    "postinstall": "npm run build",
-    "test": "react-scripts test",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "eject": "react-scripts eject",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "optimize": "npm run lint:fix && npm run build && npm run test:coverage"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
