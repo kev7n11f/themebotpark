@@ -9,9 +9,22 @@
  * @param {number} height - Desired height
  * @returns {object} WebP and fallback URLs
  */
+// Helper to check if a URL is from Unsplash (including subdomains)
+function isUnsplashUrl(urlString) {
+  try {
+    const { hostname } = new URL(urlString);
+    return (
+      hostname === "unsplash.com" ||
+      hostname.endsWith(".unsplash.com")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export const getOptimizedImageUrls = (imageUrl, width = 512, height = 512) => {
   // For Unsplash images, add format and optimization parameters
-  if (imageUrl.includes('unsplash.com')) {
+  if (isUnsplashUrl(imageUrl)) {
     const webpUrl = `${imageUrl}&w=${width}&h=${height}&fit=crop&crop=face&fm=webp&q=80`;
     const fallbackUrl = `${imageUrl}&w=${width}&h=${height}&fit=crop&crop=face&fm=jpg&q=85`;
     
