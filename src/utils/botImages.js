@@ -4,32 +4,32 @@
  */
 
 export const botImages = {
-  // High-quality placeholder images (to be replaced with custom generated images)
+  // Custom bot images from /public/images/
   RainMaker: {
-    homepage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=512&h=512&fit=crop&crop=face',
-    chatHeader: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop&crop=face', 
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face',
+    homepage: '/images/rainmaker.png',
+    chatHeader: '/images/rainmaker.png', 
+    avatar: '/images/rainmaker.png',
     fallback: 'https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/rainmaker-header_sqm8lk.jpg'
   },
   
   HeartSync: {
-    homepage: 'https://images.unsplash.com/photo-1494790108755-2616c04f3d3a?w=512&h=512&fit=crop&crop=face',
-    chatHeader: 'https://images.unsplash.com/photo-1494790108755-2616c04f3d3a?w=800&h=400&fit=crop&crop=face',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616c04f3d3a?w=64&h=64&fit=crop&crop=face', 
+    homepage: '/images/heartsync.png',
+    chatHeader: '/images/heartsync.png',
+    avatar: '/images/heartsync.png', 
     fallback: 'https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/heartsync-header_h8m8lz.jpg'
   },
   
   FixItFrank: {
-    homepage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=512&h=512&fit=crop&crop=face',
-    chatHeader: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=400&fit=crop&crop=face',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face',
+    homepage: '/images/fixitfrank.png',
+    chatHeader: '/images/fixitfrank.png',
+    avatar: '/images/fixitfrank.png',
     fallback: 'https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/fixitfrank-header_awutmy.jpg'
   },
   
   TellItLikeItIs: {
-    homepage: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=512&h=512&fit=crop&crop=face', 
-    chatHeader: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=800&h=400&fit=crop&crop=face',
-    avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=64&h=64&fit=crop&crop=face',
+    homepage: '/images/tellitlikeitis.png',
+    chatHeader: '/images/tellitlikeitis.png',
+    avatar: '/images/tellitlikeitis.png',
     fallback: 'https://res.cloudinary.com/dphrjjzl7/image/upload/v1737447306/tellitlikeitis-header_pbgdpf.jpg'
   },
   
