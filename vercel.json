@@ -7,6 +7,10 @@
       "config": {
         "distDir": "build"
       }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -15,15 +19,25 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/(.*)",
+      "src": "/static/(.*)",
+      "dest": "/build/static/$1"
+    },
+    {
+      "src": "/(manifest\\.json|favicon\\.ico|favicon\\.svg|logo192\\.png|logo512\\.png|robots\\.txt|sitemap\\.xml|sw\\.js|sw-enhanced\\.js|og-image\\.svg)",
       "dest": "/build/$1"
     },
     {
-      "src": "/.*",
+      "src": "/images/(.*)",
+      "dest": "/build/images/$1"
+    },
+    {
+      "src": "/(.*)",
       "dest": "/build/index.html"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
   }
 }

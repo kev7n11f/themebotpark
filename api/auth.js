@@ -1,10 +1,7 @@
-const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const rateLimit = require('express-rate-limit');
 const { env } = require('../config/env');
 const { signUser } = require('../utils/jwt');
-const router = express.Router();
 
 // Demo user database (in production, use real database)
 const demoUsers = [
@@ -38,7 +35,8 @@ async function hashDemoUserPasswords() {
 // Initialize demo user passwords
 hashDemoUserPasswords().catch(console.error);
 
-router.use((req, res, next) => {
+// Export serverless function
+module.exports = async (req, res) => {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -48,47 +46,49 @@ router.use((req, res, next) => {
     return res.status(200).end();
   }
 
-  next();
-});
-
-router.get('/', (req, res) => {
-  res.json({ 
-    status: 'Auth API is working!',
-    endpoints: ['/login', '/register', '/verify-token'],
-    authMethods: ['email', 'google']
+  console.log('AUTH API: Request received:', {
+    method: req.method,
+    url: req.url,
+    body: req.body ? Object.keys(req.body) : 'no body',
+    timestamp: new Date().toISOString()
   });
-});
 
-// Configure rate limiter for POST / route
-const postRateLimiter = rateLimit({
-  windowMs: env.rateLimit.windowMinutes * 60 * 1000,
-  max: env.rateLimit.maxRequests,
-  message: { error: 'Too many requests, please try again later.' }
-});
-
-router.post('/', postRateLimiter, async (req, res) => {
-  const { action } = req.body;
-  console.log('AUTH API: POST request received:', { action, hasBody: !!req.body });
-
-  try {
-    switch (action) {
-      case 'login':
-        return await handleLogin(req, res);
-      case 'register':
-        return await handleRegister(req, res);
-      case 'verify-token':
-        return await handleVerifyToken(req, res);
-      case 'logout':
-        return await handleLogout(req, res);
-      default:
-        console.log('AUTH API: Invalid action:', action);
-        return res.status(400).json({ error: 'Invalid action' });
-    }
-  } catch (error) {
-    console.error('AUTH API: Unhandled error:', error);
-    res.status(500).json({ error: 'Authentication service error' });
+  // GET route to check if auth API is working
+  if (req.method === 'GET') {
+    return res.json({
+      status: 'Auth API is working!',
+      endpoints: ['/login', '/register', '/verify-token'],
+      authMethods: ['email', 'google']
+    });
   }
-});
+
+  // POST handler - authentication actions
+  if (req.method === 'POST') {
+    const { action } = req.body;
+    console.log('AUTH API: POST request received:', { action, hasBody: !!req.body });
+
+    try {
+      switch (action) {
+        case 'login':
+          return await handleLogin(req, res);
+        case 'register':
+          return await handleRegister(req, res);
+        case 'verify-token':
+          return await handleVerifyToken(req, res);
+        case 'logout':
+          return await handleLogout(req, res);
+        default:
+          console.log('AUTH API: Invalid action:', action);
+          return res.status(400).json({ error: 'Invalid action' });
+      }
+    } catch (error) {
+      console.error('AUTH API: Unhandled error:', error);
+      res.status(500).json({ error: 'Authentication service error' });
+    }
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
+};
 
 // Login handler
 async function handleLogin(req, res) {
@@ -98,100 +98,91 @@ async function handleLogin(req, res) {
     return res.status(400).json({ error: 'Email and password required' });
   }
 
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
+  console.log('AUTH API: Login attempt for:', email);
 
-  // Find user (in production, query database)
-  const user = demoUsers.find(u => u.email === email);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-
-  // Compare password with hash
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-
-  // Create JWT token
-  const token = signUser(user);
-
-  res.json({
-    success: true,
-    token,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      subscription: user.subscription
+  try {
+    const user = demoUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    
+    if (!user) {
+      console.log('AUTH API: User not found:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
-  });
+
+    // For demo users, check if password is already hashed
+    const isValidPassword = user.password.startsWith('$2') 
+      ? await bcrypt.compare(password, user.password)
+      : password === user.password;
+
+    if (!isValidPassword) {
+      console.log('AUTH API: Invalid password for user:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = signUser(user);
+    
+    console.log('AUTH API: Login successful for:', email);
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        subscription: user.subscription
+      }
+    });
+  } catch (error) {
+    console.error('AUTH API: Login error:', error);
+    res.status(500).json({ error: 'Login failed due to server error' });
+  }
 }
 
 // Register handler
 async function handleRegister(req, res) {
-  console.log('AUTH API: Registration request received:', {
-    email: req.body.email,
-    name: req.body.name,
-    hasPassword: !!req.body.password
-  });
-  
   const { email, password, name } = req.body;
 
   if (!email || !password || !name) {
-    console.log('AUTH API: Missing required fields');
-    return res.status(400).json({ error: 'Email, password, and name required' });
+    return res.status(400).json({ error: 'Email, password, and name are required' });
   }
 
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    console.log('AUTH API: Invalid email format');
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
+  console.log('AUTH API: Registration attempt for:', email);
 
-  // Password policy enforcement
-  if (password.length < 8) {
-    console.log('AUTH API: Password too short');
-    return res.status(400).json({ error: 'Password must be at least 8 characters long' });
-  }
-
-  // Check if user exists
-  const existingUser = demoUsers.find(u => u.email === email);
+  // Check if user already exists
+  const existingUser = demoUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+  
   if (existingUser) {
-    console.log('AUTH API: User already exists');
-    return res.status(409).json({ error: 'User already exists' });
+    console.log('AUTH API: User already exists:', email);
+    return res.status(409).json({ error: 'User with this email already exists' });
   }
 
   try {
-    // Hash password
-    console.log('AUTH API: Hashing password...');
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, env.bcryptRounds);
-
-    // Create new user (in production, save to database)
+    
+    // Create new user
     const newUser = {
-      id: demoUsers.length + 1,
-      email,
+      id: Math.max(...demoUsers.map(u => u.id)) + 1,
+      email: email.toLowerCase(),
       password: hashedPassword,
       name,
       subscription: 'free',
       createdAt: new Date()
     };
 
+    // Add to demo users array
     demoUsers.push(newUser);
-    console.log('AUTH API: New user created:', { id: newUser.id, email: newUser.email });
 
-    // Create JWT token
-    console.log('AUTH API: Creating JWT token...');
+    // Generate JWT token
     const token = signUser(newUser);
+    
+    console.log('AUTH API: Registration successful for:', email);
 
-    console.log('AUTH API: Registration successful, sending response');
-    res.json({
+    res.status(201).json({
       success: true,
+      message: 'Registration successful',
       token,
       user: {
         id: newUser.id,
@@ -243,5 +234,3 @@ async function handleLogout(req, res) {
   // In production, you might invalidate the token in a blacklist
   res.json({ success: true, message: 'Logged out successfully' });
 }
-
-module.exports = router;
