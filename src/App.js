@@ -49,7 +49,7 @@ export default function App() {
         <HelmetProvider>
           <UserProvider>
             <Router>
-              <div className="app">
+              <div className="App">
                 <OfflineIndicator />
                 <Header />
                 <main className="main-content">
