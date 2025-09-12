@@ -147,14 +147,6 @@ themebotpark/
 
 **Kevin Franklin** - Full-stack developer passionate about AI and user experience.
 
----
-
-**Ready to chat with personality?** [Visit ThemeBotPark →](https://themebotpark.vercel.app)
-
-## Original Project Notes
-
-🚀 ThemeBotPark is a multi-mode AI chatbot playground powered by autodevelop.ai, featuring scroll-based navigation, creative bot personalities, voice chat, subscriptions, and long-term memory.
-
 ## 🔄 CI/CD with GitHub Actions
 
 This repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds and deploys the site to Vercel on every push to `main`. To enable deployment:
@@ -250,3 +242,19 @@ Analytics is automatically enabled when deployed to Vercel. No additional config
 
 - See `docs/SECURITY.md` for detailed security overview
 - All environment variables documented in `.env.template`
+
+## 📄 License
+
+This project is licensed under the terms in the [LICENSE](./LICENSE) file.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) for details.
+
+## 📞 Support
+
+For questions or support, please use the contact form in the application or refer to our documentation.
+
+---
+
+**Ready to chat with personality?** [Visit ThemeBotPark →](https://themebotpark.vercel.app)
