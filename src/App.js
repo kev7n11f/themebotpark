@@ -5,9 +5,6 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { UserProvider } from './contexts/UserContext';
 
-// Design System
-import './styles/design-system.css';
-
 // Error reporting
 import { errorReporter } from './utils/errorReporting';
 
