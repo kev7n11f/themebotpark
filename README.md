@@ -3,7 +3,7 @@
 A modern, multi-personality AI chatbot platform built with React 18.3.1 and Node.js/Express.
 
 ## 🚀 Live Demo
-**Production URL:** [Coming Soon - Deploying...]
+**Production URL:** [https://themebotpark.vercel.app](https://themebotpark.vercel.app)
 
 ## ✨ Features
 
@@ -84,15 +84,15 @@ Your gentle wellness coach focused on mental health, mindfulness, and self-care.
 
 ### Frontend
 
-- **React 19** - Latest React with modern features
+- **React 18.3.1** - Latest React with modern features
 - **React Router** - Client-side routing
 - **CSS3** - Custom styling with variables and gradients
 
 ### Backend  
 
-- **Node.js/Express** - REST API server
-- **OpenAI API** - GPT-powered chat functionality
-- **Stripe** - Payment processing
+- **Node.js/Express 4.21.1** - REST API server
+- **OpenAI API 5.10.1** - GPT-powered chat functionality
+- **Stripe 18.3.0** - Payment processing
 - **JWT** - Authentication tokens
 
 ### Deployment
@@ -104,7 +104,7 @@ Your gentle wellness coach focused on mental health, mindfulness, and self-care.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/themebotpark.git
+git clone https://github.com/kev7n11f/themebotpark.git
 cd themebotpark
 
 # Install dependencies
@@ -119,36 +119,33 @@ npm run dev
 
 # Build for production
 npm run build
-```plaintext
+```
 
 ## 📊 Project Structure
 
 ```plaintext
-
 themebotpark/
-├── public/           # Static files, favicon, manifest
+├── .github/           # GitHub workflows and configurations
+├── public/            # Static files, favicon, manifest
 ├── src/
-│   ├── components/   # Reusable React components
-│   ├── pages/        # Page components
-│   ├── contexts/     # React context providers
-│   └── styles/       # CSS files
-├── api/              # Serverless API endpoints
-├── logs/             # Application logs
-└── package.json      # Dependencies and scripts
-
+│   ├── components/    # Reusable React components
+│   ├── pages/         # Page components  
+│   ├── contexts/      # React context providers
+│   ├── styles/        # CSS files
+│   └── utils/         # Utility functions
+├── api/               # Vercel serverless functions
+├── config/            # Environment configuration
+├── middleware/        # Express middleware
+├── utils/             # Backend utility functions
+├── docs/              # Documentation files
+├── server.js          # Express server (development)
+├── vercel.json        # Vercel deployment configuration
+└── package.json       # Dependencies and scripts
 ```
 
 ## 👨‍💻 Created By
 
 **Kevin Franklin** - Full-stack developer passionate about AI and user experience.
-
----
-
-**Ready to chat with personality?** [Visit ThemeBotPark →](https://themebotpark-b35brpylq-kevins-projects-5e23f80d.vercel.app)
-
-## Original Project Notes
-
-🚀 ThemeBotPark is a multi-mode AI chatbot playground powered by autodevelop.ai, featuring scroll-based navigation, creative bot personalities, voice chat, subscriptions, and long-term memory.
 
 ## 🔄 CI/CD with GitHub Actions
 
@@ -183,8 +180,6 @@ Analytics is automatically enabled when deployed to Vercel. No additional config
 2. Select the ThemeBotPark project
 3. Navigate to the "Analytics" tab
 4. View real-time metrics and historical data
-
-For detailed information, see [`ANALYTICS.md`](./ANALYTICS.md).
 
 ## Environment & Security Configuration
 
@@ -247,3 +242,19 @@ For detailed information, see [`ANALYTICS.md`](./ANALYTICS.md).
 
 - See `docs/SECURITY.md` for detailed security overview
 - All environment variables documented in `.env.template`
+
+## 📄 License
+
+This project is licensed under the terms in the [LICENSE](./LICENSE) file.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) for details.
+
+## 📞 Support
+
+For questions or support, please use the contact form in the application or refer to our documentation.
+
+---
+
+**Ready to chat with personality?** [Visit ThemeBotPark →](https://themebotpark.vercel.app)
