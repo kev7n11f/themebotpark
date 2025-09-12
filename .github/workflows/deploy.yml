@@ -58,3 +58,4 @@ jobs:
           echo "🎉 Deployment completed successfully!"
           echo "🌐 URL: https://themebotpark.vercel.app"
           echo "🏥 Health: https://themebotpark.vercel.app/health"
+          echo "📅 Deployed: $(date)"
