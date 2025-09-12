@@ -2,7 +2,7 @@
   "name": "themebotpark",
   "version": "1.0.0",
   "description": "A fullstack app using React and Node.js/Express",
-  "homepage": ".",
+  "homepage": "/",
   "scripts": {
     "client": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "server": "nodemon server.js",

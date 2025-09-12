@@ -177,15 +177,14 @@ app.get('/metrics', (req, res) => {
 });
 
 // API routes
-app.use('/api/chat', require('./chat'));
-app.use('/api/auth', require('./auth'));
+app.use('/api/chat', require('./api/chat'));
+app.use('/api/auth', require('./api/auth'));
 
 // Add other API routes
-app.use('/api/stripe', require('./stripe'));
-app.use('/api/user', require('./user'));
-app.use('/api/contact', require('./contact'));
-app.use('/api/analytics', require('./analytics'));
-app.use('/api/creator', require('./creator'));
+app.use('/api/stripe', require('./api/stripe'));
+app.use('/api/contact', require('./api/contact'));
+app.use('/api/subscription-status', require('./api/subscription-status'));
+app.use('/api/creator', require('./api/creator').router);
 
 // Serve React build in production
 if (env.nodeEnv === 'production') {
