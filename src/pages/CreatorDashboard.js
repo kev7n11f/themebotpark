@@ -28,7 +28,7 @@ export default function CreatorDashboard() {
       setIsLoading(true);
       try {
         // In production, these would be real API calls
-        const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+        const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
         const analyticsRes = await fetch(`${apiBase}/api/creator/analytics?creatorId=demo-creator`);
         const myBotsRes = await fetch(`${apiBase}/api/creator/my-bots?creatorId=demo-creator`);
         const payoutsRes = await fetch(`${apiBase}/api/creator/payouts?creatorId=demo-creator`);
@@ -63,7 +63,7 @@ export default function CreatorDashboard() {
 
   const handleConnectStripe = async () => {
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
       const response = await fetch(`${apiBase}/api/creator/connect-stripe`, {
         method: 'POST',
         headers: {
@@ -87,7 +87,7 @@ export default function CreatorDashboard() {
     e.preventDefault();
     
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
       const response = await fetch(`${apiBase}/api/creator/bot`, {
         method: 'POST',
         headers: {

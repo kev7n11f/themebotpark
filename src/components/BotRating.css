@@ -1,0 +1,189 @@
+/* Bot Rating Component Styles */
+
+.bot-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.stars-container {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.star-button.interactive:hover {
+  transform: scale(1.1);
+}
+
+.star-button.readonly {
+  cursor: default;
+}
+
+.star-button.submitting {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.star-button:disabled {
+  cursor: not-allowed;
+}
+
+.star-icon {
+  font-size: inherit;
+  filter: grayscale(100%);
+  transition: filter 0.2s ease;
+}
+
+.star-button.filled .star-icon,
+.star-button.current .star-icon {
+  filter: grayscale(0%);
+}
+
+.star-button.filled .star-icon {
+  filter: grayscale(0%) brightness(1.1);
+}
+
+/* Size variants */
+.bot-rating.small {
+  gap: 0.25rem;
+}
+
+.bot-rating.small .star-button {
+  width: 16px;
+  height: 16px;
+}
+
+.bot-rating.small .star-icon {
+  font-size: 14px;
+}
+
+.bot-rating.medium {
+  gap: 0.5rem;
+}
+
+.bot-rating.medium .star-button {
+  width: 24px;
+  height: 24px;
+}
+
+.bot-rating.medium .star-icon {
+  font-size: 20px;
+}
+
+.bot-rating.large {
+  gap: 0.75rem;
+}
+
+.bot-rating.large .star-button {
+  width: 32px;
+  height: 32px;
+}
+
+.bot-rating.large .star-icon {
+  font-size: 28px;
+}
+
+/* Rating info */
+.rating-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.current-rating {
+  font-weight: 600;
+  color: var(--primary-text, #333);
+}
+
+.user-rating-indicator {
+  color: var(--success-color, #22c55e);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.submitting-indicator {
+  color: var(--muted-text, #6b7280);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+/* Hover effects for interactive mode */
+.star-button.interactive:not(:disabled) {
+  position: relative;
+}
+
+.star-button.interactive:not(:disabled):hover::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Focus styles for accessibility */
+.star-button:focus-visible {
+  outline: 2px solid var(--primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Animation for rating submission */
+@keyframes ratingSubmitted {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.star-button.filled .star-icon {
+  animation: ratingSubmitted 0.3s ease-out;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .current-rating {
+    color: var(--primary-text-dark, #e5e7eb);
+  }
+  
+  .user-rating-indicator {
+    color: var(--success-color-dark, #34d399);
+  }
+  
+  .submitting-indicator {
+    color: var(--muted-text-dark, #9ca3af);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bot-rating.medium {
+    gap: 0.375rem;
+  }
+  
+  .bot-rating.medium .star-button {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .bot-rating.medium .star-icon {
+    font-size: 18px;
+  }
+}

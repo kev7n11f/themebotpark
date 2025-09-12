@@ -18,8 +18,12 @@ export default function HomePage() {
     const fetchBots = async () => {
       // setIsLoading(true); // TODO: Implement loading state
       try {
-        // For now, just set empty array since we don't have creator bots API yet
-        setCreatorBots([]);
+        const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
+        const response = await fetch(`${apiBase}/api/creator/public-bots`);
+        if (response.ok) {
+          const data = await response.json();
+          setCreatorBots(data.bots || []);
+        }
       } catch (error) {
         console.error('Error fetching bots:', error);
       } finally {
@@ -221,8 +225,13 @@ export default function HomePage() {
                   botId={bot.name}
                   features={bot.features || []}
                   tier={bot.isPremium ? 'premium' : 'free'}
-                  personality={bot.personality || {}}
-                  stats={bot.stats || {}}
+                  personality={{
+                    traits: bot.features ? bot.features.slice(0, 3) : []
+                  }}
+                  stats={{
+                    conversations: bot.conversationCount?.toLocaleString() || "0",
+                    rating: bot.rating || 5.0
+                  }}
                 />
               ))}
             </div>
@@ -251,7 +260,7 @@ export default function HomePage() {
             <div className="feature-card">
               <div className="feature-icon">🧠</div>
               <h3>Advanced AI</h3>
-              <p>Powered by GPT-3.5 Turbo for intelligent, context-aware conversations</p>
+              <p>Powered by state-of-the-art OpenAI models for intelligent, context-aware conversations</p>
             </div>
 
             <div className="feature-card">

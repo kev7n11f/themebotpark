@@ -1,4 +1,5 @@
 import React from 'react';
+import BotRating from '../BotRating';
 import './BotCard.css';
 
 const BotCard = ({ 
@@ -73,12 +74,14 @@ const BotCard = ({
       <div className="bot-card__content">
         <div className="bot-card__header">
           <h3 className="bot-card__title">{title}</h3>
-          {stats.rating && (
-            <div className="bot-card__rating">
-              <span className="rating-star">⭐</span>
-              <span className="rating-value">{stats.rating}</span>
-            </div>
-          )}
+          <div className="bot-card__rating-container">
+            <BotRating
+              botId={botId}
+              currentRating={stats.rating || 5.0}
+              size="small"
+              readonly={false}
+            />
+          </div>
         </div>
 
         <p className="bot-card__description">{description}</p>
