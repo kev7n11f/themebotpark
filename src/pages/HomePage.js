@@ -3,7 +3,7 @@ import ScrollWrapper from '../components/ScrollWrapper';
 import BotCard from '../components/BotSection/BotCard-simple';
 import SEOHead from '../components/SEOHead';
 import { getBotImage } from '../utils/botImages';
-import '../styles/design-system.css';
+import '../styles/theme.css';
 import './HomePage.css';
 
 export default function HomePage() {
