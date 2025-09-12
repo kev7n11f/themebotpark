@@ -41,6 +41,9 @@ jobs:
           CI: false
           NODE_OPTIONS: --openssl-legacy-provider
 
+      - name: Remove .vercel directory
+        run: rm -rf .vercel
+
       - name: Deploy to Vercel
         id: deploy-vercel
         uses: amondnet/vercel-action@v25
