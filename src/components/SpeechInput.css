@@ -1,0 +1,140 @@
+.speech-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.speech-input--unsupported {
+  opacity: 0.6;
+}
+
+.speech-button {
+  min-width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.speech-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.speech-button:active {
+  transform: scale(0.95);
+}
+
+.speech-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.speech-button--recording {
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(255, 68, 68, 0.6);
+  }
+  100% {
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+  }
+}
+
+.speech-status {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.recording-indicator {
+  color: #ff4444;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.transcript-preview {
+  color: var(--accent-primary);
+  font-style: italic;
+  animation: fadeIn 0.3s ease;
+}
+
+.speech-error {
+  color: #ff6b6b;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.speech-hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .speech-input {
+    gap: 8px;
+    padding: 6px;
+  }
+  
+  .speech-button {
+    min-width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .speech-status {
+    font-size: 13px;
+  }
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  .speech-input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .speech-input {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+  
+  .speech-button {
+    border: 2px solid currentColor;
+  }
+}

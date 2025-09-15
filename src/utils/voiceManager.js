@@ -25,10 +25,10 @@ class VoiceManager {
   getBotVoice(botId) {
     const voicePreferences = {
       SafeSpace: {
-        preferredNames: ['Karen', 'Samantha', 'Victoria', 'Fiona'],
+        preferredNames: ['Karen', 'Samantha', 'Victoria', 'Fiona', 'Susan'],
         lang: 'en-US',
-        pitch: 0.8,
-        rate: 0.85
+        pitch: 1.0,
+        rate: 0.95
       },
       RainMaker: {
         preferredNames: ['Alex', 'Daniel', 'Thomas'],
@@ -94,8 +94,13 @@ class VoiceManager {
       return Promise.resolve();
     }
 
-    // Stop any current speech
+    // Stop any current speech to prevent repetition
     this.stop();
+
+    // Prevent empty or very short texts
+    if (!text || text.trim().length < 3) {
+      return Promise.resolve();
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
     const preferences = this.getBotVoice(botId);
@@ -108,7 +113,7 @@ class VoiceManager {
     utterance.lang = preferences.lang;
     utterance.pitch = preferences.pitch;
     utterance.rate = preferences.rate;
-    utterance.volume = 0.8;
+    utterance.volume = 0.9;
 
     // Clean up text for better speech
     const cleanText = this.cleanTextForSpeech(text);
@@ -118,6 +123,10 @@ class VoiceManager {
     this.isSpeaking = true;
 
     return new Promise((resolve, reject) => {
+      utterance.onstart = () => {
+        console.log('Speech started');
+      };
+
       utterance.onend = () => {
         this.isSpeaking = false;
         this.currentUtterance = null;
@@ -127,11 +136,16 @@ class VoiceManager {
       utterance.onerror = (event) => {
         this.isSpeaking = false;
         this.currentUtterance = null;
-        console.error('Speech synthesis error:', event);
+        console.error('Speech synthesis error:', event.error);
         reject(event);
       };
 
-      speechSynthesis.speak(utterance);
+      // Double-check speechSynthesis is available
+      if (window.speechSynthesis) {
+        speechSynthesis.speak(utterance);
+      } else {
+        reject(new Error('Speech synthesis not available'));
+      }
     });
   }
 

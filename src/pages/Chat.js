@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import VoiceControls from '../components/VoiceControls';
+import SpeechInput from '../components/SpeechInput';
 import SEOHead from '../components/SEOHead';
 import { getBotImage } from '../utils/botImages';
 import { api } from '../utils/api';
@@ -369,6 +370,23 @@ function Chat() {
         </div>
         
         <div className="chat-input-container">
+          {/* Speech Input */}
+          <SpeechInput 
+            onSpeechResult={(transcript) => {
+              setInputMessage(transcript);
+              // Auto-send the message after speech input
+              if (transcript.trim() && !shouldDisableInput() && !booting) {
+                setTimeout(() => {
+                  if (!isLoading) {
+                    sendMessage();
+                  }
+                }, 500); // Small delay to show the transcript
+              }
+            }}
+            disabled={shouldDisableInput() || booting || isLoading}
+            botId={bot}
+          />
+          
           <div className="chat-input-wrapper">
             <textarea
               value={inputMessage}
