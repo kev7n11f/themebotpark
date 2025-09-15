@@ -27,7 +27,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     yearly: {
       name: 'Yearly Premium',
       price: '$99.99/year',
-      priceId: process.env.REACT_APP_STRIPE_YEARLY_PRICE_ID || 'price_1S7gfxFqLK5Bra1AejR7IfYf',
+      priceId: process.env.REACT_APP_STRIPE_YEARLY_PRICE_ID || 'price_1S7ge3FqLK5Bra1AiprHVt5E',
       savings: 'Save 16%',
       features: [
         'Everything in Monthly',
