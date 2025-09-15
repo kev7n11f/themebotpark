@@ -15,7 +15,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     monthly: {
       name: 'Monthly Premium',
       price: '$9.99/month',
-      priceId: process.env.REACT_APP_STRIPE_MONTHLY_PRICE_ID || 'price_1QfCWjFqLK5Bra1A3pQAGqPz', // Replace with your Stripe price ID
+      priceId: process.env.REACT_APP_STRIPE_MONTHLY_PRICE_ID || 'price_1S7ge3FqLK5Bra1A4NXgFD2a',
       features: [
         'Unlimited chat with all bots',
         'Priority response times',
@@ -27,7 +27,7 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
     yearly: {
       name: 'Yearly Premium',
       price: '$99.99/year',
-      priceId: process.env.REACT_APP_STRIPE_YEARLY_PRICE_ID || 'price_1QfCXAFqLK5Bra1AY8xQ9m2K', // Replace with your Stripe price ID
+      priceId: process.env.REACT_APP_STRIPE_YEARLY_PRICE_ID || 'price_1S7gfxFqLK5Bra1AejR7IfYf',
       savings: 'Save 16%',
       features: [
         'Everything in Monthly',
@@ -51,7 +51,9 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
 
       console.log('Starting Stripe checkout...', {
         priceId: plans[selectedPlan].priceId,
-        hasStripeKey: !!stripeKey
+        hasStripeKey: !!stripeKey,
+        selectedPlan,
+        windowOrigin: window.location.origin
       });
 
       if (!stripeKey) {
@@ -74,17 +76,23 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
 
       console.log('Stripe session created:', data);
       
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create payment session');
+      }
+      
       if (!data.sessionId && !data.url) {
         throw new Error('No session ID or URL returned from server');
       }
 
       // Try direct redirect first (newer approach)
       if (data.url) {
+        console.log('Redirecting to Stripe Checkout:', data.url);
         window.location.href = data.url;
         return;
       }
 
       // Fallback to session redirect
+      console.log('Using Stripe redirectToCheckout with session ID:', data.sessionId);
       const result = await stripe.redirectToCheckout({
         sessionId: data.sessionId,
       });

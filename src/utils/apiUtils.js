@@ -155,7 +155,7 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
 // Use same-origin when not explicitly configured. In development, default to the local API server.
 export const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? (process.env.REACT_APP_API_BASE_URL || '')
-  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3016');
+  : (process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_LOCAL_API_BASE_URL || 'http://localhost:3010');
 
 // Circuit breakers for different API endpoints
 const circuitBreakers = {
