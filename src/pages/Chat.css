@@ -165,6 +165,7 @@
   border-radius: 16px;
   max-width: 70%;
   word-wrap: break-word;
+  color: var(--primary-text, #1f2937);
 }
 
 .message.user .message-content {
@@ -177,6 +178,7 @@
   background: var(--glass-bg, #ffffff);
   border: 1px solid var(--glass-border, #e2e8f0);
   border-radius: 4px 16px 16px 16px;
+  color: var(--primary-text, #1f2937);
 }
 
 .message-content strong {
@@ -192,6 +194,7 @@
 .message-content p {
   margin: 0;
   line-height: 1.4;
+  color: inherit;
 }
 
 /* Responsive adjustments */
@@ -246,6 +249,11 @@
   .message.bot .message-content {
     background: var(--glass-bg-dark, #1e293b);
     border-color: var(--glass-border-dark, #334155);
+    color: var(--primary-text, #e8eaf0);
+  }
+  
+  .message-content {
+    color: var(--primary-text, #e8eaf0);
   }
 }
 

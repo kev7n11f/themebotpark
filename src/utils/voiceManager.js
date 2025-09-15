@@ -1,18 +1,21 @@
 /**
- * Voice utilities using Web Speech API (FREE)
- * Works with existing setup, no additional API keys needed
+ * Voice utilities using OpenAI TTS API (PREMIUM QUALITY)
+ * Provides natural, high-quality voice synthesis for bot personalities
  */
 
 class VoiceManager {
   constructor() {
-    this.isSupported = 'speechSynthesis' in window;
+    this.isSupported = true; // OpenAI TTS is always supported if API key is available
     this.isSpeaking = false;
-    this.voices = [];
-    this.currentUtterance = null;
+    this.currentAudio = null;
+    this.isOpenAIMode = true; // Flag to indicate we're using OpenAI TTS
     
-    if (this.isSupported) {
+    // Fallback to Web Speech API if needed
+    this.webSpeechSupported = 'speechSynthesis' in window;
+    this.voices = [];
+    
+    if (this.webSpeechSupported) {
       this.loadVoices();
-      // Voices might load asynchronously
       speechSynthesis.onvoiceschanged = () => this.loadVoices();
     }
   }
@@ -87,18 +90,109 @@ class VoiceManager {
     return this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
   }
 
-  // Speak text with bot's voice
-  speak(text, botId = 'SafeSpace') {
-    if (!this.isSupported) {
-      console.warn('Speech synthesis not supported');
+  // Speak text with bot's voice using OpenAI TTS
+  async speak(text, botId = 'SafeSpace') {
+    if (!text || text.trim().length < 3) {
       return Promise.resolve();
     }
 
-    // Stop any current speech to prevent repetition
+    // Stop any current speech
     this.stop();
 
-    // Prevent empty or very short texts
-    if (!text || text.trim().length < 3) {
+    try {
+      this.isSpeaking = true;
+      
+      // Try OpenAI TTS first
+      const audioBuffer = await this.generateOpenAITTS(text, botId);
+      
+      if (audioBuffer) {
+        return this.playAudioBuffer(audioBuffer);
+      } else {
+        // Fallback to Web Speech API
+        console.log('Falling back to Web Speech API');
+        return this.speakWithWebAPI(text, botId);
+      }
+      
+    } catch (error) {
+      console.error('TTS Error:', error);
+      this.isSpeaking = false;
+      
+      // Fallback to Web Speech API on error
+      if (this.webSpeechSupported) {
+        console.log('Falling back to Web Speech API due to error');
+        return this.speakWithWebAPI(text, botId);
+      }
+      
+      throw error;
+    }
+  }
+
+  // Generate speech using OpenAI TTS API
+  async generateOpenAITTS(text, botId) {
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: this.cleanTextForSpeech(text),
+          botId: botId,
+          speed: this.getBotSpeed(botId)
+        })
+      });
+
+      if (response.ok) {
+        return await response.arrayBuffer();
+      } else {
+        const errorData = await response.json();
+        console.warn('OpenAI TTS API error:', errorData.error);
+        return null; // Will trigger fallback
+      }
+    } catch (error) {
+      console.warn('OpenAI TTS fetch error:', error);
+      return null; // Will trigger fallback
+    }
+  }
+
+  // Play audio buffer from OpenAI TTS
+  playAudioBuffer(audioBuffer) {
+    return new Promise((resolve, reject) => {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        audioContext.decodeAudioData(audioBuffer.slice(0), (audioBuffer) => {
+          const source = audioContext.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioContext.destination);
+          
+          this.currentAudio = { source, context: audioContext };
+          
+          source.onended = () => {
+            this.isSpeaking = false;
+            this.currentAudio = null;
+            resolve();
+          };
+          
+          source.start(0);
+        }, (error) => {
+          console.error('Audio decode error:', error);
+          this.isSpeaking = false;
+          reject(error);
+        });
+        
+      } catch (error) {
+        console.error('Audio playback error:', error);
+        this.isSpeaking = false;
+        reject(error);
+      }
+    });
+  }
+
+  // Fallback to Web Speech API
+  speakWithWebAPI(text, botId) {
+    if (!this.webSpeechSupported) {
+      console.warn('Web Speech API not supported');
       return Promise.resolve();
     }
 
@@ -124,7 +218,7 @@ class VoiceManager {
 
     return new Promise((resolve, reject) => {
       utterance.onstart = () => {
-        console.log('Speech started');
+        console.log('Web Speech started');
       };
 
       utterance.onend = () => {
@@ -136,7 +230,7 @@ class VoiceManager {
       utterance.onerror = (event) => {
         this.isSpeaking = false;
         this.currentUtterance = null;
-        console.error('Speech synthesis error:', event.error);
+        console.error('Web Speech synthesis error:', event.error);
         reject(event);
       };
 
@@ -147,6 +241,21 @@ class VoiceManager {
         reject(new Error('Speech synthesis not available'));
       }
     });
+  }
+
+  // Get speed setting for each bot
+  getBotSpeed(botId) {
+    const speedMap = {
+      SafeSpace: 0.95,
+      RainMaker: 1.0,
+      HeartSync: 0.9,
+      FixItFrank: 1.1,
+      TellItLikeItIs: 1.0,
+      CreativeCanvas: 1.05,
+      WellnessWise: 0.85
+    };
+    
+    return speedMap[botId] || 1.0;
   }
 
   // Clean text for better speech synthesis
@@ -171,10 +280,25 @@ class VoiceManager {
 
   // Stop current speech
   stop() {
-    if (this.isSupported && this.isSpeaking) {
-      speechSynthesis.cancel();
+    if (this.isSpeaking) {
+      // Stop OpenAI audio if playing
+      if (this.currentAudio) {
+        try {
+          this.currentAudio.source.stop();
+          this.currentAudio.context.close();
+        } catch (error) {
+          console.warn('Error stopping OpenAI audio:', error);
+        }
+        this.currentAudio = null;
+      }
+      
+      // Stop Web Speech API if playing
+      if (this.webSpeechSupported && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        this.currentUtterance = null;
+      }
+      
       this.isSpeaking = false;
-      this.currentUtterance = null;
     }
   }
 

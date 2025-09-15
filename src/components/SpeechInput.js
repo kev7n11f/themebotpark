@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import speechRecognitionManager, { 
+import { 
   startListening, 
   stopListening, 
   isListening, 
