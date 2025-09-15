@@ -95,7 +95,20 @@ export default function UpgradeModal({ isOpen, onClose, botName }) {
       }
     } catch (error) {
       console.error('Subscription error:', error);
-      setError(error.message);
+      
+      // Provide more specific error messages
+      let errorMessage = error.message;
+      if (error.message?.includes('publishable key')) {
+        errorMessage = 'Payment system configuration error. Please contact support.';
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message?.includes('session')) {
+        errorMessage = 'Unable to create payment session. Please try again or contact support.';
+      } else if (!errorMessage || errorMessage === 'Failed to fetch') {
+        errorMessage = 'Unable to connect to payment system. Please try again in a moment.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

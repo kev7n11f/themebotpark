@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import VoiceControls from '../components/VoiceControls';
 import SpeechInput from '../components/SpeechInput';
@@ -28,6 +28,18 @@ function Chat() {
   const [error, setError] = useState(null); // Error state for handling errors
   const [userId, setUserId] = useState('');
   const [booting, setBooting] = useState(true);
+  
+  // Ref for auto-scrolling to latest messages
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
 
   // Premium bots that require subscription
   const premiumBots = ['HeartSync', 'TellItLikeItIs', 'CreativeCanvas', 'WellnessWise'];
@@ -367,6 +379,8 @@ function Chat() {
               </div>
             </div>
           )}
+          {/* Scroll anchor */}
+          <div ref={messagesEndRef} />
         </div>
         
         <div className="chat-input-container">
