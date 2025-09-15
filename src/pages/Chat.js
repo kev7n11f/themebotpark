@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import VoiceControls from '../components/VoiceControls';
 import SpeechInput from '../components/SpeechInput';
+import SuggestedQuestions from '../components/SuggestedQuestions';
 import SEOHead from '../components/SEOHead';
 import { getBotImage } from '../utils/botImages';
 import { api } from '../utils/api';
@@ -101,6 +102,38 @@ function Chat() {
     return false;
   };
 
+  // Reusable function to send message to bot
+  const sendMessageToBot = async (messageText, currentMessages) => {
+    setIsLoading(true);
+
+    try {
+      const data = await api.sendChatMessage(bot, messageText, currentMessages, userId);
+
+      const botResponse = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        text: (data && typeof data.response === 'string') ? data.response : "I'm having trouble responding right now. Please try again!",
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, botResponse]);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setError('Unable to send message. Please try again.');
+      
+      const errorResponse = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        text: "I'm having trouble connecting right now. Please try again!",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const sendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -120,7 +153,6 @@ function Chat() {
     setMessages(prev => [...prev, userMessage]);
     const currentMessage = inputMessage;
     setInputMessage('');
-    setIsLoading(true);
 
     // Update message count only if not subscribed
     if (!hasSubscription) {
@@ -129,31 +161,7 @@ function Chat() {
       localStorage.setItem('messageCount', newCount.toString());
     }
 
-    try {
-      const data = await api.sendChatMessage(bot, currentMessage, messages, userId);
-
-      const botResponse = {
-        id: Date.now() + 1,
-        sender: 'bot',
-        text: (data && typeof data.response === 'string') ? data.response : "I'm having trouble responding right now. Please try again!",
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, botResponse]);
-
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setError('Failed to send message. Please try again.');
-      const errorResponse = {
-        id: Date.now() + 1,
-        sender: 'bot',
-        text: "Sorry, I'm experiencing technical difficulties. Please try again in a moment!",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorResponse]);
-    } finally {
-      setIsLoading(false);
-    }
+    await sendMessageToBot(currentMessage, [...messages, userMessage]);
   };
 
   const handleKeyPress = (e) => {
@@ -352,23 +360,49 @@ function Chat() {
         )}
 
         <div className="chat-messages">
-          {messages.map(message => (
-            <div key={message.id} className={`message ${message.sender}`}>
-              {message.sender === 'bot' && (
-                <img 
-                  src={getBotImage(bot, 'avatar')} 
-                  alt={`${bot} avatar`}
-                  className="message-avatar"
-                  onError={(e) => {
-                    e.target.src = getBotImage(bot, 'fallback');
+          {messages.map((message, index) => (
+            <div key={message.id}>
+              <div className={`message ${message.sender}`}>
+                {message.sender === 'bot' && (
+                  <img 
+                    src={getBotImage(bot, 'avatar')} 
+                    alt={`${bot} avatar`}
+                    className="message-avatar"
+                    onError={(e) => {
+                      e.target.src = getBotImage(bot, 'fallback');
+                    }}
+                  />
+                )}
+                <div className="message-content">
+                  <strong>{message.sender === 'bot' ? bot : 'You'}:</strong>
+                  <p>{message.text}</p>
+                  <small>{message.timestamp.toLocaleTimeString()}</small>
+                </div>
+              </div>
+              {/* Show suggested questions after the last bot message */}
+              {message.sender === 'bot' && index === messages.length - 1 && !isLoading && (
+                <SuggestedQuestions 
+                  botId={bot} 
+                  onQuestionClick={(question) => {
+                    setInputMessage(question);
+                    // Auto-send the suggested question
+                    setTimeout(() => {
+                      if (!shouldDisableInput() && !booting && !isLoading) {
+                        const messageId = Date.now() + Math.random();
+                        const userMessage = {
+                          id: messageId,
+                          text: question,
+                          sender: 'user',
+                          timestamp: new Date()
+                        };
+                        setMessages(prev => [...prev, userMessage]);
+                        sendMessageToBot(question, [...messages, userMessage]);
+                        setInputMessage('');
+                      }
+                    }, 100);
                   }}
                 />
               )}
-              <div className="message-content">
-                <strong>{message.sender === 'bot' ? bot : 'You'}:</strong>
-                <p>{message.text}</p>
-                <small>{message.timestamp.toLocaleTimeString()}</small>
-              </div>
             </div>
           ))}
           {isLoading && (

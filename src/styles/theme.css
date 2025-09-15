@@ -745,17 +745,20 @@ button:hover:before {
 }
 
 .message {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
   animation: messageSlideIn 0.3s ease-out;
-  max-width: 80%;
+  max-width: 100%;
+  clear: both;
 }
 
 .message.user {
-  margin-left: auto;
+  text-align: right;
+  margin-bottom: var(--space-lg);
 }
 
 .message.bot {
-  margin-right: auto;
+  text-align: left;
+  margin-bottom: var(--space-xl);
 }
 
 @keyframes messageSlideIn {
@@ -770,22 +773,27 @@ button:hover:before {
 }
 
 .message-content {
-  border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-lg);
-  box-shadow: var(--shadow-sm);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   position: relative;
   word-wrap: break-word;
+  line-height: 1.7;
+  font-size: 1rem;
+  border: none;
 }
 
 .message.user .message-content {
-  background: var(--gradient-primary);
-  color: white;
+  background: transparent;
+  color: var(--accent-primary);
+  font-weight: 500;
 }
 
 .message.bot .message-content {
-  background: var(--card-bg);
+  background: transparent;
   color: var(--primary-text);
-  border: 1px solid var(--border-color);
+  border: none;
 }
 
 .message-content strong {
