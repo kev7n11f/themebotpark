@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 import SEOHead from '../components/SEOHead';
+import '../styles/theme.css';
 
 export default function CreatorDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -21,55 +23,88 @@ export default function CreatorDashboard() {
   });
   
   const navigate = useNavigate();
+  const { user, isAuthenticated, isLoading: authLoading } = useUser();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/');
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   // Fetch creator data
   useEffect(() => {
+    if (!user?.id) return;
+    
     const fetchCreatorData = async () => {
       setIsLoading(true);
       try {
-        // In production, these would be real API calls
-        const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
-        const analyticsRes = await fetch(`${apiBase}/api/creator/analytics?creatorId=demo-creator`);
-        const myBotsRes = await fetch(`${apiBase}/api/creator/my-bots?creatorId=demo-creator`);
-        const payoutsRes = await fetch(`${apiBase}/api/creator/payouts?creatorId=demo-creator`);
+        // Use the authenticated user's ID instead of demo-creator
+        const userId = user.id;
+        console.log('Fetching creator data for user ID:', userId);
         
-        if (analyticsRes.ok && myBotsRes.ok && payoutsRes.ok) {
-          const analyticsData = await analyticsRes.json();
-          const myBotsData = await myBotsRes.json();
-          const payoutsData = await payoutsRes.json();
-          
-          setAnalytics(analyticsData.analytics || demoAnalytics);
-          setMyBots(myBotsData.bots || demoBots);
-          setPayouts(payoutsData || demoPayouts);
+        const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+        
+        // Try to fetch real creator data
+        const [analyticsRes, myBotsRes, payoutsRes] = await Promise.allSettled([
+          fetch(`${apiBase}/api/creator/analytics?creatorId=${userId}`),
+          fetch(`${apiBase}/api/creator/my-bots?creatorId=${userId}`),
+          fetch(`${apiBase}/api/creator/payouts?creatorId=${userId}`)
+        ]);
+        
+        // Handle analytics
+        if (analyticsRes.status === 'fulfilled' && analyticsRes.value.ok) {
+          const analyticsData = await analyticsRes.value.json();
+          setAnalytics(analyticsData.analytics || getDefaultAnalytics());
         } else {
-          // If API fails, use demo data
-          setAnalytics(demoAnalytics);
-          setMyBots(demoBots);
-          setPayouts(demoPayouts);
+          console.log('Using default analytics data');
+          setAnalytics(getDefaultAnalytics());
         }
+        
+        // Handle bots
+        if (myBotsRes.status === 'fulfilled' && myBotsRes.value.ok) {
+          const myBotsData = await myBotsRes.value.json();
+          setMyBots(myBotsData.bots || []);
+        } else {
+          console.log('No existing bots found, starting with empty list');
+          setMyBots([]);
+        }
+        
+        // Handle payouts
+        if (payoutsRes.status === 'fulfilled' && payoutsRes.value.ok) {
+          const payoutsData = await payoutsRes.value.json();
+          setPayouts(payoutsData || getDefaultPayouts());
+        } else {
+          console.log('Using default payouts data');
+          setPayouts(getDefaultPayouts());
+        }
+        
       } catch (error) {
         console.error('Error fetching creator data:', error);
-        // Use demo data as fallback
-        setAnalytics(demoAnalytics);
-        setMyBots(demoBots);
-        setPayouts(demoPayouts);
+        // Use default data as fallback
+        setAnalytics(getDefaultAnalytics());
+        setMyBots([]);
+        setPayouts(getDefaultPayouts());
       } finally {
         setIsLoading(false);
       }
     };
     
     fetchCreatorData();
-  }, []);
+  }, [user?.id]);
 
   const handleConnectStripe = async () => {
+    if (!user?.id) return;
+    
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
       const response = await fetch(`${apiBase}/api/creator/connect-stripe`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
-        body: JSON.stringify({ creatorId: 'demo-creator' })
+        body: JSON.stringify({ creatorId: user.id })
       });
       
       const data = await response.json();
@@ -86,16 +121,19 @@ export default function CreatorDashboard() {
   const handleCreateBot = async (e) => {
     e.preventDefault();
     
+    if (!user?.id) return;
+    
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3010';
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
       const response = await fetch(`${apiBase}/api/creator/bot`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
         body: JSON.stringify({
           ...newBot,
-          creatorId: 'demo-creator'
+          creatorId: user.id
         })
       });
       
@@ -129,9 +167,12 @@ export default function CreatorDashboard() {
     }
     
     try {
-      const apiBase = process.env.NODE_ENV === 'production' ? 'https://themebotpark.onrender.com' : '';
+      const apiBase = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
       const response = await fetch(`${apiBase}/api/creator/bot/${botId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
       });
       
       const data = await response.json();
@@ -163,7 +204,7 @@ export default function CreatorDashboard() {
     setNewBot({ ...newBot, features: updatedFeatures });
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <section className="dashboard">
         <SEOHead 
@@ -174,6 +215,29 @@ export default function CreatorDashboard() {
         <div className="dashboard-loader">
           <div className="spinner"></div>
           <p>Loading your creator dashboard...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <section className="dashboard">
+        <SEOHead 
+          title="Creator Dashboard - ThemeBotPark"
+          description="Manage your AI bots, track performance, and monitor revenue in the ThemeBotPark creator portal."
+          noindex={true}
+        />
+        <div className="dashboard-auth-required">
+          <h2>Authentication Required</h2>
+          <p>Please log in to access your creator dashboard.</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => navigate('/')}
+          >
+            Go to Login
+          </button>
         </div>
       </section>
     );
@@ -675,131 +739,21 @@ export default function CreatorDashboard() {
   );
 }
 
-// Demo data for initial state
-const demoAnalytics = {
-  totalBots: 3,
-  totalConversations: 245,
-  totalMessages: 1876,
-  totalSubscribers: 18,
-  totalRevenue: 342.75,
-  popularBots: [
-    {
-      id: 'bot1',
-      name: 'FitnessFriend',
-      emoji: '💪',
-      stats: {
-        conversations: 120,
-        messages: 876,
-        subscribers: 10,
-        revenue: 186.50
-      }
-    },
-    {
-      id: 'bot2',
-      name: 'StudyBuddy',
-      emoji: '📚',
-      stats: {
-        conversations: 85,
-        messages: 614,
-        subscribers: 6,
-        revenue: 112.25
-      }
-    },
-    {
-      id: 'bot3',
-      name: 'MindfulMate',
-      emoji: '🧘',
-      stats: {
-        conversations: 40,
-        messages: 386,
-        subscribers: 2,
-        revenue: 44.00
-      }
-    }
-  ]
-};
+// Helper functions for default data
+const getDefaultAnalytics = () => ({
+  totalBots: 0,
+  totalConversations: 0,
+  totalMessages: 0,
+  totalSubscribers: 0,
+  totalRevenue: 0,
+  popularBots: []
+});
 
-const demoBots = [
-  {
-    id: 'bot1',
-    name: 'FitnessFriend',
-    description: 'Your personal fitness coach',
-    systemPrompt: 'You are FitnessFriend, a supportive AI fitness coach. You provide workout advice, nutritional guidance, and motivational support...',
-    welcomeMessage: 'Hello! I\'m your personal fitness coach. How can I help you with your fitness journey today?',
-    emoji: '💪',
-    features: ['Workout Plans', 'Nutrition Advice', 'Progress Tracking', 'Motivation'],
-    isPublic: true,
-    isPremium: true,
-    creatorId: 'demo-creator',
-    createdAt: '2025-05-01T00:00:00Z',
-    updatedAt: '2025-06-15T00:00:00Z',
-    stats: {
-      conversations: 120,
-      messages: 876,
-      subscribers: 10,
-      revenue: 186.50
-    }
-  },
-  {
-    id: 'bot2',
-    name: 'StudyBuddy',
-    description: 'Study smarter, not harder',
-    systemPrompt: 'You are StudyBuddy, an educational AI tutor. You help explain complex topics, provide practice problems, and guide effective study methods...',
-    welcomeMessage: 'Hi there! Ready to study more effectively? Tell me what subject you\'re working on!',
-    emoji: '📚',
-    features: ['Subject Explanations', 'Practice Problems', 'Study Techniques', 'Exam Prep'],
-    isPublic: true,
-    isPremium: false,
-    creatorId: 'demo-creator',
-    createdAt: '2025-05-15T00:00:00Z',
-    updatedAt: '2025-06-10T00:00:00Z',
-    stats: {
-      conversations: 85,
-      messages: 614,
-      subscribers: 6,
-      revenue: 112.25
-    }
-  },
-  {
-    id: 'bot3',
-    name: 'MindfulMate',
-    description: 'Your companion for mindfulness and meditation',
-    systemPrompt: 'You are MindfulMate, a calming presence focused on mindfulness, meditation, and mental wellness...',
-    welcomeMessage: 'Welcome to a moment of calm. How are you feeling today?',
-    emoji: '🧘',
-    features: ['Guided Meditations', 'Breathing Exercises', 'Stress Management', 'Sleep Assistance'],
-    isPublic: true,
-    isPremium: true,
-    creatorId: 'demo-creator',
-    createdAt: '2025-06-01T00:00:00Z',
-    updatedAt: '2025-06-20T00:00:00Z',
-    stats: {
-      conversations: 40,
-      messages: 386,
-      subscribers: 2,
-      revenue: 44.00
-    }
-  }
-];
-
-const demoPayouts = {
-  payouts: [
-    {
-      id: 'payout_1',
-      amount: 124.50,
-      status: 'paid',
-      date: '2025-06-15T00:00:00Z'
-    },
-    {
-      id: 'payout_2',
-      amount: 87.25,
-      status: 'pending',
-      date: '2025-07-15T00:00:00Z'
-    }
-  ],
+const getDefaultPayouts = () => ({
+  payouts: [],
   payoutMethod: {
     type: 'stripe',
-    connected: true,
-    lastFour: '4242'
+    connected: false,
+    lastFour: null
   }
-};
+});

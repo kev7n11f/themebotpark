@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import UpgradeModal from '../components/UpgradeModal';
 import VoiceControls from '../components/VoiceControls';
 import SpeechInput from '../components/SpeechInput';
+import VoiceTestComponent from '../components/VoiceTestComponent';
 import SEOHead from '../components/SEOHead';
 import { getBotImage } from '../utils/botImages';
 import { api } from '../utils/api';
@@ -422,6 +423,11 @@ function Chat() {
           </div>
         </div>
       </div>
+
+      {/* Temporary voice debugging component */}
+      {bot && (
+        <VoiceTestComponent />
+      )}
 
       <UpgradeModal 
         isOpen={showPaywall} 
