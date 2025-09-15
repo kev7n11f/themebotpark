@@ -1,13 +1,12 @@
 /* Enhanced Chat Interface Styles with Bot Images */
 
 .chat-header {
-  background: linear-gradient(135deg, var(--glass-bg), var(--glass-bg-alt));
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px 16px 0 0;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  border-radius: 0;
   padding: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .chat-header-content {
@@ -68,10 +67,9 @@
   flex-direction: column;
   height: calc(100vh - 200px); /* Account for header and input */
   min-height: 400px;
-  background: var(--glass-bg, #ffffff);
-  border: 1px solid var(--glass-border, #e2e8f0);
-  border-radius: 0 0 16px 16px;
-  border-top: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
 .chat-messages {
@@ -263,10 +261,10 @@
   flex-direction: column;
   gap: 12px;
   padding: 1rem;
-  background: var(--glass-bg, #ffffff);
-  border: 1px solid var(--glass-border, #e2e8f0);
-  border-radius: 0 0 16px 16px;
-  backdrop-filter: blur(10px);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
 }
 
 .chat-input-wrapper {

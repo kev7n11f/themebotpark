@@ -16,13 +16,22 @@ html {
   background: var(--primary-bg);
 }
 
-.static-page, .dashboard, .chat-page {
+.static-page, .dashboard {
   max-width: 700px;
   margin: 40px auto;
   background: var(--card-bg);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   padding: 2rem;
+}
+
+.chat-page {
+  max-width: 100%;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
 }
 
 footer {
@@ -81,13 +90,13 @@ button:hover {
 }
 
 .chat-page {
-  max-width: 900px;
-  margin: 20px auto;
-  background: var(--card-bg);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  max-width: 100%;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   padding: 0;
-  height: 80vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
