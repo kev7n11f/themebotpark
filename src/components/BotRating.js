@@ -13,6 +13,9 @@ const BotRating = ({
   const [submittedRating, setSubmittedRating] = useState(userRating);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Ensure currentRating is always a valid number
+  const safeCurrentRating = typeof currentRating === 'number' && !isNaN(currentRating) ? currentRating : 5.0;
+
   const handleRatingClick = async (rating) => {
     if (readonly || submittedRating) return;
     
@@ -54,7 +57,7 @@ const BotRating = ({
     
     for (let i = 1; i <= 5; i++) {
       const isFilled = i <= displayRating;
-      const isCurrentRating = i <= currentRating;
+      const isCurrentRating = i <= safeCurrentRating;
       
       stars.push(
         <button
@@ -90,7 +93,7 @@ const BotRating = ({
       
       <div className="rating-info">
         <span className="current-rating">
-          {currentRating.toFixed(1)}
+          {safeCurrentRating.toFixed(1)}
         </span>
         
         {submittedRating && (

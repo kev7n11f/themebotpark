@@ -265,7 +265,7 @@ export default function CreatorDashboard() {
               
               <div className="stat-card highlight">
                 <h3>Revenue</h3>
-                <p className="stat-value">${analytics.totalRevenue.toFixed(2)}</p>
+                <p className="stat-value">${typeof analytics.totalRevenue === 'number' ? analytics.totalRevenue.toFixed(2) : '0.00'}</p>
               </div>
             </div>
             
@@ -356,7 +356,7 @@ export default function CreatorDashboard() {
                       </div>
                       <div className="bot-stat">
                         <span className="stat-label">Revenue</span>
-                        <span className="stat-value">${bot.stats.revenue.toFixed(2)}</span>
+                        <span className="stat-value">${typeof bot.stats.revenue === 'number' ? bot.stats.revenue.toFixed(2) : '0.00'}</span>
                       </div>
                     </div>
                     
@@ -432,7 +432,7 @@ export default function CreatorDashboard() {
                     {payouts.payouts.map(payout => (
                       <tr key={payout.id}>
                         <td>{new Date(payout.date).toLocaleDateString()}</td>
-                        <td>${payout.amount.toFixed(2)}</td>
+                        <td>${typeof payout.amount === 'number' ? payout.amount.toFixed(2) : '0.00'}</td>
                         <td>
                           <span className={`status ${payout.status}`}>
                             {payout.status}

@@ -289,7 +289,8 @@ export class MemoryMonitor {
 
     // Warn about high memory usage
     if (measurement.usagePercent > 80) {
-      console.warn(`High memory usage detected: ${measurement.usagePercent.toFixed(1)}%`);
+      const usagePercent = typeof measurement.usagePercent === 'number' ? measurement.usagePercent.toFixed(1) : '0.0';
+      console.warn(`High memory usage detected: ${usagePercent}%`);
       
       if (window.analytics && typeof window.analytics.track === 'function') {
         window.analytics.track('High Memory Usage', measurement);
