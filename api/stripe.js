@@ -23,17 +23,30 @@ module.exports = async (req, res) => {
 
   if (req.method === 'POST') {
     try {
-      console.log('Stripe API called with:', {
+      console.log('=== STRIPE API DEBUG START ===');
+      console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+      console.log('Request body:', JSON.stringify(req.body, null, 2));
+      console.log('Environment check:', {
         hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-        body: req.body,
-        nodeEnv: process.env.NODE_ENV
+        stripeKeyPrefix: process.env.STRIPE_SECRET_KEY?.substring(0, 10) + '...',
+        nodeEnv: process.env.NODE_ENV,
+        vercelUrl: process.env.VERCEL_URL,
+        vercelEnv: process.env.VERCEL_ENV
       });
 
       if (!process.env.STRIPE_SECRET_KEY) {
-        console.error('Missing STRIPE_SECRET_KEY environment variable');
+        console.error('❌ Missing STRIPE_SECRET_KEY environment variable');
         return res.status(500).json({
           success: false,
           error: 'Stripe secret key not configured'
+        });
+      }
+
+      if (!stripe) {
+        console.error('❌ Stripe SDK not initialized despite having key');
+        return res.status(500).json({
+          success: false,
+          error: 'Stripe SDK initialization failed'
         });
       }
 
@@ -58,19 +71,19 @@ module.exports = async (req, res) => {
         premium: process.env.STRIPE_PRICE_PREMIUM,
       };
 
-      console.log('Price mapping:', priceMap);
+      console.log('Price mapping:', JSON.stringify(priceMap, null, 2));
 
       let priceId = bodyPriceId;
       if (!priceId && plan) {
         priceId = priceMap[plan];
-        console.log(`Mapped plan '${plan}' to priceId: ${priceId}`);
+        console.log(`✅ Mapped plan '${plan}' to priceId: ${priceId}`);
       }
 
       if (!priceId) {
         const availablePlans = Object.keys(priceMap)
           .filter((k) => !!priceMap[k])
           .join(', ') || 'none';
-        console.error('No valid priceId found:', { 
+        console.error('❌ No valid priceId found:', { 
           receivedPlan: plan, 
           bodyPriceId, 
           availablePlans 
@@ -83,9 +96,9 @@ module.exports = async (req, res) => {
       }
 
       // Determine URLs with sensible fallbacks
-      const clientUrl = process.env.CLIENT_URL || process.env.PUBLIC_URL || '';
-      const resolvedSuccess = (process.env.STRIPE_SUCCESS_URL || successUrl || (clientUrl ? clientUrl + '/subscription-success' : null));
-      const resolvedCancel = (process.env.STRIPE_CANCEL_URL || cancelUrl || (clientUrl ? clientUrl + '/chat' : null));
+      const clientUrl = process.env.CLIENT_URL || process.env.PUBLIC_URL || 'https://themebotpark.vercel.app';
+      const resolvedSuccess = (process.env.STRIPE_SUCCESS_URL || successUrl || (clientUrl + '/subscription-success'));
+      const resolvedCancel = (process.env.STRIPE_CANCEL_URL || cancelUrl || (clientUrl + '/chat'));
 
       console.log('Resolved URLs:', {
         resolvedSuccess,
@@ -94,26 +107,23 @@ module.exports = async (req, res) => {
       });
 
       if (!resolvedSuccess || !resolvedCancel) {
-        console.error('Missing success or cancel URLs');
+        console.error('❌ Missing success or cancel URLs');
         return res.status(400).json({
           success: false,
           error: 'Missing success or cancel URL and no defaults available. Provide successUrl and cancelUrl in the request or set CLIENT_URL/PUBLIC_URL.'
         });
       }
 
-      if (!stripe) {
-        console.error('Stripe SDK not initialized');
-        return res.status(500).json({ success: false, error: 'Stripe SDK not initialized' });
-      }
-
-      console.log('Creating Stripe checkout session with:', {
+      console.log('✅ Creating Stripe checkout session with:', {
         priceId,
         successUrl: resolvedSuccess,
-        cancelUrl: resolvedCancel
+        cancelUrl: resolvedCancel,
+        mode: 'subscription'
       });
 
       // Create Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
+      console.log('🔄 Attempting to create Stripe checkout session...');
+      const sessionParams = {
         payment_method_types: ['card'],
         line_items: [
           {
@@ -127,12 +137,19 @@ module.exports = async (req, res) => {
         allow_promotion_codes: true,
         billing_address_collection: 'auto',
         // customer_creation is not needed for subscription mode - Stripe handles it automatically
-      });
+      };
+      
+      console.log('Session parameters:', JSON.stringify(sessionParams, null, 2));
+      
+      const session = await stripe.checkout.sessions.create(sessionParams);
 
-      console.log('Stripe session created successfully:', {
+      console.log('✅ Stripe session created successfully:', {
         sessionId: session.id,
-        url: session.url
+        url: session.url,
+        status: session.status,
+        mode: session.mode
       });
+      console.log('=== STRIPE API DEBUG END ===');
 
       return res.json({ 
         sessionId: session.id, 
@@ -140,16 +157,31 @@ module.exports = async (req, res) => {
         success: true
       });
     } catch (error) {
-      console.error('Stripe error details:', {
+      console.log('=== STRIPE ERROR DEBUG START ===');
+      console.error('❌ Stripe error details:', {
         message: error.message,
         type: error.type,
         code: error.code,
-        stack: error.stack
+        param: error.param,
+        decline_code: error.decline_code,
+        charge: error.charge,
+        payment_method: error.payment_method,
+        request_log_url: error.request_log_url,
+        stack: error.stack?.split('\n').slice(0, 5).join('\n') // First 5 lines of stack
       });
+      console.log('=== STRIPE ERROR DEBUG END ===');
+      
       return res.status(500).json({ 
         error: error.message,
         type: error.type || 'unknown_error',
-        success: false
+        code: error.code || null,
+        success: false,
+        debug: process.env.NODE_ENV === 'development' ? {
+          message: error.message,
+          type: error.type,
+          code: error.code,
+          param: error.param
+        } : null
       });
     }
   }
